@@ -48,7 +48,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     }
     
     public void instanciarTabela(){
-        String sql = "select idproduto as ID,codigo as Codigo, produto as Produto, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações from tbprodutos";
+        String sql = "select idproduto as ID,codigo as Codigo, produto as Produto, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações,estoque as Estoque from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -76,7 +76,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     }
     
     private void pesquisar_cliente() {
-        String sql = "select idproduto as ID, produto as Produto, codigo as Codigo, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações from tbprodutos where produto like ?";
+        String sql = "select idproduto as ID, produto as Produto, codigo as Codigo, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações, estoque as Estoque from tbprodutos where produto like ?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtPesquisa.getText() + "%");
@@ -97,7 +97,8 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         txtCusto.setText(tbProduto.getModel().getValueAt(setar, 3).toString());
         txtPreco.setText(tbProduto.getModel().getValueAt(setar, 4).toString());     
         txtFornecedor.setText(tbProduto.getModel().getValueAt(setar, 5).toString());        
-        taProduto.setText(tbProduto.getModel().getValueAt(setar, 6).toString());     
+        taProduto.setText(tbProduto.getModel().getValueAt(setar, 6).toString()); 
+        cbEstoque.setSelectedItem(tbProduto.getModel().getValueAt(setar, 7).toString());
         
         
         
@@ -111,7 +112,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
 
     private void adicionar() {
             
-        String sql = "insert into tbprodutos(produto,codigo,custo,preco,fornecedor,obs)values(?,?,?,?,?,?)";
+        String sql = "insert into tbprodutos(produto,codigo,custo,preco,fornecedor,obs,estoque,quantidade)values(?,?,?,?,?,?,?,?)";
         
         double custo,preco;            
         
@@ -128,6 +129,8 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             pst.setString(4, new DecimalFormat("#,##0.00").format(preco));
             pst.setString(5, txtFornecedor.getText());
             pst.setString(6, taProduto.getText());
+            pst.setString(7, cbEstoque.getSelectedItem().toString());
+            pst.setInt(8, 0);
 
             //Validação dos Campos Obrigatorios
             if ((txtDescricao.getText().isEmpty()) || (txtCusto.getText().equals("0.00")) || (txtPreco.getText().equals("0.00"))) {
@@ -159,7 +162,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     }
     
     private void alterar() {
-        String sql = "update tbprodutos set produto=?,codigo=?,custo=?,preco=?,fornecedor=?,obs=? where idproduto=?";
+        String sql = "update tbprodutos set produto=?,codigo=?,custo=?,preco=?,fornecedor=?,obs=?,estoque=? where idproduto=?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtDescricao.getText());
@@ -168,7 +171,8 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             pst.setString(4, txtPreco.getText());
             pst.setString(5, txtFornecedor.getText());
             pst.setString(6, taProduto.getText());
-            pst.setString(7, txtID.getText());
+            pst.setString(7, cbEstoque.getSelectedItem().toString());
+            pst.setString(8, txtID.getText());
 
             if ((txtDescricao.getText().isEmpty()) || (txtCusto.getText().isEmpty()) || (txtPreco.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
@@ -184,14 +188,17 @@ public class TelaProduto extends javax.swing.JInternalFrame {
 
                 }
             }
-        } catch (Exception e) {
+        } catch (com.mysql.cj.jdbc.exceptions.MysqlDataTruncation e) {
+            JOptionPane.showMessageDialog(null, "Codigo de barras deve ter no maximo 18 caracteres.");
+            limpar();
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
 
     }
     
     private void remover() {
-        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este produto?", "Atenção", JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             String sql = "delete from tbprodutos where idproduto=?";
             try {
@@ -256,6 +263,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         lblPreco = new javax.swing.JLabel();
         lblFornecedor = new javax.swing.JLabel();
         lblCodigoDeBarras = new javax.swing.JLabel();
+        lblEstoque = new javax.swing.JLabel();
         txtDescricao = new javax.swing.JTextField();
         txtID = new javax.swing.JTextField();
         txtPesquisa = new javax.swing.JTextField();
@@ -267,6 +275,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         btnEditar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
         btnAtualizar = new javax.swing.JButton();
+        cbEstoque = new javax.swing.JComboBox<>();
         scProduto = new javax.swing.JScrollPane();
         taProduto = new javax.swing.JTextArea();
         scTbProduto = new javax.swing.JScrollPane();
@@ -317,6 +326,9 @@ public class TelaProduto extends javax.swing.JInternalFrame {
 
         lblCodigoDeBarras.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblCodigoDeBarras.setText("Codigo de Barras:");
+
+        lblEstoque.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblEstoque.setText("*Estoque:");
 
         txtID.setEnabled(false);
 
@@ -381,6 +393,9 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             }
         });
 
+        cbEstoque.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        cbEstoque.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Com controle de estoque.", "Sem controle de estoque." }));
+
         taProduto.setColumns(20);
         taProduto.setRows(5);
         scProduto.setViewportView(taProduto);
@@ -443,19 +458,26 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(txtPreco))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblCodigoDeBarras)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtCodigo)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblFornecedor)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(lblID)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(txtID))
+                                            .addComponent(lblCodigoDeBarras))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblID)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
-                                        .addComponent(lblOBS)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtCodigo, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblFornecedor)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(txtFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(lblEstoque)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbEstoque, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(lblOBS)))))
                                 .addGap(18, 18, 18)
                                 .addComponent(scProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(30, 30, 30))
@@ -487,7 +509,9 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblID)
                             .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblOBS))
+                            .addComponent(lblOBS)
+                            .addComponent(lblEstoque)
+                            .addComponent(cbEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblFornecedor)
@@ -505,7 +529,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                             .addComponent(lblPreco)
                             .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(scProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(btnEditar)
@@ -571,10 +595,12 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnAtualizar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnRemover;
+    private javax.swing.JComboBox<String> cbEstoque;
     private javax.swing.JLabel lblCamposObrigatorios;
     private javax.swing.JLabel lblCodigoDeBarras;
     private javax.swing.JLabel lblCusto;
     private javax.swing.JLabel lblDescricao;
+    private javax.swing.JLabel lblEstoque;
     private javax.swing.JLabel lblFornecedor;
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblOBS;

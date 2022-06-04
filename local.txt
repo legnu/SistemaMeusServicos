@@ -10,52 +10,11 @@ usuario varchar(50) not null,
 cargo_usuario varchar(15),
 telefone varchar(15) not null,
 login varchar(15) not null unique,
-senha varchar(15) not null
+senha varchar(15) not null,
+perfil varchar(20) not null
 );
--- O comando abaixo descreve a Tabela
-describe tbusuarios;
--- A Linha abaixo insere dados na Tabela (CRUD)
--- create -> insert
--- A Linha abaixo exibe os dados da Tabela (CRUD)
--- read -> select
-alter table tbusuarios add column perfil varchar(20) not null;
--- A linha acima acresce um Campo a Tabela, e por entendimento o codigo na linha abaixo remove um campo a tabela
--- alter table tbusuarios drop column perfil;
-select * from tbusuarios;
-insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha)
-values(1,'Leandro Clemente','Gerente','31 982352599','leandroclemente','admin123');
-insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha)
-values(2,'Leandro Alencar Clemente','Tecnico','31 982359999','leandroalencar','admin123');
-insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha)
-values(3,'Lucas Clemente','Vendedor','31 982999999','lucasclemente','admin123');
-insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha)
-values(4,'Luan Clemente','Estoquista','31 982999777','luanclemente','admin1234');
-insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha)
-values(5,'Larissa Clemente','Recepicionista','31 985236777','larissaclemente','admin12346');
--- A Linha abaixo modifica dados na Tabela
--- update -> update
-update tbusuarios set telefone='31 977766555' where iduser=2;
-update tbusuarios set senha='Admin123' where iduser=1;
-update tbusuarios set senha='admin12' where iduser=2;
-update tbusuarios set senha='admin123' where iduser=3;
-update tbusuarios set senha='admin12345' where iduser=5;
-update tbusuarios set cargo_usuario='Administrador' where iduser=1;
-update tbusuarios set usuario='Leandro Alencar' where iduser=2;
-update tbusuarios set usuario='Leandro Clemente' where iduser=1;
-update tbusuarios set senha='admin' where iduser=1;
-update tbusuarios set login='leandro' where iduser=1;
--- Será feito um update do perfil do usuario
-update tbusuarios set perfil='admin' where iduser=1;
-update tbusuarios set perfil='admin' where iduser=2;
-update tbusuarios set perfil='user' where iduser=3;
-update tbusuarios set perfil='user' where iduser=4;
-update tbusuarios set perfil='user' where iduser=5;
-update tbos set idcli=10 where os=1;
--- A Linha abaixo apaga registro da Tabela
--- delete -> delete
-delete from tbusuarios where iduser=3;
-delete from tbclientes where idcli=6;
-delete from tbclientes where idcli=1;
+insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil)
+values(1,'Administrador','Administrador','000000000000000','admin','admin123','admin');
 
 create table tbclientes(
 idcli int primary key auto_increment,
@@ -68,19 +27,14 @@ cidadecli varchar(30),
 telefonecli varchar(15) not null,
 emailcli varchar(50)
 );
-describe tbclientes;
-select * from tbclientes;
 insert into tbclientes(nomecli,sexocli,cepcli,endcli,bairrocli,cidadecli,telefonecli,emailcli)
-values('Luzia Alencar Clemente','F','32372015','Rua das Lindas','Novo Progresso','Belo Horizonte','31 989326828','luzia@luziagatissima.com');
-insert into tbclientes(nomecli,sexocli,cepcli,endcli,bairrocli,cidadecli,telefonecli,emailcli)
-values('Luan Clemente','M','32000888','Rua dos Brotheres','Água Branca','Contagem','31 99999999','luan@luanporreta.com');
+values('Caixa','F','00000000','Loja','loja','loja','000000000000000','loja@gmail.com');
 
-update tbclientes set nomecli='Leona Bragança' where idcli=4;
-
--- Apartir daqui será criado a Tabela de Ordens de Serviços
 create table tbos(
 os int primary key auto_increment,
 data_os timestamp default current_timestamp,
+tipo varchar(15) not null,
+situacao varchar(20) not null,
 previsao_entreg_os varchar(50),
 equipamento varchar(150) not null,
 defeito varchar(150) not null,
@@ -90,14 +44,52 @@ Valor decimal(10,2),
 idcli int not null,
 foreign key(idcli) references tbclientes(idcli)
 );
-describe tbos;
-alter table tbos add tipo varchar(15) not null after data_os;
-alter table tbos add situacao varchar(20) not null after tipo;
-select * from tbos;
-select os,date_format(data_os,'%d/%m/%Y - %H:%i'),tipo,situacao,previsao_entreg_os,equipamento,defeito,servico,tecnico,Valor,idcli from tbos where os=1;
-insert into tbos(previsao_entreg_os,equipamento,defeito,servico,tecnico,Valor,idcli)
-values('22.10.2021_14:30h','Notebook Samsung','Teclas não Funcionam','Substituição do Teclado','Leandro','135.9','2');
--- O Codigo abaixo traz informações de duas Tabelas
+
+create table tbvenda(
+idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+cliente_venda varchar(50),
+nome varchar(50),
+preco double
+);
+
+create table tbtotalvendas(
+id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+dia varchar(50),
+venda double
+);
+
+create table tbprodutos(
+idproduto MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+codigo varchar(18),
+produto varchar(50),
+custo varchar(9),
+preco varchar(9),
+fornecedor varchar(50),
+obs varchar(500),
+estoque varchar(30),
+quantidade int
+);
+select quantidade from tbprodutos;
+
+create table tbcompra(
+idcompra MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nome_produto varchar(50),
+valor double,
+valor_unidade double,
+quantidade int,
+quantidade_comprada int
+);
+
+select sum(valor) from tbcompra;
+
+create table gastos(
+idgastos MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+valor double,
+data_emicao date
+);
+
+select * from gastos;
+
 select
 O.os,previsao_entreg_os,tecnico,defeito,servico,Valor,
 C.nomecli,telefonecli
