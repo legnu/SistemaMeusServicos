@@ -47,6 +47,20 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         conexao = ModuloConexao.conector();
     }
     
+    public void InstanciarCombobox(){
+        try {
+            cbFornecedor.addItem(" ");
+            String sql = "select nome_fornecedor from tbfornecedor";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                  cbFornecedor.addItem(rs.getString("nome_fornecedor"));
+            }
+        } catch (Exception sqlEx) {
+        
+        }
+    }    
+    
     public void instanciarTabela(){
         String sql = "select idproduto as ID,codigo as Codigo, produto as Produto, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações,estoque as Estoque from tbprodutos";
         try {
@@ -66,7 +80,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         txtPreco.setText("0.00");
         txtDescricao.setText(null);
         txtPesquisa.setText(null);
-        txtFornecedor.setText(null);
+        cbFornecedor.setSelectedItem(" ");
         taProduto.setText(null);
         btnAdicionar.setEnabled(true);
         btnAtualizar.setEnabled(true);
@@ -96,7 +110,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         txtDescricao.setText(tbProduto.getModel().getValueAt(setar, 2).toString());
         txtCusto.setText(tbProduto.getModel().getValueAt(setar, 3).toString());
         txtPreco.setText(tbProduto.getModel().getValueAt(setar, 4).toString());     
-        txtFornecedor.setText(tbProduto.getModel().getValueAt(setar, 5).toString());        
+        cbFornecedor.setSelectedItem(tbProduto.getModel().getValueAt(setar, 5).toString());        
         taProduto.setText(tbProduto.getModel().getValueAt(setar, 6).toString()); 
         cbEstoque.setSelectedItem(tbProduto.getModel().getValueAt(setar, 7).toString());
         
@@ -127,7 +141,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             pst.setString(2, txtCodigo.getText());
             pst.setString(3, new DecimalFormat("#,##0.00").format(custo));
             pst.setString(4, new DecimalFormat("#,##0.00").format(preco));
-            pst.setString(5, txtFornecedor.getText());
+            pst.setString(5, cbFornecedor.getSelectedItem().toString());
             pst.setString(6, taProduto.getText());
             pst.setString(7, cbEstoque.getSelectedItem().toString());
             pst.setInt(8, 0);
@@ -169,7 +183,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             pst.setString(2, txtCodigo.getText());
             pst.setString(3, txtCusto.getText());
             pst.setString(4, txtPreco.getText());
-            pst.setString(5, txtFornecedor.getText());
+            pst.setString(5, cbFornecedor.getSelectedItem().toString());
             pst.setString(6, taProduto.getText());
             pst.setString(7, cbEstoque.getSelectedItem().toString());
             pst.setString(8, txtID.getText());
@@ -268,7 +282,6 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         txtID = new javax.swing.JTextField();
         txtPesquisa = new javax.swing.JTextField();
         txtCusto = new javax.swing.JTextField();
-        txtFornecedor = new javax.swing.JTextField();
         txtPreco = new javax.swing.JTextField();
         txtCodigo = new javax.swing.JTextField();
         btnAdicionar = new javax.swing.JButton();
@@ -280,6 +293,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         taProduto = new javax.swing.JTextArea();
         scTbProduto = new javax.swing.JScrollPane();
         tbProduto = new javax.swing.JTable();
+        cbFornecedor = new javax.swing.JComboBox<>();
 
         setClosable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -346,12 +360,6 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         txtCusto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCustoActionPerformed(evt);
-            }
-        });
-
-        txtFornecedor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFornecedorActionPerformed(evt);
             }
         });
 
@@ -424,6 +432,12 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         });
         scTbProduto.setViewportView(tbProduto);
 
+        cbFornecedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbFornecedorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -470,8 +484,8 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                                                 .addComponent(txtCodigo, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(lblFornecedor)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(txtFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                 .addComponent(lblEstoque)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -515,9 +529,9 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblFornecedor)
-                            .addComponent(txtFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblCodigoDeBarras)
-                            .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblDescricao)
@@ -529,7 +543,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                             .addComponent(lblPreco)
                             .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(scProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(btnEditar)
@@ -545,10 +559,6 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     private void txtPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPesquisaActionPerformed
-
-    private void txtFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFornecedorActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtFornecedorActionPerformed
 
     private void txtCustoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCustoActionPerformed
         // TODO add your handling code here:
@@ -581,6 +591,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
 
     private void formInternalFrameActivated(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameActivated
         // TODO add your handling code here:
+        InstanciarCombobox();
         limpar();
     }//GEN-LAST:event_formInternalFrameActivated
 
@@ -589,6 +600,11 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         setar_campos();
     }//GEN-LAST:event_tbProdutoMouseClicked
 
+    private void cbFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFornecedorActionPerformed
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_cbFornecedorActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdicionar;
@@ -596,6 +612,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnRemover;
     private javax.swing.JComboBox<String> cbEstoque;
+    private javax.swing.JComboBox<String> cbFornecedor;
     private javax.swing.JLabel lblCamposObrigatorios;
     private javax.swing.JLabel lblCodigoDeBarras;
     private javax.swing.JLabel lblCusto;
@@ -613,7 +630,6 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtCusto;
     private javax.swing.JTextField txtDescricao;
-    private javax.swing.JTextField txtFornecedor;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtPesquisa;
     private javax.swing.JTextField txtPreco;

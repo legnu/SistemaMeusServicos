@@ -4,14 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaProduto.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaPrincipal.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaClientesVendas.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaOS.java</file>
             <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/Compra.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaUsuario.java</file>
             <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/PontoDeVendas.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaCliente.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaSobre.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaFornecedor.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/dal/ValidadorDeCNPJ.java</file>
         </group>
     </open-files>
 </project-private>

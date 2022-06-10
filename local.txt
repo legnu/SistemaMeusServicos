@@ -49,14 +49,19 @@ create table tbvenda(
 idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 cliente_venda varchar(50),
 nome varchar(50),
-preco double
+preco double,
+quantidade int,
+pagamento varchar(50)
 );
 
 create table tbtotalvendas(
 id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 dia varchar(50),
-venda double
+hora varchar(50),
+venda double,
+obs varchar(10000)
 );
+select * from tbtotalvendas;
 
 create table tbprodutos(
 idproduto MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -76,23 +81,40 @@ idcompra MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nome_produto varchar(50),
 valor double,
 valor_unidade double,
-quantidade int,
-quantidade_comprada int
+quantidade_comprada int,
+fornecedor varchar(50)
 );
 
-select sum(valor) from tbcompra;
+select * from tbcompra;
 
 create table gastos(
 idgastos MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 valor double,
-data_emicao date
+data_emicao date,
+obs varchar(900)
 );
 
 select * from gastos;
 
-select
-O.os,previsao_entreg_os,tecnico,defeito,servico,Valor,
-C.nomecli,telefonecli
-from tbos as O
-inner join tbclientes as C
-on (O.idcli = C.idcli);
+select C.idcompra as ID_Nota, nome_produto as Produto, valor as Valor, quantidade_comprada as Quantidade_Adicionada, P.idproduto as ID_Produto, quantidade as Quantidade_em_Estoque from tbcompra as C right join tbprodutos as P on (C.idcompra = P.idproduto);
+
+create table tbfornecedor(
+idfornecedor MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nome_fornecedor varchar(80),
+razaosocial varchar(80),
+pessoa_juridica_fisica varchar(80),
+cnpj varchar(80),
+cidade_fornecedor varchar(80),
+bairro_fornecedor varchar(80),
+complemento_fornecedor varchar(80),
+cep_fornecedor varchar(80),
+numero_fornecedor int,
+telefone_fornecedor int,
+email_fornecedor varchar(80)
+);
+
+
+
+
+
+
