@@ -62,7 +62,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     }    
     
     public void instanciarTabela(){
-        String sql = "select idproduto as ID,codigo as Codigo, produto as Produto, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações,estoque as Estoque from tbprodutos";
+        String sql = "select idproduto as ID,codigo as Codigo, produto as Produto, valor_compra as Valor_de_Compra, valor_venda as Valor_de_Venda, fornecedor as Fornecedor, obs as Observações,estoque as Estoque from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -90,7 +90,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     }
     
     private void pesquisar_cliente() {
-        String sql = "select idproduto as ID, produto as Produto, codigo as Codigo, custo as Custo, preco as Preço, fornecedor as Fornecedor, obs as Observações, estoque as Estoque from tbprodutos where produto like ?";
+        String sql = "select idproduto as ID, produto as Produto, codigo as Codigo, valor_compra as Valor_de_Compra, valor_venda as Valor_de_Venda, fornecedor as Fornecedor, obs as Observações, estoque as Estoque from tbprodutos where produto like ?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtPesquisa.getText() + "%");
@@ -126,7 +126,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
 
     private void adicionar() {
             
-        String sql = "insert into tbprodutos(produto,codigo,custo,preco,fornecedor,obs,estoque,quantidade)values(?,?,?,?,?,?,?,?)";
+        String sql = "insert into tbprodutos(produto,codigo,valor_compra,valor_venda,fornecedor,obs,estoque,quantidade)values(?,?,?,?,?,?,?,?)";
         
         double custo,preco;            
         
@@ -139,17 +139,20 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             
             pst.setString(1, txtDescricao.getText());
             pst.setString(2, txtCodigo.getText());
-            pst.setString(3, new DecimalFormat("#,##0.00").format(custo));
-            pst.setString(4, new DecimalFormat("#,##0.00").format(preco));
+            pst.setDouble(3, custo);
+            pst.setDouble(4, preco);
             pst.setString(5, cbFornecedor.getSelectedItem().toString());
             pst.setString(6, taProduto.getText());
             pst.setString(7, cbEstoque.getSelectedItem().toString());
             pst.setInt(8, 0);
 
             //Validação dos Campos Obrigatorios
-            if ((txtDescricao.getText().isEmpty()) || (txtCusto.getText().equals("0.00")) || (txtPreco.getText().equals("0.00"))) {
+            if ((txtDescricao.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-            } else {
+                
+            }else if((Double.parseDouble(txtCusto.getText()) <= 0) || (Double.parseDouble(txtPreco.getText()) <= 0)){
+                JOptionPane.showMessageDialog(null, "Valor de Compra ou Valor de Venda Deve ser maior que 0.");
+            }   else {
 
                 //A linha abaixo atualiza os dados do novo usuario
                 int adicionado = pst.executeUpdate();
@@ -162,12 +165,11 @@ public class TelaProduto extends javax.swing.JInternalFrame {
             }
         } catch (com.mysql.cj.jdbc.exceptions.MysqlDataTruncation n) {
             JOptionPane.showMessageDialog(null, "Erro ao salvar Codigo de Barras, maximo de 18 caracteres");
-            txtCodigo.setText(null);
+            limpar();
             
         } catch (java.lang.NumberFormatException c) {
-            JOptionPane.showMessageDialog(null, "Preço e Custo deve ser Salvo no Formato: 0.00");
-            txtCusto.setText("0.00");
-            txtPreco.setText("0.00");           
+            JOptionPane.showMessageDialog(null, "Valor de Compra e Valor de Venda deve ser Salvo no Formato: 0.00");
+            limpar();
             
         }catch (Exception e ){
             JOptionPane.showMessageDialog(null, e);
@@ -176,7 +178,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
     }
     
     private void alterar() {
-        String sql = "update tbprodutos set produto=?,codigo=?,custo=?,preco=?,fornecedor=?,obs=?,estoque=? where idproduto=?";
+        String sql = "update tbprodutos set produto=?,codigo=?,valor_compra=?,valor_venda=?,fornecedor=?,obs=?,estoque=? where idproduto=?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtDescricao.getText());
@@ -330,10 +332,10 @@ public class TelaProduto extends javax.swing.JInternalFrame {
         lblOBS.setText("OBS:");
 
         lblCusto.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblCusto.setText("*Custo(R$):");
+        lblCusto.setText("*Valor Compra(R$):");
 
         lblPreco.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblPreco.setText("*Preço(R$):");
+        lblPreco.setText("*Valor Venda(R$):");
 
         lblFornecedor.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblFornecedor.setText("Fornecedor:");
@@ -465,9 +467,9 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                                         .addComponent(txtDescricao))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lblCusto)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtCusto, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtCusto, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(25, 25, 25)
                                         .addComponent(lblPreco)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(txtPreco))
@@ -543,7 +545,7 @@ public class TelaProduto extends javax.swing.JInternalFrame {
                             .addComponent(lblPreco)
                             .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(scProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(btnEditar)

@@ -27,7 +27,9 @@ import br.com.MeusServicos.dal.ModuloConexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -93,7 +95,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
             if (tipo.equals("Produto")) {
                 precoProduto = Double.parseDouble(lblPrecoFinal.getText());
-                pst.setString(2, new DecimalFormat("#,##0.00").format(precoProduto).replace(",", "."));
+                pst.setDouble(2, precoProduto);
             }
             if (tipo.equals("OS")) {
                 precoOS = Double.parseDouble(txtPreco.getText());
@@ -125,9 +127,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 //A Linha abaixo serve de apoio ao entendimento da logica
                 //System.out.println(adicionado);
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Item adicionado com sucesso");
-                    instanciarTabelaVenda();
                     QuantidadeTirada();
+                    instanciarTabelaVenda();
+                    JOptionPane.showMessageDialog(null, "Item adicionado com sucesso");
+
                     limpar();
 
                 }
@@ -161,6 +164,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
             limpar();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -168,7 +173,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         if (tipo.equals("Produto")) {
 
-            String sql = "select produto as Produto, preco as Preço, obs as Observações, idproduto as ID, fornecedor as Fornecedor, custo as Custo from tbprodutos where produto like ?";
+            String sql = "select produto as Produto, valor_venda as Preço, obs as Observações, idproduto as ID, fornecedor as Fornecedor, valor_compra as Custo from tbprodutos where produto like ?";
 
             try {
                 pst = conexao.prepareStatement(sql);
@@ -177,6 +182,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
+
             }
 
         }
@@ -191,6 +198,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
+
             }
 
         }
@@ -205,6 +214,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
+
             }
 
         }
@@ -245,6 +256,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
             }
         }
     }
@@ -258,6 +270,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
 
     }
@@ -274,6 +288,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
 
     }
@@ -286,6 +302,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -295,14 +313,52 @@ public class PontoDeVendas extends javax.swing.JFrame {
             int quantidadeVendida = Integer.parseInt(txtQuantidade.getText());
             int quantidade = quantidadeEstoque - quantidadeVendida;
 
+            int auxilioQuantidade;
+
+            double valor_compra;
+            double valor_venda;
+
+            String sqy = "select valor_compra from tbprodutos where produto=?";
+
+            pst = conexao.prepareStatement(sqy);
+            pst.setString(1, txtNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+            valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
+            
+            String sqk = "select valor_venda from tbprodutos where produto=?";
+
+            pst = conexao.prepareStatement(sqk);
+            pst.setString(1, txtNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio2.setModel(DbUtils.resultSetToTableModel(rs));
+            valor_venda = Double.parseDouble(tbAuxilio2.getModel().getValueAt(0, 0).toString());
+
             String sql = "update tbprodutos set quantidade=? where produto=?";
             pst = conexao.prepareStatement(sql);
             pst.setString(1, String.valueOf(quantidade));
             pst.setString(2, txtNome.getText());
             pst.executeUpdate();
 
+            String squ = "select quantidade from tbprodutos where produto=?";
+
+            pst = conexao.prepareStatement(squ);
+            pst.setString(1, txtNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+            auxilioQuantidade = Integer.parseInt(tbAuxilio1.getModel().getValueAt(0, 0).toString());
+
+            String sqo = "update tbprodutos set referencial_compra=?, referencial_venda=? where produto=?";
+            pst = conexao.prepareStatement(sqo);
+            pst.setDouble(1, auxilioQuantidade * valor_compra);
+            pst.setDouble(2, auxilioQuantidade * valor_venda);
+            pst.setString(3, txtNome.getText());
+            pst.executeUpdate();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -311,6 +367,27 @@ public class PontoDeVendas extends javax.swing.JFrame {
             int quantidadeEstoque = Integer.parseInt(txtEstoque.getText());
             int quantidadeVendida = Integer.parseInt(txtQuantidade.getText());
             int quantidade = quantidadeEstoque + quantidadeVendida;
+            double auxilioQuantidade;
+
+            double valor_compra;
+            double valor_venda;
+
+            String sqy = "select valor_compra from tbprodutos where produto=?";
+
+            pst = conexao.prepareStatement(sqy);
+            pst.setString(1, txtNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+            valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
+            
+            
+            String sqk = "select valor_venda from tbprodutos where produto=?";
+
+            pst = conexao.prepareStatement(sqk);
+            pst.setString(1, txtNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio2.setModel(DbUtils.resultSetToTableModel(rs));
+            valor_venda = Double.parseDouble(tbAuxilio2.getModel().getValueAt(0, 0).toString());
 
             String sql = "update tbprodutos set quantidade=? where produto=?";
             pst = conexao.prepareStatement(sql);
@@ -318,8 +395,25 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(2, txtNome.getText());
             pst.executeUpdate();
 
+            String squ = "select quantidade from tbprodutos where produto=?";
+
+            pst = conexao.prepareStatement(squ);
+            pst.setString(1, txtNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+            auxilioQuantidade = Double.parseDouble(tbAuxilio1.getModel().getValueAt(0, 0).toString());
+
+            String sqo = "update tbprodutos set referencial_compra=?, referencial_venda=? where produto=?";
+            pst = conexao.prepareStatement(sqo);
+            pst.setDouble(1, auxilioQuantidade * valor_compra);
+            pst.setDouble(2, auxilioQuantidade * valor_venda);
+            pst.setString(3, txtNome.getText());
+            pst.executeUpdate();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -331,6 +425,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
             tbItens.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
 
     }
@@ -345,6 +441,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 JasperViewer.viewReport(print, false);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
+
             }
         }
     }
@@ -364,6 +462,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
 
     }
@@ -378,11 +478,13 @@ public class PontoDeVendas extends javax.swing.JFrame {
             tipo = "Cliente";
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
     public void instanciarTabelaProduto() {
-        String sql = "select produto as Produto, preco as Preço, obs as Observações, idproduto as ID, fornecedor as Fornecedor, custo as Custo, estoque as Estoque, quantidade as Quantidade from tbprodutos";
+        String sql = "select produto as Produto, valor_venda as Preço, obs as Observações, idproduto as ID, fornecedor as Fornecedor, valor_compra as Custo, estoque as Estoque, quantidade as Quantidade from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -391,6 +493,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
             tipo = "Produto";
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -405,6 +509,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
             tipo = "OS";
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
 
     }
@@ -427,6 +533,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -439,12 +547,12 @@ public class PontoDeVendas extends javax.swing.JFrame {
             taRelatorio.append("Descrição" + "\n\n\n");
 
             for (int i = 0; i <= linha; i++) {
-                taRelatorio.append("OS/Produto: " + tbItens.getModel().getValueAt(i, 1).toString() + 
-                        "          Cliente: " + tbItens.getModel().getValueAt(i, 3).toString() + 
-                        "          Forma De Pagamento: " + tbItens.getModel().getValueAt(i, 4).toString() + 
-                        "          Preço(R$): " + tbItens.getModel().getValueAt(i, 2).toString() + 
-                        "          Quantidade: " + tbItens.getModel().getValueAt(i, 5).toString() + 
-                        "\n\n");
+                taRelatorio.append("OS/Produto: " + tbItens.getModel().getValueAt(i, 1).toString()
+                        + "          Cliente: " + tbItens.getModel().getValueAt(i, 3).toString()
+                        + "          Forma De Pagamento: " + tbItens.getModel().getValueAt(i, 4).toString()
+                        + "          Preço(R$): " + tbItens.getModel().getValueAt(i, 2).toString()
+                        + "          Quantidade: " + tbItens.getModel().getValueAt(i, 5).toString()
+                        + "\n\n");
 
             }
 
@@ -455,28 +563,45 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     public void concluir() {
 
-        String sql = "insert into tbtotalvendas(dia, hora, venda, obs)values(?,?,?,?)";
-
-        double preco;
-
-        preco = Double.parseDouble(lblValorTotal.getText());
+       
         Date dataHoraAtual = new Date();
-        String data = new SimpleDateFormat("dd/mm/yyyy").format(dataHoraAtual);
         String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
-        
-        
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date d = new Date();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        java.sql.Date dSql = new java.sql.Date(d.getTime());
+        df.format(dSql);
+
         try {
+
+            double preco;
+
+            String sql = "select sum(preco) FROM tbvenda;";
+
             pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbTotal.setModel(DbUtils.resultSetToTableModel(rs));
+            preco = Double.parseDouble((tbTotal.getModel().getValueAt(0, 0).toString()));
+            
+
+            String sqo = "insert into tbtotalvendas(dia, hora, venda, obs)values(?,?,?,?)";
+            
+            pst = conexao.prepareStatement(sqo);
             criar_relatorio();
-            pst.setString(1, data);
+            pst.setString(1, dSql.toString());
             pst.setString(2, hora);
-            pst.setString(3, new DecimalFormat("#,##0.00").format(preco).replace(",", "."));
+            pst.setDouble(3, preco);
             pst.setString(4, taRelatorio.getText());
 
             pst.executeUpdate();
 
-        } catch (Exception e) {
+        } catch (java.lang.NullPointerException e) {
+
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
 
     }
@@ -504,6 +629,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 tbCliente.setModel(DbUtils.resultSetToTableModel(rs));
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
+
             }
 
             txtCliente.setText(tbCliente.getModel().getValueAt(0, 0).toString());
@@ -549,6 +676,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -592,6 +721,12 @@ public class PontoDeVendas extends javax.swing.JFrame {
         taRelatorio = new javax.swing.JTextArea();
         scRelatoriotb = new javax.swing.JScrollPane();
         tbRelatorio = new javax.swing.JTable();
+        scAuxilio = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
+        scAuxilio1 = new javax.swing.JScrollPane();
+        tbAuxilio1 = new javax.swing.JTable();
+        scAuxilio2 = new javax.swing.JScrollPane();
+        tbAuxilio2 = new javax.swing.JTable();
         lblPesquisa = new javax.swing.JLabel();
         lblNome = new javax.swing.JLabel();
         lblPreco = new javax.swing.JLabel();
@@ -686,6 +821,45 @@ public class PontoDeVendas extends javax.swing.JFrame {
             }
         ));
         scRelatoriotb.setViewportView(tbRelatorio);
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio.setViewportView(tbAuxilio);
+
+        tbAuxilio1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio1.setViewportView(tbAuxilio1);
+
+        tbAuxilio2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio2.setViewportView(tbAuxilio2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1244,6 +1418,9 @@ public class PontoDeVendas extends javax.swing.JFrame {
     private javax.swing.JRadioButton rbCliente;
     private javax.swing.JRadioButton rbOrdemDeServico;
     private javax.swing.JRadioButton rbProduto;
+    private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scAuxilio1;
+    private javax.swing.JScrollPane scAuxilio2;
     private javax.swing.JScrollPane scCliente;
     private javax.swing.JScrollPane scItens;
     private javax.swing.JScrollPane scPdv;
@@ -1254,6 +1431,9 @@ public class PontoDeVendas extends javax.swing.JFrame {
     private javax.swing.JScrollPane scTotal;
     private javax.swing.JTextArea taOBS;
     private javax.swing.JTextArea taRelatorio;
+    private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbAuxilio1;
+    private javax.swing.JTable tbAuxilio2;
     private javax.swing.JTable tbCliente;
     private javax.swing.JTable tbItens;
     private javax.swing.JTable tbListaDeInformaçoes;

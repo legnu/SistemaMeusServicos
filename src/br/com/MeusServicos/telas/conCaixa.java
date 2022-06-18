@@ -27,7 +27,10 @@ import br.com.MeusServicos.dal.ModuloConexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
 
@@ -40,23 +43,44 @@ public class conCaixa extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    
+
     public conCaixa() {
         initComponents();
         conexao = ModuloConexao.conector();
     }
-    
-     public void instanciarTabela() {
+
+    public void instanciarTabela() {
         String sql = "select id as Id, dia as Data, hora as Hora, venda as Valor from tbtotalvendas";
         try {
-            pst = conexao.prepareStatement(sql);            
+            pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbConCaixa.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-     
+
+    public void setarPorData() {
+
+        try {
+            java.util.Date aInicial = DaInicial.getDate();
+            java.sql.Date bInicial = new java.sql.Date(aInicial.getTime());
+
+            java.util.Date aFinal = DaFinal.getDate();
+            java.sql.Date bFinal = new java.sql.Date(aFinal.getTime());
+
+            String sql = "select id as Id, dia as Data, hora as Hora, venda as Valor from tbtotalvendas where dia between '" + bInicial + "' and '" + bFinal + "';";
+            
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbConCaixa.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (java.lang.NullPointerException e) {
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
     public void criar_relatorio() {
 
         try {
@@ -69,34 +93,31 @@ public class conCaixa extends javax.swing.JFrame {
 
             for (int i = 0; i <= linha; i++) {
                 x = Double.parseDouble(tbConCaixa.getModel().getValueAt(i, 3).toString());
-                y = y+x;
+                y = y + x;
                 z = y;
                 lblValorFinal.setText(new DecimalFormat("#,##0.00").format(z).replace(",", "."));
             }
-             
-            
-           
+
         } catch (Exception sqlEx) {
 
         }
     }
-     
+
     public void setar_campos() {
         int setar = tbConCaixa.getSelectedRow();
         txtNomeVenda.setText(tbConCaixa.getModel().getValueAt(setar, 0).toString());
-        
+
         String sql = "select obs from tbtotalvendas where id=?";
         try {
-            pst = conexao.prepareStatement(sql);  
+            pst = conexao.prepareStatement(sql);
             pst.setString(1, txtNomeVenda.getText());
-            rs = pst.executeQuery();       
+            rs = pst.executeQuery();
             tbResultado.setModel(DbUtils.resultSetToTableModel(rs));
             taConCaixa.setText(tbResultado.getModel().getValueAt(0, 0).toString());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-        }    
-        
-        
+        }
+
     }
 
     /**
@@ -113,14 +134,15 @@ public class conCaixa extends javax.swing.JFrame {
         tbResultado = new javax.swing.JTable();
         lblDataInicial = new javax.swing.JLabel();
         lblDataFinal = new javax.swing.JLabel();
-        txtDataInicial = new javax.swing.JTextField();
-        txtDataFinal = new javax.swing.JTextField();
         scConCaixa = new javax.swing.JScrollPane();
         tbConCaixa = new javax.swing.JTable();
         scConCaixata = new javax.swing.JScrollPane();
         taConCaixa = new javax.swing.JTextArea();
         lblValor = new javax.swing.JLabel();
         lblValorFinal = new javax.swing.JLabel();
+        DaInicial = new com.toedter.calendar.JDateChooser();
+        DaFinal = new com.toedter.calendar.JDateChooser();
+        btnPesquisar = new javax.swing.JToggleButton();
 
         txtNomeVenda.setText("jTextField1");
 
@@ -137,7 +159,7 @@ public class conCaixa extends javax.swing.JFrame {
         ));
         scResultado.setViewportView(tbResultado);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -191,6 +213,26 @@ public class conCaixa extends javax.swing.JFrame {
         lblValorFinal.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
         lblValorFinal.setText("0.00");
 
+        DaInicial.setDateFormatString("y-MM-dd");
+        DaInicial.setFocusable(false);
+        DaInicial.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                DaInicialKeyReleased(evt);
+            }
+        });
+
+        DaFinal.setDateFormatString("y-MM-dd");
+
+        btnPesquisar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/lupa.png"))); // NOI18N
+        btnPesquisar.setSelected(true);
+        btnPesquisar.setContentAreaFilled(false);
+        btnPesquisar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPesquisar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPesquisarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -205,11 +247,13 @@ public class conCaixa extends javax.swing.JFrame {
                                 .addGap(39, 39, 39)
                                 .addComponent(lblDataInicial)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDataInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(24, 24, 24)
+                                .addComponent(DaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
                                 .addComponent(lblDataFinal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(DaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtDataFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnPesquisar))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(scConCaixa, javax.swing.GroupLayout.PREFERRED_SIZE, 784, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -222,20 +266,27 @@ public class conCaixa extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDataInicial)
-                    .addComponent(lblDataFinal)
-                    .addComponent(txtDataInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtDataFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblDataInicial)
+                            .addComponent(DaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(DaFinal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblDataFinal, javax.swing.GroupLayout.Alignment.TRAILING)))
+                        .addGap(25, 25, 25))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnPesquisar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(scConCaixa, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblValor)
                         .addComponent(lblValorFinal)))
                 .addGap(18, 18, 18)
-                .addComponent(scConCaixata, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                .addComponent(scConCaixata, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -251,13 +302,23 @@ public class conCaixa extends javax.swing.JFrame {
     private void taConCaixaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taConCaixaMouseClicked
         // TODO add your handling code here:
         setar_campos();
-        
+
     }//GEN-LAST:event_taConCaixaMouseClicked
 
     private void tbConCaixaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbConCaixaMouseClicked
         // TODO add your handling code here:
         setar_campos();
     }//GEN-LAST:event_tbConCaixaMouseClicked
+
+    private void DaInicialKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DaInicialKeyReleased
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_DaInicialKeyReleased
+
+    private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+        // TODO add your handling code here:
+        setarPorData();
+    }//GEN-LAST:event_btnPesquisarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -285,6 +346,13 @@ public class conCaixa extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(conCaixa.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -295,6 +363,9 @@ public class conCaixa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.toedter.calendar.JDateChooser DaFinal;
+    private com.toedter.calendar.JDateChooser DaInicial;
+    private javax.swing.JToggleButton btnPesquisar;
     private javax.swing.JLabel lblDataFinal;
     private javax.swing.JLabel lblDataInicial;
     private javax.swing.JLabel lblValor;
@@ -305,8 +376,6 @@ public class conCaixa extends javax.swing.JFrame {
     private javax.swing.JTextArea taConCaixa;
     private javax.swing.JTable tbConCaixa;
     private javax.swing.JTable tbResultado;
-    private javax.swing.JTextField txtDataFinal;
-    private javax.swing.JTextField txtDataInicial;
     private javax.swing.JTextField txtNomeVenda;
     // End of variables declaration//GEN-END:variables
 }

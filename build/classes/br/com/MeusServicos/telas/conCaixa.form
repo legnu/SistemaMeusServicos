@@ -30,7 +30,7 @@
     </Container>
   </NonVisualComponents>
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -64,11 +64,13 @@
                               <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                               <Component id="lblDataInicial" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txtDataInicial" min="-2" pref="77" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                              <Component id="DaInicial" min="-2" pref="190" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="lblDataFinal" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="DaFinal" min="-2" pref="188" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="txtDataFinal" min="-2" pref="71" max="-2" attributes="0"/>
+                              <Component id="btnPesquisar" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="scConCaixa" min="-2" pref="784" max="-2" attributes="0"/>
@@ -88,14 +90,25 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblDataInicial" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblDataFinal" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtDataInicial" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtDataFinal" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lblDataInicial" min="-2" max="-2" attributes="0"/>
+                          <Component id="DaInicial" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="0" attributes="0">
+                              <Component id="DaFinal" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblDataFinal" alignment="1" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnPesquisar" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="scConCaixa" min="-2" pref="304" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -104,7 +117,7 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="scConCaixata" pref="324" max="32767" attributes="0"/>
+              <Component id="scConCaixata" pref="316" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -126,10 +139,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Data Final:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtDataInicial">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtDataFinal">
     </Component>
     <Container class="javax.swing.JScrollPane" name="scConCaixa">
       <AuxValues>
@@ -193,6 +202,35 @@
         </Property>
         <Property name="text" type="java.lang.String" value="0.00"/>
       </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="DaInicial">
+      <Properties>
+        <Property name="dateFormatString" type="java.lang.String" value="y-MM-dd"/>
+        <Property name="focusable" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="DaInicialKeyReleased"/>
+      </Events>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="DaFinal">
+      <Properties>
+        <Property name="dateFormatString" type="java.lang.String" value="y-MM-dd"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JToggleButton" name="btnPesquisar">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/br/com/MeusServicos/icones/lupa.png"/>
+        </Property>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="contentAreaFilled" type="boolean" value="false"/>
+        <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+          <Color id="Cursor em Forma de M&#xe3;o"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPesquisarActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

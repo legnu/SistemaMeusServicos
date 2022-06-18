@@ -56,25 +56,31 @@ pagamento varchar(50)
 
 create table tbtotalvendas(
 id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
-dia varchar(50),
+dia date,
 hora varchar(50),
 venda double,
 obs varchar(10000)
 );
-select * from tbtotalvendas;
+select * from tbtotalvendas;	
+
+select * from tbtotalvendas where dia between '2022-06-10' and '2022-06-12';
 
 create table tbprodutos(
 idproduto MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 codigo varchar(18),
 produto varchar(50),
-custo varchar(9),
-preco varchar(9),
+valor_compra double,
+valor_venda double,
 fornecedor varchar(50),
 obs varchar(500),
 estoque varchar(30),
-quantidade int
+quantidade int,
+referencial_compra double,
+referencial_venda double,
+compra_x_venda double
 );
-select quantidade from tbprodutos;
+
+select * from tbprodutos;
 
 create table tbcompra(
 idcompra MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -82,19 +88,22 @@ nome_produto varchar(50),
 valor double,
 valor_unidade double,
 quantidade_comprada int,
-fornecedor varchar(50)
+fornecedor varchar(50),
+data_pagamento date,
+status_pagamento varchar(50)
 );
 
 select * from tbcompra;
 
-create table gastos(
+create table tbgastos(
 idgastos MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 valor double,
 data_emicao date,
 obs varchar(900)
 );
 
-select * from gastos;
+select * from tbgastos;
+
 
 select C.idcompra as ID_Nota, nome_produto as Produto, valor as Valor, quantidade_comprada as Quantidade_Adicionada, P.idproduto as ID_Produto, quantidade as Quantidade_em_Estoque from tbcompra as C right join tbprodutos as P on (C.idcompra = P.idproduto);
 

@@ -50,9 +50,9 @@
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="lblCusto" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="txtCusto" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="txtCusto" min="-2" pref="140" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                                       <Component id="lblPreco" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="txtPreco" max="32767" attributes="0"/>
@@ -151,7 +151,7 @@
                   </Group>
                   <Component id="scProduto" min="-2" pref="142" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="54" max="32767" attributes="0"/>
+              <EmptySpace pref="58" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" alignment="1" groupAlignment="0" attributes="0">
                       <Component id="btnEditar" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -211,7 +211,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="14" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="*Custo(R$):"/>
+        <Property name="text" type="java.lang.String" value="*Valor Compra(R$):"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblPreco">
@@ -219,7 +219,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="14" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="*Pre&#xe7;o(R$):"/>
+        <Property name="text" type="java.lang.String" value="*Valor Venda(R$):"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblFornecedor">
