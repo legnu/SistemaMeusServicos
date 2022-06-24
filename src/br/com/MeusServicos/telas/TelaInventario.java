@@ -174,7 +174,7 @@ public class TelaInventario extends javax.swing.JFrame {
     }
     
     private void criar(){
-        String sql = "alter table tbprodutos add compra_x_venda double";
+        String sql = "alter table tbprodutos add compra_x_venda float(12,2)";
             try {
                 pst = conexao.prepareStatement(sql);                
                 pst.executeUpdate();
@@ -196,15 +196,14 @@ public class TelaInventario extends javax.swing.JFrame {
         grupo1 = new javax.swing.ButtonGroup();
         scAuxilio = new javax.swing.JScrollPane();
         tbAuxilio = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        lblValor = new javax.swing.JLabel();
+        lblNome = new javax.swing.JLabel();
         scProdutos = new javax.swing.JScrollPane();
         tbProdutos = new javax.swing.JTable();
-        rbReferencialCompra = new javax.swing.JRadioButton();
-        rbReferrencialVenda = new javax.swing.JRadioButton();
         rbVendaCompra = new javax.swing.JRadioButton();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        lblNome = new javax.swing.JLabel();
-        lblValor = new javax.swing.JLabel();
+        rbReferrencialVenda = new javax.swing.JRadioButton();
+        rbReferencialCompra = new javax.swing.JRadioButton();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -226,7 +225,13 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
-        scProdutos.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 14))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        lblValor.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblValor.setText("0.00");
+
+        lblNome.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblNome.setText("Total(R$):");
 
         tbProdutos = new javax.swing.JTable(){
             public boolean isCellEditable(int rowIndex, int colIndex){
@@ -253,12 +258,12 @@ public class TelaInventario extends javax.swing.JFrame {
         });
         scProdutos.setViewportView(tbProdutos);
 
-        grupo1.add(rbReferencialCompra);
-        rbReferencialCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        rbReferencialCompra.setText("Referencial P.Compra");
-        rbReferencialCompra.addActionListener(new java.awt.event.ActionListener() {
+        grupo1.add(rbVendaCompra);
+        rbVendaCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbVendaCompra.setText("Venda X Compra");
+        rbVendaCompra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbReferencialCompraActionPerformed(evt);
+                rbVendaCompraActionPerformed(evt);
             }
         });
 
@@ -271,72 +276,63 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
-        grupo1.add(rbVendaCompra);
-        rbVendaCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        rbVendaCompra.setText("Venda X Compra");
-        rbVendaCompra.addActionListener(new java.awt.event.ActionListener() {
+        grupo1.add(rbReferencialCompra);
+        rbReferencialCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbReferencialCompra.setText("Referencial P.Compra");
+        rbReferencialCompra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbVendaCompraActionPerformed(evt);
+                rbReferencialCompraActionPerformed(evt);
             }
         });
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jLabel5.setText("Pesquisar:");
-
-        lblNome.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblNome.setText("Total(R$):");
-
-        lblValor.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblValor.setText("0.00");
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lblNome)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblValor))
+                    .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 1262, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(rbReferencialCompra)
+                        .addGap(1, 1, 1)
+                        .addComponent(rbReferrencialVenda)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbVendaCompra)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(16, 16, 16))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbVendaCompra)
+                    .addComponent(rbReferrencialVenda)
+                    .addComponent(rbReferencialCompra))
+                .addGap(13, 13, 13)
+                .addComponent(scProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 665, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblNome)
+                    .addComponent(lblValor))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 1206, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(rbReferencialCompra)
-                                .addGap(18, 18, 18)
-                                .addComponent(rbReferrencialVenda)
-                                .addGap(18, 18, 18)
-                                .addComponent(rbVendaCompra))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblNome)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblValor)
-                .addGap(60, 60, 60))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rbReferencialCompra)
-                    .addComponent(rbReferrencialVenda)
-                    .addComponent(rbVendaCompra))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNome)
-                    .addComponent(lblValor))
-                .addGap(32, 32, 32))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -405,8 +401,7 @@ public class TelaInventario extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup grupo1;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblValor;
     private javax.swing.JRadioButton rbReferencialCompra;

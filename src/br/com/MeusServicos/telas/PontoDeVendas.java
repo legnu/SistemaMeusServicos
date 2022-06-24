@@ -71,7 +71,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void CadastroCliente() {
-        TelaClientesVendas cliente = new TelaClientesVendas();
+        CadClientes cliente = new CadClientes();
         cliente.setVisible(true);
 
     }
@@ -276,6 +276,19 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     }
 
+    private void criarId() {
+        String sql = "alter table tbvenda add idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+    }
+
     private void limpar_nota() {
         String sql = "delete from tbvenda";
         try {
@@ -292,19 +305,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         }
 
-    }
-
-    private void criarId() {
-        String sql = "alter table tbvenda add idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.executeUpdate();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
     }
 
     public void QuantidadeTirada() {
@@ -325,7 +325,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
             valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
-            
+
             String sqk = "select valor_venda from tbprodutos where produto=?";
 
             pst = conexao.prepareStatement(sqk);
@@ -379,8 +379,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
             valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
-            
-            
+
             String sqk = "select valor_venda from tbprodutos where produto=?";
 
             pst = conexao.prepareStatement(sqk);
@@ -563,11 +562,9 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     public void concluir() {
 
-       
         Date dataHoraAtual = new Date();
         String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date d = new Date();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         java.sql.Date dSql = new java.sql.Date(d.getTime());
@@ -583,22 +580,22 @@ public class PontoDeVendas extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbTotal.setModel(DbUtils.resultSetToTableModel(rs));
             preco = Double.parseDouble((tbTotal.getModel().getValueAt(0, 0).toString()));
-            
 
-            String sqo = "insert into tbtotalvendas(dia, hora, venda, obs)values(?,?,?,?)";
-            
+            String sqo = "insert into tbtotalvendas(dia, nome, hora, venda, obs)values(?,?,?,?,?)";
+
             pst = conexao.prepareStatement(sqo);
             criar_relatorio();
             pst.setString(1, dSql.toString());
-            pst.setString(2, hora);
-            pst.setDouble(3, preco);
-            pst.setString(4, taRelatorio.getText());
+            pst.setString(2, dSql.toString());
+            pst.setString(3, hora);
+            pst.setDouble(4, preco);
+            pst.setString(5, taRelatorio.getText());
 
             pst.executeUpdate();
 
         } catch (java.lang.NullPointerException e) {
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
 

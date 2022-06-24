@@ -84,6 +84,7 @@ public class Compra extends javax.swing.JFrame {
             String sql = "insert into tbcompra(nome_produto, valor, valor_unidade, fornecedor, quantidade_comprada)values(?,?,?,?,?)";
             preco = Double.parseDouble(txtValorFinal.getText());
             unidade = Double.parseDouble(txtValorUnidade.getText());
+
             pst = conexao.prepareStatement(sql);
 
             pst.setString(1, txtProduto.getText());
@@ -104,7 +105,8 @@ public class Compra extends javax.swing.JFrame {
                 if ((txtProduto.getText().isEmpty()) || (txtValorFinal.getText().isEmpty()) || (txtQuantidade.getText().isEmpty())) {
                     JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
 
-                } else {
+               
+                }else{
                     pst.executeUpdate();
 
                     String sqr = "update tbprodutos set quantidade=? where idproduto=?";
@@ -156,6 +158,7 @@ public class Compra extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
         }
     }
 
@@ -168,6 +171,8 @@ public class Compra extends javax.swing.JFrame {
             tbProduto.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
     }
 
@@ -179,6 +184,8 @@ public class Compra extends javax.swing.JFrame {
             tbNotaCompra.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
     }
 
@@ -196,6 +203,8 @@ public class Compra extends javax.swing.JFrame {
             lblValorTotal.setText("0.00");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
     }
 
@@ -217,6 +226,8 @@ public class Compra extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
     }
 
@@ -234,19 +245,40 @@ public class Compra extends javax.swing.JFrame {
             preco = Double.parseDouble((tbSoma.getModel().getValueAt(0, 0).toString()));
 
             Date d = new Date();
+            Date y = dtPagamento.getDate();
+            String status;
+
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
             java.sql.Date dSql = new java.sql.Date(d.getTime());
             df.format(dSql);
 
-            String sql = "insert into tbgastos(valor, data_emicao)values(?,?)";
+            java.sql.Date dSqo = new java.sql.Date(y.getTime());
+            df.format(dSqo);
+
+            if (d.before(y)) {
+                status = "Pendente";
+            } else {
+                status = "Pago";
+
+            }
+
+            String sql = "insert into tbgastos(valor, data_emicao, status_pagamento, data_pagamento, nome)values(?,?,?,?,?)";
 
             pst = conexao.prepareStatement(sql);
 
             pst.setDouble(1, preco);
-            pst.setString(2, dSql.toString());
+            pst.setDate(2, dSql);
+            pst.setString(3, status);
+            pst.setDate(4, dSqo);
+            pst.setDate(5, dSql);
             //Validação dos Campos Obrigatorios
             if ((lblValorTotal.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Sua lista de compras deve conter algo.");
+
+            } else if (dtPagamento.equals("")) {
+                JOptionPane.showMessageDialog(null, "Coloque uma Data.");
+
             } else {
 
                 //A linha abaixo atualiza os dados do novo usuario
@@ -264,14 +296,22 @@ public class Compra extends javax.swing.JFrame {
                         criarId();
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(null, e);
+                        Limpar();
+
                     }
 
                 }
             }
         } catch (java.lang.NumberFormatException e) {
 
+        } catch (java.lang.NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "Adicione uma Data de Pagamento.");
+            Limpar();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
 
     }
@@ -310,8 +350,6 @@ public class Compra extends javax.swing.JFrame {
                 tbEstoque.setModel(DbUtils.resultSetToTableModel(rs));
 
                 double valor_venda = Double.parseDouble(tbEstoque.getModel().getValueAt(0, 0).toString());
-                
-        
 
                 String sqt = "select referencial_venda from tbprodutos where produto=?";
 
@@ -321,7 +359,7 @@ public class Compra extends javax.swing.JFrame {
                 tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
 
                 double referencial_venda = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
-                
+
                 double x = valor_venda * Double.parseDouble(txtQuantidade.getText());
 
                 String sqr = "update tbprodutos set quantidade=?, referencial_compra=?, referencial_venda=? where produto=?";
@@ -350,6 +388,8 @@ public class Compra extends javax.swing.JFrame {
 
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                Limpar();
+
             }
         }
     }
@@ -357,10 +397,12 @@ public class Compra extends javax.swing.JFrame {
     public void setar_campos() {
         Limpar();
         int setar = tbProduto.getSelectedRow();
+        cbFornecedor.addItem(tbProduto.getModel().getValueAt(setar, 4).toString());
         txtID.setText(tbProduto.getModel().getValueAt(setar, 0).toString());
         txtProduto.setText(tbProduto.getModel().getValueAt(setar, 1).toString());
         txtValorUnidade.setText(tbProduto.getModel().getValueAt(setar, 2).toString().replace(",", "."));
         txtQuantidadeInicial.setText(tbProduto.getModel().getValueAt(setar, 3).toString());
+        cbFornecedor.setSelectedItem(tbProduto.getModel().getValueAt(setar, 4).toString());
 
         //A Linha Abaixo desabilita o botão adicionar
         txtPesquisa.setText(null);
@@ -371,7 +413,7 @@ public class Compra extends javax.swing.JFrame {
 
     public void setar_campos_remover() {
         try {
-            
+
             int setar = tbNotaCompra.getSelectedRow();
             txtID.setText(tbNotaCompra.getModel().getValueAt(setar, 0).toString());
             txtProduto.setText(tbNotaCompra.getModel().getValueAt(setar, 1).toString());
@@ -402,6 +444,8 @@ public class Compra extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
     }
 
@@ -413,6 +457,8 @@ public class Compra extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
     }
 
@@ -425,6 +471,8 @@ public class Compra extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            Limpar();
+
         }
 
     }
@@ -433,6 +481,7 @@ public class Compra extends javax.swing.JFrame {
         instanciarTabelaSoma();
         instanciarTabelaNotaCompra();
 
+        dtPagamento.setDate(null);
         txtProduto.setText(null);
         txtID.setText(null);
         txtQuantidade.setText(null);
@@ -489,8 +538,8 @@ public class Compra extends javax.swing.JFrame {
         lblValorTotal = new javax.swing.JLabel();
         scNotaProduto1 = new javax.swing.JScrollPane();
         tbNotaCompra = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        dtPagamento = new com.toedter.calendar.JDateChooser();
+        lblDataPagamento = new javax.swing.JLabel();
 
         tbSoma.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -694,6 +743,9 @@ public class Compra extends javax.swing.JFrame {
         });
         scNotaProduto1.setViewportView(tbNotaCompra);
 
+        lblDataPagamento.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblDataPagamento.setText("*Data do Pagamento:");
+
         javax.swing.GroupLayout pnNotaLayout = new javax.swing.GroupLayout(pnNota);
         pnNota.setLayout(pnNotaLayout);
         pnNotaLayout.setHorizontalGroup(
@@ -703,34 +755,41 @@ public class Compra extends javax.swing.JFrame {
                 .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scNotaProduto1)
                     .addGroup(pnNotaLayout.createSequentialGroup()
-                        .addComponent(lblTotal)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblValorTotal)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(pnNotaLayout.createSequentialGroup()
                         .addComponent(btnComprar, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnNotaLayout.createSequentialGroup()
+                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnNotaLayout.createSequentialGroup()
+                                .addComponent(lblTotal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblValorTotal))
+                            .addGroup(pnNotaLayout.createSequentialGroup()
+                                .addComponent(lblDataPagamento)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dtPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         pnNotaLayout.setVerticalGroup(
             pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnNotaLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(scNotaProduto1)
+                .addGap(24, 24, 24)
+                .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblDataPagamento)
+                    .addComponent(dtPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addComponent(scNotaProduto1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTotal)
                     .addComponent(lblValorTotal))
-                .addGap(30, 30, 30)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnComprar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26))
         );
-
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jLabel1.setText("*Data do Pagamento:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -752,7 +811,7 @@ public class Compra extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblValorFinal)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtValorFinal))
+                                .addComponent(txtValorFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
                                 .addComponent(lblPesquisar))
@@ -762,11 +821,7 @@ public class Compra extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblNomeProduto)
                                 .addGap(7, 7, 7)
-                                .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtProduto)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -821,15 +876,11 @@ public class Compra extends javax.swing.JFrame {
                         .addComponent(scProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel1))
+                            .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblNomeProduto)
-                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(16, 16, 16)
+                                .addComponent(lblNomeProduto)))
+                        .addGap(17, 17, 17)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblQuantidade)
                             .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -932,9 +983,9 @@ public class Compra extends javax.swing.JFrame {
     private javax.swing.JButton btnRemove;
     private javax.swing.JComboBox<String> cbFormaDePagamento;
     private javax.swing.JComboBox<String> cbFornecedor;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
-    private javax.swing.JLabel jLabel1;
+    private com.toedter.calendar.JDateChooser dtPagamento;
     private javax.swing.JLabel lblCamposObrigatorios;
+    private javax.swing.JLabel lblDataPagamento;
     private javax.swing.JLabel lblFormadePagamento;
     private javax.swing.JLabel lblFornecedor;
     private javax.swing.JLabel lblID;

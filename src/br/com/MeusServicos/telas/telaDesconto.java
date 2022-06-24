@@ -55,7 +55,7 @@ public class telaDesconto extends javax.swing.JFrame {
     }
     
     public void adicionar(){
-        String sql = "insert into tbvenda(nome, preco)values(?,?)";
+        String sql = "insert into tbvenda(nome, valor_venda)values(?,?)";
         
         double preco; 
         String desconto;

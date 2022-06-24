@@ -27,17 +27,14 @@ public class TelaLogin extends javax.swing.JFrame {
             pst.setString(1, txtUsuario.getText());
             String captura = new String(txtSenha.getPassword());
             pst.setString(2, captura);
-    
-
             rs = pst.executeQuery();
-            int confirma = JOptionPane.showConfirmDialog(null, "Deseja ir para tela principal?", "Atençao", JOptionPane.YES_OPTION);
-            if (confirma == JOptionPane.YES_OPTION) {
+           
                 try {
                     if (rs.next()) {
-                        String perfil = rs.getString(7);
+                        String perfil = rs.getString(6);
                         //System.out.println(perfil);
                         //Linha acima competi a teste e a estrutura abaixo trata do perfil do usuario
-                        if (perfil.equals("admin")) {
+                        if (perfil.equals("Administrador")) {
                             TelaPrincipal principal = new TelaPrincipal();
                             principal.setVisible(true);
                             TelaPrincipal.MenRel.setEnabled(true);
@@ -47,12 +44,13 @@ public class TelaLogin extends javax.swing.JFrame {
                             this.dispose();
                             conexao.close();
                         } else {
-                            TelaPrincipal principal = new TelaPrincipal();
-                            principal.setVisible(true);
-                            TelaPrincipal.lblUsuario.setText(rs.getString(2));
-                            TelaPrincipal.lblUsuario.setForeground(Color.blue);
-                            this.dispose();
-                            conexao.close();
+                        PontoDeVendas pdv = new PontoDeVendas();
+                        pdv.setVisible(true);
+                        PontoDeVendas.lblUsuarioPDV.setText(rs.getString(2));
+                        PontoDeVendas.lblUsuarioPDV.setForeground(Color.blue);
+                        this.dispose();
+                        conexao.close();
+                           
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Usuário e/ou Senha inválido(s)");
@@ -61,29 +59,9 @@ public class TelaLogin extends javax.swing.JFrame {
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, e);
                 }
-            }
-            if (confirma == JOptionPane.NO_OPTION) {
-                try {
-                    if (rs.next()) {
-                        String perfil = rs.getString(7);
-                        //System.out.println(perfil);
-                        //Linha acima competi a teste e a estrutura abaixo trata do perfil do usuario
-
-                        PontoDeVendas pdv = new PontoDeVendas();
-                        pdv.setVisible(true);
-                        PontoDeVendas.lblUsuarioPDV.setText(rs.getString(2));
-                        PontoDeVendas.lblUsuarioPDV.setForeground(Color.red);
-                        this.dispose();
-                        conexao.close();
-
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Usuário e/ou Senha inválido(s)");
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e);
-                }
-            }
-
+            
+           
+               
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -97,12 +75,13 @@ public class TelaLogin extends javax.swing.JFrame {
         conexao = ModuloConexao.conector();
         //A linha abaixo serve de apoio ao Status da conexão
         //System.out.println(conexao);
-        if (conexao != null) {
-            lblStatus.setText("Conectado ao Banco de Dados");
+         if (conexao != null) {
+            lblStatus.setText("Conectado ao Banco de Dados.");
+            lblStatus.setForeground(Color.BLUE);
         } else {
-            lblStatus.setText("Não Conectado ao MySQL");
+            lblStatus.setText("Não Conectado ao MySQL.");
+            lblStatus.setForeground(Color.RED);
         }
-
     }
 
     /**
@@ -120,15 +99,20 @@ public class TelaLogin extends javax.swing.JFrame {
         txtSenha = new javax.swing.JPasswordField();
         btnLogin = new javax.swing.JButton();
         lblStatus = new javax.swing.JLabel();
+        jToggleButton1 = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sistema Meus Serviços - Login");
+        setBackground(new java.awt.Color(204, 204, 204));
         setResizable(false);
 
-        jLabel1.setText("Usuário");
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel1.setText("Usuario:");
 
-        jLabel2.setText("Senha");
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setText("Senha:");
 
+        btnLogin.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -136,48 +120,66 @@ public class TelaLogin extends javax.swing.JFrame {
             }
         });
 
+        lblStatus.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblStatus.setText("Status");
+
+        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
+        jToggleButton1.setBorderPainted(false);
+        jToggleButton1.setContentAreaFilled(false);
+        jToggleButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(58, 58, 58)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnLogin))
+                        .addGap(12, 12, 12)
+                        .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(59, 59, 59)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtUsuario)
-                            .addComponent(txtSenha, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE))))
-                .addContainerGap(60, Short.MAX_VALUE))
+                        .addGap(217, 217, 217)
+                        .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(217, 217, 217)
+                        .addComponent(jLabel1)
+                        .addGap(12, 12, 12)
+                        .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(227, 227, 227)
+                        .addComponent(jLabel2)
+                        .addGap(12, 12, 12)
+                        .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(176, 176, 176)
+                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(175, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(16, 16, 16)
+                .addComponent(lblStatus)
+                .addGap(7, 7, 7)
+                .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(jLabel1))
                     .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(jLabel2))
                     .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnLogin)
-                    .addComponent(lblStatus))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
 
-        setSize(new java.awt.Dimension(416, 237));
+        setSize(new java.awt.Dimension(723, 436));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -225,6 +227,7 @@ public class TelaLogin extends javax.swing.JFrame {
     private javax.swing.JButton btnLogin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JLabel lblStatus;
     private javax.swing.JPasswordField txtSenha;
     private javax.swing.JTextField txtUsuario;

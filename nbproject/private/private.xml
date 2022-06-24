@@ -3,12 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaProduto.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadUsuarios.java</file>
             <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaPrincipal.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/Compra.java</file>
             <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/PontoDeVendas.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaInventario.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/conCaixa.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaLogin.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadOS.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadClientes.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadFornecedor.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadProduto.java</file>
         </group>
     </open-files>
 </project-private>

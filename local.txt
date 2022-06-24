@@ -5,7 +5,7 @@ create database dbmeusservicos;
 use dbmeusservicos;
 -- Obloco de instruções abaixo cria uma Tabela
 create table tbusuarios(
-iduser int primary key,
+iduser MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 usuario varchar(50) not null,
 cargo_usuario varchar(15),
 telefone varchar(15) not null,
@@ -14,24 +14,26 @@ senha varchar(15) not null,
 perfil varchar(20) not null
 );
 insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil)
-values(1,'Administrador','Administrador','000000000000000','admin','admin123','admin');
+values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador');
 
 create table tbclientes(
-idcli int primary key auto_increment,
+idcli MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomecli varchar(60) not null,
 sexocli varcharacter(1),
 cepcli varchar(8),
 endcli varchar(150),
 bairrocli varchar(30),
 cidadecli varchar(30),
-telefonecli varchar(15) not null,
+telefonecli varchar(15),
 emailcli varchar(50)
 );
+
+select * from tbclientes;
 insert into tbclientes(nomecli,sexocli,cepcli,endcli,bairrocli,cidadecli,telefonecli,emailcli)
 values('Caixa','F','00000000','Loja','loja','loja','000000000000000','loja@gmail.com');
 
 create table tbos(
-os int primary key auto_increment,
+os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 data_os timestamp default current_timestamp,
 tipo varchar(15) not null,
 situacao varchar(20) not null,
@@ -40,25 +42,24 @@ equipamento varchar(150) not null,
 defeito varchar(150) not null,
 servico varchar(150),
 tecnico varchar(30),
-Valor decimal(10,2),
-idcli int not null,
-foreign key(idcli) references tbclientes(idcli)
+Valor float(10,2)
 );
 
 create table tbvenda(
 idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 cliente_venda varchar(50),
 nome varchar(50),
-preco double,
+preco float(12,2),
 quantidade int,
 pagamento varchar(50)
 );
 
 create table tbtotalvendas(
 id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nome varchar(50),
 dia date,
 hora varchar(50),
-venda double,
+venda float(12,2),
 obs varchar(10000)
 );
 select * from tbtotalvendas;	
@@ -69,15 +70,15 @@ create table tbprodutos(
 idproduto MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 codigo varchar(18),
 produto varchar(50),
-valor_compra double,
-valor_venda double,
+valor_compra varchar(12),
+valor_venda varchar(12),
 fornecedor varchar(50),
-obs varchar(500),
+obs text,
 estoque varchar(30),
 quantidade int,
-referencial_compra double,
-referencial_venda double,
-compra_x_venda double
+referencial_compra varchar(22),
+referencial_venda varchar(22),
+compra_x_venda varchar(12)
 );
 
 select * from tbprodutos;
@@ -85,25 +86,27 @@ select * from tbprodutos;
 create table tbcompra(
 idcompra MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nome_produto varchar(50),
-valor double,
-valor_unidade double,
+valor varchar(12),
+valor_unidade float(12,2),
 quantidade_comprada int,
-fornecedor varchar(50),
-data_pagamento date,
-status_pagamento varchar(50)
+fornecedor varchar(50)
 );
 
 select * from tbcompra;
 
 create table tbgastos(
 idgastos MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
-valor double,
+valor float(12,2),
 data_emicao date,
-obs varchar(900)
+data_pagamento date,
+nome varchar(50),
+obs varchar(900),
+status_pagamento varchar(50)
 );
 
-select * from tbgastos;
-
+select * from tbgastos;	
+update tbgastos set data_pagamento='2020-06-29' where idgastos=1;
+REPLACE into tbgastos(status_pagamento)
 
 select C.idcompra as ID_Nota, nome_produto as Produto, valor as Valor, quantidade_comprada as Quantidade_Adicionada, P.idproduto as ID_Produto, quantidade as Quantidade_em_Estoque from tbcompra as C right join tbprodutos as P on (C.idcompra = P.idproduto);
 
@@ -116,11 +119,12 @@ cnpj varchar(80),
 cidade_fornecedor varchar(80),
 bairro_fornecedor varchar(80),
 complemento_fornecedor varchar(80),
-cep_fornecedor varchar(80),
-numero_fornecedor int,
-telefone_fornecedor int,
+cep_fornecedor varchar(8),
+numero_fornecedor varchar(5),
+telefone_fornecedor varchar(15),
 email_fornecedor varchar(80)
 );
+select * from  tbfornecedor;
 
 
 

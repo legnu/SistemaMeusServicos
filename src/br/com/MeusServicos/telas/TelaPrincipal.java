@@ -38,7 +38,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         PontoDeVendas.lblUsuarioPDV.setText(lblUsuario.getText());
         PontoDeVendas.lblUsuarioPDV.setForeground(Color.red);
         this.dispose();
-        
+
     }
 
     /**
@@ -50,14 +50,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        desktop = new javax.swing.JDesktopPane();
-        jLabel1 = new javax.swing.JLabel();
-        lblUsuario = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         lblData = new javax.swing.JLabel();
-        NomeDaEquipe = new javax.swing.JLabel();
-        TelefoneDaEquipe = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        lblUsuario = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         Menu = new javax.swing.JMenuBar();
         MenCad = new javax.swing.JMenu();
         MenCadCli = new javax.swing.JMenuItem();
@@ -73,9 +73,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menEstoqueProdutoQuantidade = new javax.swing.JMenuItem();
         menEstoqueInventario = new javax.swing.JMenuItem();
         menCaixa = new javax.swing.JMenu();
+        menCaixaCaixa = new javax.swing.JMenuItem();
+        menCaixaSuplemento = new javax.swing.JMenuItem();
+        menCaixaSangria = new javax.swing.JMenuItem();
         menConferencia = new javax.swing.JMenu();
         menConferenciaCaixa = new javax.swing.JMenuItem();
         menCompra = new javax.swing.JMenu();
+        menCompraCompra = new javax.swing.JMenuItem();
         menPontoDeVendas = new javax.swing.JMenu();
         MenAju = new javax.swing.JMenu();
         MenAjuSob = new javax.swing.JMenuItem();
@@ -91,38 +95,83 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout desktopLayout = new javax.swing.GroupLayout(desktop);
-        desktop.setLayout(desktopLayout);
-        desktopLayout.setHorizontalGroup(
-            desktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1017, Short.MAX_VALUE)
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Cadastro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 14))); // NOI18N
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
-        desktopLayout.setVerticalGroup(
-            desktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 676, Short.MAX_VALUE)
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 275, Short.MAX_VALUE)
         );
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Administrativo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 14))); // NOI18N
 
-        lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblUsuario.setText("Usuario");
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 979, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 304, Short.MAX_VALUE)
+        );
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblData.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblData.setText("Data:");
 
-        NomeDaEquipe.setFont(new java.awt.Font("Times New Roman", 3, 18)); // NOI18N
-        NomeDaEquipe.setText("LeGNU Team`s");
-
-        TelefoneDaEquipe.setFont(new java.awt.Font("Times New Roman", 3, 18)); // NOI18N
-        TelefoneDaEquipe.setText("31 973573354");
-
-        jLabel2.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
-        jLabel2.setText("Nome do Usuário:");
-
-        jLabel3.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel3.setText("Data atual login:");
 
+        lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblUsuario.setText("Usuario");
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setText("Nome do Usuário:");
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(lblUsuario)
+                    .addComponent(jLabel3)
+                    .addComponent(lblData))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblUsuario)
+                .addGap(24, 24, 24)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblData)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        Menu.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+
         MenCad.setText("Cadastro");
+        MenCad.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         MenCadCli.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenCadCli.setText("Clientes");
@@ -144,7 +193,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         MenCadUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenCadUsu.setText("Usuários");
-        MenCadUsu.setEnabled(false);
         MenCadUsu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MenCadUsuActionPerformed(evt);
@@ -172,6 +220,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         MenRel.setText("Relatorio");
         MenRel.setEnabled(false);
+        MenRel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         menRelCli.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menRelCli.setText("Clientes");
@@ -203,6 +252,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         Menu.add(MenRel);
 
         menEstoque.setText("Estoque");
+        menEstoque.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         menEstoqueProdutoQuantidade.setText("Produto/Quantidade");
         menEstoqueProdutoQuantidade.addActionListener(new java.awt.event.ActionListener() {
@@ -213,14 +263,46 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menEstoque.add(menEstoqueProdutoQuantidade);
 
         menEstoqueInventario.setText("Inventario");
+        menEstoqueInventario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menEstoqueInventarioActionPerformed(evt);
+            }
+        });
         menEstoque.add(menEstoqueInventario);
 
         Menu.add(menEstoque);
 
         menCaixa.setText("Caixa");
+        menCaixa.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+
+        menCaixaCaixa.setText("Caixa");
+        menCaixaCaixa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCaixaCaixaActionPerformed(evt);
+            }
+        });
+        menCaixa.add(menCaixaCaixa);
+
+        menCaixaSuplemento.setText("Suplemento");
+        menCaixaSuplemento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCaixaSuplementoActionPerformed(evt);
+            }
+        });
+        menCaixa.add(menCaixaSuplemento);
+
+        menCaixaSangria.setText("Sangria");
+        menCaixaSangria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCaixaSangriaActionPerformed(evt);
+            }
+        });
+        menCaixa.add(menCaixaSangria);
+
         Menu.add(menCaixa);
 
         menConferencia.setText("Conferencia");
+        menConferencia.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         menConferenciaCaixa.setText("Caixa");
         menConferenciaCaixa.addActionListener(new java.awt.event.ActionListener() {
@@ -233,9 +315,25 @@ public class TelaPrincipal extends javax.swing.JFrame {
         Menu.add(menConferencia);
 
         menCompra.setText("Compra");
+        menCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        menCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCompraActionPerformed(evt);
+            }
+        });
+
+        menCompraCompra.setText("Compra");
+        menCompraCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCompraCompraActionPerformed(evt);
+            }
+        });
+        menCompra.add(menCompraCompra);
+
         Menu.add(menCompra);
 
         menPontoDeVendas.setText("PDV");
+        menPontoDeVendas.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         menPontoDeVendas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menPontoDeVendasMouseClicked(evt);
@@ -249,6 +347,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         Menu.add(menPontoDeVendas);
 
         MenAju.setText("Ajuda");
+        MenAju.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         MenAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenAjuSob.setText("Sobre");
@@ -262,6 +361,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         Menu.add(MenAju);
 
         MenOpc.setText("Opções");
+        MenOpc.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
         MenOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenOpcSai.setText("Sair");
@@ -280,40 +380,26 @@ public class TelaPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(desktop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblUsuario)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(lblData)
-                            .addComponent(NomeDaEquipe)
-                            .addComponent(TelefoneDaEquipe)))))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(16, 16, 16)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktop)
             .addGroup(layout.createSequentialGroup()
-                .addGap(76, 76, 76)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
-                .addComponent(lblUsuario)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addComponent(lblData)
-                .addGap(166, 166, 166)
-                .addComponent(NomeDaEquipe)
-                .addGap(18, 18, 18)
-                .addComponent(TelefoneDaEquipe))
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(16, 16, 16)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         setSize(new java.awt.Dimension(1294, 735));
@@ -341,21 +427,21 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_MenAjuSobActionPerformed
 
     private void MenCadUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadUsuActionPerformed
-        TelaUsuario usuario = new TelaUsuario();
+        CadUsuarios usuario = new CadUsuarios();
         usuario.setVisible(true);
-        desktop.add(usuario);
+       
     }//GEN-LAST:event_MenCadUsuActionPerformed
 
     private void MenCadCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadCliActionPerformed
-        TelaCliente cliente = new TelaCliente();
+        CadClientes cliente = new CadClientes();
         cliente.setVisible(true);
-        desktop.add(cliente);
+        
     }//GEN-LAST:event_MenCadCliActionPerformed
 
     private void MenCadOsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadOsActionPerformed
-        TelaOS os = new TelaOS();
+        CadOS os = new CadOS();
         os.setVisible(true);
-        desktop.add(os);
+     
     }//GEN-LAST:event_MenCadOsActionPerformed
 
     private void menRelCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelCliActionPerformed
@@ -387,9 +473,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void menServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menServicosActionPerformed
         // TODO add your handling code here:
-        TelaProduto produto = new TelaProduto();
+        CadProduto produto = new CadProduto();
         produto.setVisible(true);
-        desktop.add(produto);
+        
     }//GEN-LAST:event_menServicosActionPerformed
 
     private void menPontoDeVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menPontoDeVendasActionPerformed
@@ -404,7 +490,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void menVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menVendasActionPerformed
         // TODO add your handling code here:
-         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
                 JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/relatorioTodasVendas.jasper"), null, conexao);
@@ -418,16 +504,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void menConferenciaCaixaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menConferenciaCaixaActionPerformed
         // TODO add your handling code here:
-        TelaInventario caixa = new TelaInventario();
-        caixa.setVisible(true);
-     
+        conCaixa concaixa = new conCaixa();
+        concaixa.setVisible(true);
+
     }//GEN-LAST:event_menConferenciaCaixaActionPerformed
 
     private void menCadastroFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadastroFornecedorActionPerformed
         // TODO add your handling code here:
-        TelaFornecedor fornecedor = new TelaFornecedor();
+        CadFornecedor fornecedor = new CadFornecedor();
         fornecedor.setVisible(true);
-        
+
     }//GEN-LAST:event_menCadastroFornecedorActionPerformed
 
     private void menEstoqueProdutoQuantidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstoqueProdutoQuantidadeActionPerformed
@@ -443,6 +529,42 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_menEstoqueProdutoQuantidadeActionPerformed
+
+    private void menCaixaCaixaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCaixaCaixaActionPerformed
+        // TODO add your handling code here:
+        telaCaixa caixa = new telaCaixa();
+        caixa.setVisible(true);
+    }//GEN-LAST:event_menCaixaCaixaActionPerformed
+
+    private void menCaixaSuplementoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCaixaSuplementoActionPerformed
+        // TODO add your handling code here:
+        telaSuplemento suplemento = new telaSuplemento();
+        suplemento.setVisible(true);
+    }//GEN-LAST:event_menCaixaSuplementoActionPerformed
+
+    private void menCaixaSangriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCaixaSangriaActionPerformed
+        // TODO add your handling code here:
+        telaSangria sangria = new telaSangria();
+        sangria.setVisible(true);
+    }//GEN-LAST:event_menCaixaSangriaActionPerformed
+
+    private void menEstoqueInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstoqueInventarioActionPerformed
+        // TODO add your handling code here:
+        TelaInventario inventario = new TelaInventario();
+        inventario.setVisible(true);
+
+    }//GEN-LAST:event_menEstoqueInventarioActionPerformed
+
+    private void menCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCompraActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_menCompraActionPerformed
+
+    private void menCompraCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCompraCompraActionPerformed
+        // TODO add your handling code here:
+        Compra compra = new Compra();
+        compra.setVisible(true);
+    }//GEN-LAST:event_menCompraCompraActionPerformed
 
     /**
      * @param args the command line arguments
@@ -491,17 +613,21 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenu MenRel;
     private javax.swing.JMenuItem MenRelSer;
     private javax.swing.JMenuBar Menu;
-    private javax.swing.JLabel NomeDaEquipe;
-    private javax.swing.JLabel TelefoneDaEquipe;
-    private javax.swing.JDesktopPane desktop;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblData;
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenuItem menCadastroFornecedor;
     private javax.swing.JMenu menCaixa;
+    private javax.swing.JMenuItem menCaixaCaixa;
+    private javax.swing.JMenuItem menCaixaSangria;
+    private javax.swing.JMenuItem menCaixaSuplemento;
     private javax.swing.JMenu menCompra;
+    private javax.swing.JMenuItem menCompraCompra;
     private javax.swing.JMenu menConferencia;
     private javax.swing.JMenuItem menConferenciaCaixa;
     private javax.swing.JMenu menEstoque;
