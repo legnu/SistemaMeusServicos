@@ -27,6 +27,10 @@ import br.com.MeusServicos.dal.ModuloConexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -34,6 +38,7 @@ import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
+import org.jfree.chart.title.Title;
 
 /**
  *
@@ -44,11 +49,12 @@ public class CadOS extends javax.swing.JFrame {
     /**
      * Creates new form CadOS
      */
-    
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    
+
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
     private String tipo;
 
     public CadOS() {
@@ -56,218 +62,327 @@ public class CadOS extends javax.swing.JFrame {
         conexao = ModuloConexao.conector();
     }
 
-     private void pesquisar_cliente() {
-        String sql = "select idcli as Id, nomecli as Nome, telefonecli as Fone from tbclientes where nomecli like ?";
+    public void InstanciarTabelaCliente() {
+        String sql = "select idcli as ID, nomecli as Nome, telefonecli as Telefone from tbclientes ";
+        try {
+            limpar();
+            txtCliPesquisar.setText(null);
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbPrincipal.setModel(DbUtils.resultSetToTableModel(rs));
+            pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Clientes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
+            tipo = "Cliente";
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+    }
+
+    private void pesquisar_cliente() {
+        String sql = "select idcli as ID, nomecli as Nome, telefonecli as Telefone from tbclientes where nomecli like ?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtCliPesquisar.getText() + "%");
-            rs=pst.executeQuery();
-            tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
+            rs = pst.executeQuery();
+            tbPrincipal.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
-    
-    private void setar_campos(){
-        int setar = tblClientes.getSelectedRow();
-        txtCliId.setText(tblClientes.getModel().getValueAt(setar, 0).toString());
-    }
-    
-    private void emitir_os(){
-        String sql = "insert into tbos(tipo,situacao,previsao_entreg_os,equipamento,defeito,servico,tecnico,valor,idcli) values(?,?,?,?,?,?,?,?,?)";
+
+    public void instanciarTabelaOrcamento() {
+        String sql = "select os as Numero_da_Ordem_de_Serviço, data_os as Emição, tipo as Tipo, situacao as Situação, previsao_entreg_os as Previsão_de_Entrega, equipamento as Equipamento, defeito as Defeito, servico as Serviço, tecnico as Tecnico, valor as Valor, cliente as Cliente from tbos ";
         try {
-            pst=conexao.prepareStatement(sql);
-            pst.setString(1, tipo);
-            pst.setString(2, cboOsSit.getSelectedItem().toString());
-            pst.setString(3, txtPrevisaoEntrega.getText());
-            pst.setString(4, txtOsEquip.getText());
-            pst.setString(5, txtOsDef.getText());
-            pst.setString(6, txtOsServ.getText());
-            pst.setString(7, txtOsTec.getText());
-            pst.setString(8, txtOsValor.getText().replace(",", "."));
-            pst.setString(9, txtCliId.getText());
-            
-            if ((txtCliId.getText().isEmpty())||(txtOsEquip.getText().isEmpty())||(txtOsDef.getText().isEmpty())|| cboOsSit.getSelectedItem().equals(" ")) {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-            
-        } if((txtOsValor.getText().equals("0.00") || (txtOsValor.getText().isEmpty()))){
-            JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
-        }
-        else{
-            int adicionado = pst.executeUpdate();
-            if (adicionado > 0){
-                JOptionPane.showMessageDialog(null, "OS emitida com sucesso");
-                recuperarOs();
-                btnOsAdicionar.setEnabled(false);
-                btnOsPesquisar.setEnabled(false);
-                btnOsImprimir.setEnabled(true);
-                
-                
-            }
-        }
+            limpar();
+            txtCliPesquisar.setText(null);
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbPrincipal.setModel(DbUtils.resultSetToTableModel(rs));
+            pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Orçamento e Ordem de Serviço", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
+            tipo = "Orcamento_OS";
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
-    
-    private void pesquisar_os(){
-        String num_os=JOptionPane.showInputDialog("Numero da OS");
-        String sql="select os,date_format(data_os,'%d/%m/%Y - %H:%i'),tipo,situacao,previsao_entreg_os,equipamento,defeito,servico,tecnico,Valor,idcli from tbos where os= "+num_os;
-        try {            
-            pst=conexao.prepareStatement(sql);
-            rs=pst.executeQuery();
-            if (rs.next()) {
-                txtOs.setText(rs.getString(1));
-                txtData.setText(rs.getString(2));
-                String rbtTipo=rs.getString(3);
-                if (rbtTipo.equals("OS")) {
-                    rbtOs.setSelected(true);
-                    tipo="OS";
-                } else {
-                    rbtOrc.setSelected(true);
-                    tipo="Orçamento";
-                }
-                cboOsSit.setSelectedItem(rs.getString(4));
-                txtPrevisaoEntrega.setText(rs.getString(5));
-                txtOsEquip.setText(rs.getString(6));
-                txtOsDef.setText(rs.getString(7));
-                txtOsServ.setText(rs.getString(8));
-                txtOsTec.setText(rs.getString(9));
-                txtOsValor.setText(rs.getString(10));
-                txtCliId.setText(rs.getString(11));
-                
-                btnOsAdicionar.setEnabled(false);
-                btnOsPesquisar.setEnabled(false);
-                txtCliPesquisar.setEnabled(false);
-                tblClientes.setVisible(false);
-                
-                btnOsAlterar.setEnabled(true);
-                btnOsExcluir.setEnabled(true);
-                btnOsImprimir.setEnabled(true);
-            } else {
-                JOptionPane.showMessageDialog(null, "OS não cadastrada");
-            }
-            
-        } catch (java.sql.SQLSyntaxErrorException e) {
-            JOptionPane.showMessageDialog(null, "OS invalida");
 
-        }catch(Exception e2){
-            JOptionPane.showMessageDialog(null, e2);
-        }
-    }
-    
-    private void alterar_os(){
-        String sql = "update tbos set tipo=?,situacao=?,previsao_entreg_os=?,equipamento=?,defeito=?,servico=?,tecnico=?,valor=? where os=?";
-        
-         try {
-            pst=conexao.prepareStatement(sql);
-            pst.setString(1, tipo);
-            pst.setString(2, cboOsSit.getSelectedItem().toString());
-            pst.setString(3, txtPrevisaoEntrega.getText());
-            pst.setString(4, txtOsEquip.getText());
-            pst.setString(5, txtOsDef.getText());
-            pst.setString(6, txtOsServ.getText());
-            pst.setString(7, txtOsTec.getText());
-            pst.setString(8, txtOsValor.getText().replace(",", "."));
-            pst.setString(9, txtOs.getText());
-            
-            if ((txtCliId.getText().isEmpty())||(txtOsEquip.getText().isEmpty())||(txtOsDef.getText().isEmpty())|| cboOsSit.getSelectedItem().equals(" ")) {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-            
-        } else{
-            int adicionado = pst.executeUpdate();
-            if (adicionado > 0){
-                JOptionPane.showMessageDialog(null, "OS alterada com sucesso");
-                
-                limpar();
-
-                
-                
-            }
-        }
+    private void pesquisar_orcamento() {
+        String sql = "select os as Numero_da_Ordem_de_Serviço, data_os as Emição, tipo as Tipo, situacao as Situação, previsao_entreg_os as Previsão_de_Entrega, equipamento as Equipamento, defeito as Defeito, servico as Serviço, tecnico as Tecnico, valor as Valor, cliente as Cliente from tbos where servico like ? ";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtCliPesquisar.getText() + "%");
+            rs = pst.executeQuery();
+            tbPrincipal.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-        }
-    }
-    
-    private void excluir_os(){
-        int confirma=JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta OS?","Atenção", JOptionPane.YES_NO_OPTION);
-        if(confirma==JOptionPane.YES_OPTION){
-            String sql = "delete from tbos where os=?";
-            try {
-                pst=conexao.prepareStatement(sql);
-                pst.setString(1, txtOs.getText());
-                int apagado=pst.executeUpdate();
-                if (apagado>0){
-                JOptionPane.showMessageDialog(null, "OS excluida com sucesso");
-                limpar();
-                }
-            } catch (Exception e) {   
-                JOptionPane.showMessageDialog(null, e);
-            }
+            limpar();
 
         }
     }
-    
-    private void imprimir_os(){
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao desta OS?", "Atençao",JOptionPane.YES_OPTION);
-        if (confirma == JOptionPane.YES_OPTION){
+
+    public void pesquisar() {
+        if (tipo == "Cliente") {
+
+            pesquisar_cliente();
+
+        } else {
+
+            pesquisar_orcamento();
+        }
+    }
+
+    private void setar_campos() {
+        if (tipo == "Cliente") {
+
+            int setar = tbPrincipal.getSelectedRow();
+            txtCliente.setText(tbPrincipal.getModel().getValueAt(setar, 1).toString());
+            txtOsDef.setEnabled(true);
+            txtOsEquip.setEnabled(true);
+            txtOsServ.setEnabled(true);
+            txtOsTec.setEnabled(true);
+            txtOsValor.setEnabled(true);
+            cbTipo.setEnabled(true);
+            cboOsSit.setEnabled(true);
+            dtPrevisao.setEnabled(true);
+            btnAdicionar.setEnabled(true);
+            btnResetar.setEnabled(true);
+            btnRemover.setEnabled(false);
+            btnImprimir.setEnabled(false);
+            btnEditar.setEnabled(false);
+
+        } else {
+
             try {
-                
-                HashMap filtro = new HashMap();
-                filtro.put("os",Integer.parseInt(txtOs.getText()));
-                
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/os.jasper"),filtro, conexao);
-                
-                JasperViewer.viewReport(print,false);
+
+                int setar = tbPrincipal.getSelectedRow();
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                txtOs.setText(tbPrincipal.getModel().getValueAt(setar, 0).toString());
+                cbTipo.setSelectedItem(tbPrincipal.getModel().getValueAt(setar, 2).toString());
+                cboOsSit.setSelectedItem(tbPrincipal.getModel().getValueAt(setar, 3).toString());
+                dtPrevisao.setDate(df.parse(tbPrincipal.getModel().getValueAt(setar, 4).toString()));
+                txtOsEquip.setText(tbPrincipal.getModel().getValueAt(setar, 5).toString());
+                txtOsDef.setText(tbPrincipal.getModel().getValueAt(setar, 6).toString());
+                txtOsServ.setText(tbPrincipal.getModel().getValueAt(setar, 7).toString());
+                txtOsTec.setText(tbPrincipal.getModel().getValueAt(setar, 8).toString());
+                double valor = Double.parseDouble(tbPrincipal.getModel().getValueAt(setar, 9).toString().replace(".", "")) / 100;
+                txtOsValor.setText(String.valueOf(valor));
+                txtCliente.setText(tbPrincipal.getModel().getValueAt(setar, 10).toString());
+                txtOsDef.setEnabled(true);
+                txtOsEquip.setEnabled(true);
+                txtOsServ.setEnabled(true);
+                txtOsTec.setEnabled(true);
+                txtOsValor.setEnabled(true);
+                cbTipo.setEnabled(true);
+                cboOsSit.setEnabled(true);
+                dtPrevisao.setEnabled(true);
+                btnAdicionar.setEnabled(false);
+                btnResetar.setEnabled(true);
+                btnRemover.setEnabled(true);
+                btnImprimir.setEnabled(true);
+                btnEditar.setEnabled(true);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
+                limpar();
+
             }
         }
     }
-    
-    private void iniciar(){
-        rbtOrc.setSelected(true);
-        tipo = "Orçamento";
-        txtOsValor.setText("0.00");
-    }
-    
-    private void recuperarOs(){
-        String sql = "select max(os) from tbos";
+
+    private void emitir_os() {
+        String sql = "insert into tbos(tipo,situacao,previsao_entreg_os,equipamento,defeito,servico,tecnico,valor,cliente) values(?,?,?,?,?,?,?,?,?)";
         try {
-            pst=conexao.prepareStatement(sql);
-            rs=pst.executeQuery();
-            if(rs.next()){
-                txtOs.setText(rs.getString(1));
+            Date d = dtPrevisao.getDate();
+            java.sql.Date dSql = new java.sql.Date(d.getTime());
+            df.format(dSql);
+
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cbTipo.getSelectedItem().toString());
+            pst.setString(2, cboOsSit.getSelectedItem().toString());
+            pst.setDate(3, dSql);
+            pst.setString(4, txtOsEquip.getText());
+            pst.setString(5, txtOsDef.getText());
+            pst.setString(6, txtOsServ.getText());
+            pst.setString(7, txtOsTec.getText());
+            pst.setString(8, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtOsValor.getText())).replace(",", "."));
+            pst.setString(9, txtCliente.getText());
+
+            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) || (dtPrevisao.getDate() == null) || (txtOsTec.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
+                limpar();
+
+            } else if ((Double.parseDouble(txtOsValor.getText()) <= 0)) {
+                JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
+                limpar();
+            } else {
+                int adicionado = pst.executeUpdate();
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "OS emitida com sucesso.");
+                    limpar();
+
+                }
             }
+        } catch (java.lang.NumberFormatException c) {
+            JOptionPane.showMessageDialog(null, "Campo Valor só suporta Numeros.");
+            JOptionPane.showMessageDialog(null, "Campo Valor Deve ser salvo no formato 0.00 .");
+            limpar();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
-    
-    private void limpar(){
-        txtOs.setText(null);
-                txtData.setText(null);
-                txtCliId.setText(null);
-                txtOsTec.setText(null);
-                txtCliPesquisar.setText(null);
-                ((DefaultTableModel) tblClientes.getModel()).setRowCount(0);
-                txtOsValor.setText(null);
-                cboOsSit.setSelectedItem(" ");
-                txtOsServ.setText(null);
-                txtOsDef .setText(null);
-                txtOsEquip.setText(null);
-                txtPrevisaoEntrega.setText(null);                
-                btnOsAdicionar.setEnabled(true);
-                btnOsPesquisar.setEnabled(false);
-                btnOsAlterar.setEnabled(false);
-                tblClientes.setVisible(true);
-                btnOsAlterar.setEnabled(false);
-                btnOsExcluir.setEnabled(false);
-                btnOsImprimir.setEnabled(false);
+
+    private void alterar_os() {
+        String sql = "update tbos set tipo=?,situacao=?,previsao_entreg_os=?,equipamento=?,defeito=?,servico=?,tecnico=?,valor=? where os=?";
+
+        try {
+
+            Date d = dtPrevisao.getDate();
+            java.sql.Date dSql = new java.sql.Date(d.getTime());
+            df.format(dSql);
+
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cbTipo.getSelectedItem().toString());
+            pst.setString(2, cboOsSit.getSelectedItem().toString());
+            pst.setDate(3, dSql);
+            pst.setString(4, txtOsEquip.getText());
+            pst.setString(5, txtOsDef.getText());
+            pst.setString(6, txtOsServ.getText());
+            pst.setString(7, txtOsTec.getText());
+            pst.setString(8, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtOsValor.getText())).replace(",", "."));
+            pst.setString(9, txtOs.getText());
+
+            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) || (dtPrevisao.getDate() == null) || (txtOsTec.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
+                limpar();
+
+            } else if ((Double.parseDouble(txtOsValor.getText()) <= 0)) {
+                JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
+                limpar();
+            } else {
+                int adicionado = pst.executeUpdate();
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "OS alterada com sucesso.");
+
+                    limpar();
+
+                }
+            }
+        } catch (java.lang.NumberFormatException c) {
+            JOptionPane.showMessageDialog(null, "Campo Valor só suporta Numeros.");
+            JOptionPane.showMessageDialog(null, "Campo Valor Deve ser salvo no formato 0.00 .");
+            limpar();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
     }
-    
-    
+
+    private void excluir_os() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta OS?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            String sql = "delete from tbos where os=?";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtOs.getText());
+                int apagado = pst.executeUpdate();
+                if (apagado > 0) {
+                    JOptionPane.showMessageDialog(null, "Aguarde.");
+                    tirarId();
+                    criarId();
+                    JOptionPane.showMessageDialog(null, "OS excluida com sucesso.");
+                    limpar();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                limpar();
+
+            }
+
+        }
+    }
+
+    private void tirarId() {
+
+        String sql = "alter table tbos drop os";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+        }
+
+    }
+
+    private void criarId() {
+        String sql = "alter table tbos add os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+        }
+    }
+
+    private void imprimir_os() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao desta OS?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+
+                HashMap filtro = new HashMap();
+                filtro.put("os", Integer.parseInt(txtOs.getText()));
+
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/os.jasper"), filtro, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                limpar();
+
+            }
+        }
+    }
+
+    private void limpar() {
+        txtCliId.setText(null);
+        txtCliPesquisar.setText(null);
+        txtCliente.setText(null);
+        txtOs.setText(null);
+        txtOsDef.setText(null);
+        txtOsEquip.setText(null);
+        txtOsServ.setText(null);
+        txtOsTec.setText(null);
+        txtOsValor.setText("0.00");
+        dtPrevisao.setDate(null);
+        txtCliId.setEnabled(false);
+        txtOsDef.setEnabled(false);
+        txtOsEquip.setEnabled(false);
+        txtOsServ.setEnabled(false);
+        txtOsTec.setEnabled(false);
+        txtOsValor.setEnabled(false);
+        cbTipo.setEnabled(false);
+        cboOsSit.setEnabled(false);
+        dtPrevisao.setEnabled(false);
+        btnAdicionar.setEnabled(false);
+        btnResetar.setEnabled(false);
+        btnRemover.setEnabled(false);
+        btnImprimir.setEnabled(false);
+        btnEditar.setEnabled(false);
+
+        ((DefaultTableModel) tbPrincipal.getModel()).setRowCount(0);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -277,117 +392,117 @@ public class CadOS extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel10 = new javax.swing.JLabel();
-        txtOsValor = new javax.swing.JTextField();
-        btnOsAdicionar = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
-        btnOsPesquisar = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
-        btnOsAlterar = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        btnOsExcluir = new javax.swing.JButton();
-        cboOsSit = new javax.swing.JComboBox<>();
-        jLabel9 = new javax.swing.JLabel();
-        btnOsImprimir = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        txtCliPesquisar = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         txtCliId = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblClientes = new javax.swing.JTable();
-        txtOsEquip = new javax.swing.JTextField();
-        lblPrevisaoEntrega = new javax.swing.JLabel();
-        txtOsDef = new javax.swing.JTextField();
-        txtPrevisaoEntrega = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         txtOs = new javax.swing.JTextField();
-        txtData = new javax.swing.JTextField();
-        rbtOrc = new javax.swing.JRadioButton();
-        rbtOs = new javax.swing.JRadioButton();
+        grupoTbPrincipal = new javax.swing.ButtonGroup();
+        lblValorTotal = new javax.swing.JLabel();
+        lblEquipamento = new javax.swing.JLabel();
+        lblDefeito = new javax.swing.JLabel();
+        lblSituacao = new javax.swing.JLabel();
+        lblServico = new javax.swing.JLabel();
+        lblTecnico = new javax.swing.JLabel();
+        lblPrevisaoEntrega = new javax.swing.JLabel();
+        lblPesquisar = new javax.swing.JLabel();
+        lblTipo = new javax.swing.JLabel();
+        lblCliente = new javax.swing.JLabel();
+        lblCamposObrigatorios = new javax.swing.JLabel();
+        dtPrevisao = new com.toedter.calendar.JDateChooser();
+        rbClientes = new javax.swing.JRadioButton();
+        rbOS_Orcamento = new javax.swing.JRadioButton();
+        txtOsValor = new javax.swing.JTextField();
+        txtOsEquip = new javax.swing.JTextField();
+        txtOsDef = new javax.swing.JTextField();
         txtOsServ = new javax.swing.JTextField();
         txtOsTec = new javax.swing.JTextField();
+        txtCliPesquisar = new javax.swing.JTextField();
+        txtCliente = new javax.swing.JTextField();
+        cboOsSit = new javax.swing.JComboBox<>();
+        cbTipo = new javax.swing.JComboBox<>();
+        btnAdicionar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnResetar = new javax.swing.JButton();
+        btnRemover = new javax.swing.JButton();
+        btnImprimir = new javax.swing.JButton();
+        pnTbPrincipal = new javax.swing.JPanel();
+        scTbPrincipal = new javax.swing.JScrollPane();
+        tbPrincipal = new javax.swing.JTable();
+
+        txtCliId.setEditable(false);
+
+        txtOs.setEditable(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Cadastro de OS");
+        setResizable(false);
 
-        jLabel10.setText("Valor Total");
+        lblValorTotal.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblValorTotal.setText("*Valor Total:");
 
-        txtOsValor.setText("0");
+        lblEquipamento.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblEquipamento.setText("*Equipamento:");
 
-        btnOsAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/cread.png"))); // NOI18N
-        btnOsAdicionar.setToolTipText("Adicionar");
-        btnOsAdicionar.setContentAreaFilled(false);
-        btnOsAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnOsAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
-        btnOsAdicionar.addActionListener(new java.awt.event.ActionListener() {
+        lblDefeito.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblDefeito.setText("*Defeito:");
+
+        lblSituacao.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblSituacao.setText("*Situação:");
+
+        lblServico.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblServico.setText("*Serviço:");
+
+        lblTecnico.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTecnico.setText("*Técnico:");
+
+        lblPrevisaoEntrega.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblPrevisaoEntrega.setText("*Previsao Entrega:");
+
+        lblPesquisar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblPesquisar.setText("Pesquisar:");
+
+        lblTipo.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTipo.setText("*Tipo:");
+
+        lblCliente.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblCliente.setText("*Cliente:");
+
+        lblCamposObrigatorios.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblCamposObrigatorios.setText("*Campos Obrigatorios");
+
+        dtPrevisao.setDateFormatString("yyyy-MM-dd");
+        dtPrevisao.setEnabled(false);
+
+        grupoTbPrincipal.add(rbClientes);
+        rbClientes.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbClientes.setText("Clientes");
+        rbClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOsAdicionarActionPerformed(evt);
+                rbClientesActionPerformed(evt);
             }
         });
 
-        jLabel6.setText("*Equipamento");
-
-        btnOsPesquisar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/read.png"))); // NOI18N
-        btnOsPesquisar.setToolTipText("Pesquisar");
-        btnOsPesquisar.setContentAreaFilled(false);
-        btnOsPesquisar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnOsPesquisar.setPreferredSize(new java.awt.Dimension(80, 80));
-        btnOsPesquisar.addActionListener(new java.awt.event.ActionListener() {
+        grupoTbPrincipal.add(rbOS_Orcamento);
+        rbOS_Orcamento.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbOS_Orcamento.setText("Orçamento/Ordem de Serviço");
+        rbOS_Orcamento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOsPesquisarActionPerformed(evt);
+                rbOS_OrcamentoActionPerformed(evt);
             }
         });
 
-        jLabel7.setText("*Defeito");
+        txtOsValor.setEnabled(false);
 
-        btnOsAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/update.png"))); // NOI18N
-        btnOsAlterar.setToolTipText("Editar");
-        btnOsAlterar.setContentAreaFilled(false);
-        btnOsAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnOsAlterar.setEnabled(false);
-        btnOsAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
-        btnOsAlterar.addActionListener(new java.awt.event.ActionListener() {
+        txtOsEquip.setEnabled(false);
+        txtOsEquip.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOsAlterarActionPerformed(evt);
+                txtOsEquipActionPerformed(evt);
             }
         });
 
-        jLabel3.setText("Situação");
+        txtOsDef.setEnabled(false);
 
-        jLabel8.setText("Serviço");
+        txtOsServ.setEnabled(false);
 
-        btnOsExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/delete.png"))); // NOI18N
-        btnOsExcluir.setToolTipText("Deletar");
-        btnOsExcluir.setContentAreaFilled(false);
-        btnOsExcluir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnOsExcluir.setEnabled(false);
-        btnOsExcluir.setPreferredSize(new java.awt.Dimension(80, 80));
-        btnOsExcluir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOsExcluirActionPerformed(evt);
-            }
-        });
-
-        cboOsSit.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Na bancada", "Entrega OK", "Orçamento REPROVADO", "Aguardando Aprovação", "Aguardando peças", "Abandonado pelo cliente", "Retornou" }));
-
-        jLabel9.setText("Técnico");
-
-        btnOsImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/2530827_general_inkjet printer_office_paper printer_print_icon (1).png"))); // NOI18N
-        btnOsImprimir.setToolTipText("Imprimir OS");
-        btnOsImprimir.setContentAreaFilled(false);
-        btnOsImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnOsImprimir.setEnabled(false);
-        btnOsImprimir.setPreferredSize(new java.awt.Dimension(80, 80));
-        btnOsImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOsImprimirActionPerformed(evt);
-            }
-        });
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Cliente"));
+        txtOsTec.setEnabled(false);
 
         txtCliPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -395,134 +510,119 @@ public class CadOS extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/lupa-removebg-preview.png"))); // NOI18N
+        txtCliente.setEnabled(false);
+        txtCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtClienteActionPerformed(evt);
+            }
+        });
 
-        jLabel5.setText("* Id");
+        cboOsSit.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Na bancada", "Entrega OK", "Orçamento REPROVADO", "Aguardando Aprovação", "Aguardando peças", "Abandonado pelo cliente", "Retornou" }));
+        cboOsSit.setEnabled(false);
 
-        txtCliId.setEditable(false);
+        cbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Orçamento", "Ordem de Serviço" }));
+        cbTipo.setEnabled(false);
+        cbTipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbTipoActionPerformed(evt);
+            }
+        });
 
-        tblClientes.setModel(new javax.swing.table.DefaultTableModel(
+        btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeAdicionar-removebg-preview.png"))); // NOI18N
+        btnAdicionar.setToolTipText("Adicionar");
+        btnAdicionar.setContentAreaFilled(false);
+        btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAdicionar.setEnabled(false);
+        btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdicionarActionPerformed(evt);
+            }
+        });
+
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeEditar-removebg-preview.png"))); // NOI18N
+        btnEditar.setToolTipText("Pesquisar");
+        btnEditar.setContentAreaFilled(false);
+        btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditar.setEnabled(false);
+        btnEditar.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+
+        btnResetar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRestart-removebg-preview.png"))); // NOI18N
+        btnResetar.setToolTipText("Editar");
+        btnResetar.setContentAreaFilled(false);
+        btnResetar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnResetar.setEnabled(false);
+        btnResetar.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnResetar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetarActionPerformed(evt);
+            }
+        });
+
+        btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRemover-removebg-preview.png"))); // NOI18N
+        btnRemover.setToolTipText("Deletar");
+        btnRemover.setContentAreaFilled(false);
+        btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRemover.setEnabled(false);
+        btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
+        });
+
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/ImpresoraIcon.png"))); // NOI18N
+        btnImprimir.setToolTipText("Imprimir OS");
+        btnImprimir.setContentAreaFilled(false);
+        btnImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnImprimir.setEnabled(false);
+        btnImprimir.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+
+        pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        tbPrincipal = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
+        tbPrincipal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Id", "Nome ", "Fone "
+
             }
         ));
-        tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+        tbPrincipal.setFocusable(false);
+        tbPrincipal.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblClientesMouseClicked(evt);
+                tbPrincipalMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblClientes);
+        scTbPrincipal.setViewportView(tbPrincipal);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(txtCliPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtCliId, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(37, Short.MAX_VALUE))
+        javax.swing.GroupLayout pnTbPrincipalLayout = new javax.swing.GroupLayout(pnTbPrincipal);
+        pnTbPrincipal.setLayout(pnTbPrincipalLayout);
+        pnTbPrincipalLayout.setHorizontalGroup(
+            pnTbPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scTbPrincipal)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtCliId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5)))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(txtCliPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        lblPrevisaoEntrega.setText("Previsao Entrega");
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel1.setText("N° OS");
-
-        jLabel2.setText("Data");
-
-        txtOs.setEditable(false);
-
-        txtData.setEditable(false);
-
-        rbtOrc.setText("Orçamento");
-        rbtOrc.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbtOrcActionPerformed(evt);
-            }
-        });
-
-        rbtOs.setText("OS");
-        rbtOs.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbtOsActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(txtOs, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(25, 25, 25)
-                                .addComponent(jLabel2)
-                                .addGap(0, 91, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtData))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(rbtOrc)
-                        .addGap(18, 18, 18)
-                        .addComponent(rbtOs)))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtOs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rbtOrc)
-                    .addComponent(rbtOs))
-                .addContainerGap())
+        pnTbPrincipalLayout.setVerticalGroup(
+            pnTbPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scTbPrincipal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -530,146 +630,186 @@ public class CadOS extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
+                        .addComponent(rbClientes)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbOS_Orcamento))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblPesquisar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtCliPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblCamposObrigatorios))
+                    .addComponent(pnTbPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtOsTec, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
-                            .addComponent(txtOsServ))
-                        .addGap(44, 44, 44)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(lblCliente)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblSituacao)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cboOsSit, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblTipo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblPrevisaoEntrega)
+                                .addGap(12, 12, 12)
+                                .addComponent(dtPrevisao, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtOsValor, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(lblPrevisaoEntrega)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cboOsSit, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtOsEquip, javax.swing.GroupLayout.PREFERRED_SIZE, 618, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, 618, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(txtPrevisaoEntrega, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lblServico)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtOsServ, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblTecnico)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtOsTec, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblValorTotal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtOsValor))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(lblEquipamento)
+                                .addGap(12, 12, 12)
+                                .addComponent(txtOsEquip)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblDefeito)
+                                .addGap(12, 12, 12)
+                                .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(4, 4, 4)))
+                .addGap(16, 16, 16))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(176, 176, 176)
+                .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(48, 48, 48)
+                .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(48, 48, 48)
+                .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(48, 48, 48)
+                .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(48, 48, 48)
+                .addComponent(btnResetar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnOsAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOsPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOsAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOsExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOsImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(148, 148, 148))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(cboOsSit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtOsEquip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(txtOsServ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblPrevisaoEntrega)
-                    .addComponent(txtPrevisaoEntrega, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(txtOsTec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(txtOsValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btnOsPesquisar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnOsAlterar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnOsExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnOsAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnOsImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(txtCliPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPesquisar)
+                            .addComponent(lblCamposObrigatorios))
+                        .addGap(16, 16, 16)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(rbClientes)
+                            .addComponent(rbOS_Orcamento))
+                        .addGap(16, 16, 16)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(pnTbPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(24, 24, 24)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lblCliente)
+                                    .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblSituacao)
+                                    .addComponent(cboOsSit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblTipo)
+                                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblPrevisaoEntrega)))
+                            .addComponent(dtPrevisao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(16, 16, 16)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblEquipamento)
+                            .addComponent(txtOsEquip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblDefeito)
+                            .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(16, 16, 16)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblServico)
+                            .addComponent(txtOsServ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblTecnico)
+                            .addComponent(txtOsTec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblValorTotal)
+                            .addComponent(txtOsValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(btnEditar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnRemover, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnResetar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(16, 16, 16))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnOsAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOsAdicionarActionPerformed
+    private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
         // TODO add your handling code here:
         emitir_os();
-    }//GEN-LAST:event_btnOsAdicionarActionPerformed
+    }//GEN-LAST:event_btnAdicionarActionPerformed
 
-    private void btnOsPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOsPesquisarActionPerformed
-        // TODO add your handling code here:
-        pesquisar_os();
-    }//GEN-LAST:event_btnOsPesquisarActionPerformed
-
-    private void btnOsAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOsAlterarActionPerformed
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         // TODO add your handling code here:
         alterar_os();
-    }//GEN-LAST:event_btnOsAlterarActionPerformed
+    }//GEN-LAST:event_btnEditarActionPerformed
 
-    private void btnOsExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOsExcluirActionPerformed
+    private void btnResetarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetarActionPerformed
+        // TODO add your handling code here:
+        limpar();
+    }//GEN-LAST:event_btnResetarActionPerformed
+
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         // TODO add your handling code here:
         excluir_os();
-    }//GEN-LAST:event_btnOsExcluirActionPerformed
+    }//GEN-LAST:event_btnRemoverActionPerformed
 
-    private void btnOsImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOsImprimirActionPerformed
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
         // TODO add your handling code here:
         imprimir_os();
-    }//GEN-LAST:event_btnOsImprimirActionPerformed
+    }//GEN-LAST:event_btnImprimirActionPerformed
 
     private void txtCliPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCliPesquisarKeyReleased
         // TODO add your handling code here:
-        pesquisar_cliente();
+        pesquisar();
     }//GEN-LAST:event_txtCliPesquisarKeyReleased
 
-    private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
+    private void tbPrincipalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbPrincipalMouseClicked
         // TODO add your handling code here:
         setar_campos();
-    }//GEN-LAST:event_tblClientesMouseClicked
+    }//GEN-LAST:event_tbPrincipalMouseClicked
 
-    private void rbtOrcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtOrcActionPerformed
+    private void txtClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClienteActionPerformed
         // TODO add your handling code here:
-        tipo = "Orçamento";
-    }//GEN-LAST:event_rbtOrcActionPerformed
+    }//GEN-LAST:event_txtClienteActionPerformed
 
-    private void rbtOsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtOsActionPerformed
+    private void cbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTipoActionPerformed
         // TODO add your handling code here:
-        tipo = "OS";
-    }//GEN-LAST:event_rbtOsActionPerformed
+    }//GEN-LAST:event_cbTipoActionPerformed
+
+    private void txtOsEquipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtOsEquipActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtOsEquipActionPerformed
+
+    private void rbOS_OrcamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbOS_OrcamentoActionPerformed
+        // TODO add your handling code here:
+        instanciarTabelaOrcamento();
+    }//GEN-LAST:event_rbOS_OrcamentoActionPerformed
+
+    private void rbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbClientesActionPerformed
+        // TODO add your handling code here:
+        InstanciarTabelaCliente();
+    }//GEN-LAST:event_rbClientesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -707,38 +847,39 @@ public class CadOS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnOsAdicionar;
-    private javax.swing.JButton btnOsAlterar;
-    private javax.swing.JButton btnOsExcluir;
-    private javax.swing.JButton btnOsImprimir;
-    private javax.swing.JButton btnOsPesquisar;
+    private javax.swing.JButton btnAdicionar;
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnImprimir;
+    private javax.swing.JButton btnRemover;
+    private javax.swing.JButton btnResetar;
+    private javax.swing.JComboBox<String> cbTipo;
     private javax.swing.JComboBox<String> cboOsSit;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private com.toedter.calendar.JDateChooser dtPrevisao;
+    private javax.swing.ButtonGroup grupoTbPrincipal;
+    private javax.swing.JLabel lblCamposObrigatorios;
+    private javax.swing.JLabel lblCliente;
+    private javax.swing.JLabel lblDefeito;
+    private javax.swing.JLabel lblEquipamento;
+    private javax.swing.JLabel lblPesquisar;
     private javax.swing.JLabel lblPrevisaoEntrega;
-    private javax.swing.JRadioButton rbtOrc;
-    private javax.swing.JRadioButton rbtOs;
-    private javax.swing.JTable tblClientes;
+    private javax.swing.JLabel lblServico;
+    private javax.swing.JLabel lblSituacao;
+    private javax.swing.JLabel lblTecnico;
+    private javax.swing.JLabel lblTipo;
+    private javax.swing.JLabel lblValorTotal;
+    private javax.swing.JPanel pnTbPrincipal;
+    private javax.swing.JRadioButton rbClientes;
+    private javax.swing.JRadioButton rbOS_Orcamento;
+    private javax.swing.JScrollPane scTbPrincipal;
+    private javax.swing.JTable tbPrincipal;
     private javax.swing.JTextField txtCliId;
     private javax.swing.JTextField txtCliPesquisar;
-    private javax.swing.JTextField txtData;
+    private javax.swing.JTextField txtCliente;
     private javax.swing.JTextField txtOs;
     private javax.swing.JTextField txtOsDef;
     private javax.swing.JTextField txtOsEquip;
     private javax.swing.JTextField txtOsServ;
     private javax.swing.JTextField txtOsTec;
     private javax.swing.JTextField txtOsValor;
-    private javax.swing.JTextField txtPrevisaoEntrega;
     // End of variables declaration//GEN-END:variables
 }

@@ -70,6 +70,22 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     }
 
+    public void InstanciarCombobox() {
+        try {
+
+            String sql = "select nomecli from tbclientes";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                cbCliente.addItem(rs.getString("nomecli"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+    }
+
     public void CadastroCliente() {
         CadClientes cliente = new CadClientes();
         cliente.setVisible(true);
@@ -77,16 +93,35 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void AdicionarDesconto() {
-        telaDesconto desconto = new telaDesconto();
-        desconto.setVisible(true);
+
+        String sql = "select idvenda from tbvenda where nome='Desconto'";
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbDesconto.setModel(DbUtils.resultSetToTableModel(rs));
+
+            String sqo = "delete from tbvenda where idvenda=" + tbDesconto.getModel().getValueAt(0, 0).toString();
+
+            pst = conexao.prepareStatement(sqo);
+            pst.executeUpdate();
+            limpar();
+            telaDesconto desconto = new telaDesconto();
+            desconto.setVisible(true);
+
+        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
+            telaDesconto desconto = new telaDesconto();
+            desconto.setVisible(true);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
 
     }
 
     public void criarNota() {
         String sql = "insert into tbvenda(nome, preco, cliente_venda, pagamento, quantidade)values(?,?,?,?,?)";
-
-        double precoProduto;
-        double precoOS;
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -94,15 +129,15 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, txtNome.getText());
 
             if (tipo.equals("Produto")) {
-                precoProduto = Double.parseDouble(lblPrecoFinal.getText());
-                pst.setDouble(2, precoProduto);
+
+                pst.setString(2, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(txtPreco.getText()) * Integer.parseInt(txtQuantidade.getText())))).replace(",", "."));
             }
             if (tipo.equals("OS")) {
-                precoOS = Double.parseDouble(txtPreco.getText());
-                pst.setString(2, new DecimalFormat("#,##0.00").format(precoOS).replace(",", "."));
+
+                pst.setString(2, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(txtPreco.getText())))).replace(",", "."));
             }
 
-            pst.setString(3, txtCliente.getText());
+            pst.setString(3, cbCliente.getSelectedItem().toString());
             pst.setString(4, cbFormaDePagamento.getSelectedItem().toString());
             pst.setString(5, txtQuantidade.getText());
 
@@ -122,6 +157,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Sem estoque de " + txtNome.getText() + ".");
                 limpar();
 
+            } else if (Integer.parseInt(txtQuantidade.getText()) > Integer.parseInt(txtEstoque.getText())) {
+                JOptionPane.showMessageDialog(null, "Estoque insuficiente de " + txtNome.getText() + ".");
+                limpar();
+
             } else if (tipo.equals("Produto")) {
                 int adicionado = pst.executeUpdate();
                 //A Linha abaixo serve de apoio ao entendimento da logica
@@ -129,7 +168,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 if (adicionado > 0) {
                     QuantidadeTirada();
                     instanciarTabelaVenda();
-                    JOptionPane.showMessageDialog(null, "Item adicionado com sucesso");
+                    JOptionPane.showMessageDialog(null, "Produto adicionado com sucesso.");
 
                     limpar();
 
@@ -138,17 +177,25 @@ public class PontoDeVendas extends javax.swing.JFrame {
             }
 
             if (tipo.equals("OS")) {
+                int adicionado = 0;
 
-                //A linha abaixo atualiza os dados do novo usuario
-                int adicionado = pst.executeUpdate();
-                //A Linha abaixo serve de apoio ao entendimento da logica
-                //System.out.println(adicionado);
-                if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Item adicionado com sucesso");
+                for (int i = 0; i < tbItens.getRowCount(); i++) {
+                    String Nome = tbItens.getModel().getValueAt(i, 1).toString();
+                    if (Nome.equals(txtNome.getText()) == true) {
+                        JOptionPane.showMessageDialog(null, "OS já esta na Nota.");
+                        adicionado = 1;
+                        limpar();
+                    }
+                }
+
+                if (adicionado == 0) {
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "OS adicionada com sucesso.");
                     instanciarTabelaVenda();
                     limpar();
 
                 }
+
             }
 
             if (tipo.equals("Cliente")) {
@@ -180,6 +227,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 pst.setString(1, txtPesquisa.getText() + "%");
                 rs = pst.executeQuery();
                 tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
+                pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 limpar();
@@ -189,29 +238,15 @@ public class PontoDeVendas extends javax.swing.JFrame {
         }
         if (tipo.equals("OS")) {
 
-            String sql = "select servico as Serviço, Valor as Valor, equipamento as Equipamento, previsao_entreg_os as Entrega, defeito as Defeito, os as OS, tecnico as Tecnico, data_os as Data, idcli as ID_Cliente from tbos where servico like ?";
+            String sql = "select servico as Serviço, Valor as Valor, equipamento as Equipamento, previsao_entreg_os as Entrega, defeito as Defeito, os as OS, tecnico as Tecnico, data_os as Data, cliente as Cliente from tbos where servico like ?";
 
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtPesquisa.getText() + "%");
                 rs = pst.executeQuery();
                 tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-                limpar();
+                pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ordem de Serviço", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
-            }
-
-        }
-        if (tipo.equals("Cliente")) {
-
-            String sql = "select idcli as ID, nomecli as Nome, telefonecli as Telefone, endcli as Endereço from tbclientes where nomecli like ?";
-
-            try {
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtPesquisa.getText() + "%");
-                rs = pst.executeQuery();
-                tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 limpar();
@@ -234,9 +269,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     pst.setString(1, txtID.getText());
                     int apagado = pst.executeUpdate();
                     if (apagado > 0) {
-                        JOptionPane.showMessageDialog(null, "Item removido com sucesso");
+                        JOptionPane.showMessageDialog(null, "Aguarde.");
                         tirarId();
                         criarId();
+                        JOptionPane.showMessageDialog(null, "OS removida com sucesso");
                         limpar();
 
                     }
@@ -247,9 +283,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     pst.setString(1, txtID.getText());
                     int apagado = pst.executeUpdate();
                     if (apagado > 0) {
-                        JOptionPane.showMessageDialog(null, "Item removido com sucesso");
+                        JOptionPane.showMessageDialog(null, "Aguarde.");
                         tirarId();
                         criarId();
+                        JOptionPane.showMessageDialog(null, "Produto removido com sucesso");
                         limpar();
 
                     }
@@ -289,6 +326,34 @@ public class PontoDeVendas extends javax.swing.JFrame {
         }
     }
 
+    private void tirarIdOS() {
+
+        String sql = "alter table tbos drop os";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+
+    }
+
+    private void criarIdOS() {
+        String sql = "alter table tbos add os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+    }
+
     private void limpar_nota() {
         String sql = "delete from tbvenda";
         try {
@@ -298,6 +363,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
             lblValorTotal.setText("0.00");
             tirarId();
             criarId();
+            tirarIdOS();
+            criarIdOS();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -324,7 +391,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, txtNome.getText());
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
+            valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString().replace(".", "")) / 100;
 
             String sqk = "select valor_venda from tbprodutos where produto=?";
 
@@ -332,7 +399,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, txtNome.getText());
             rs = pst.executeQuery();
             tbAuxilio2.setModel(DbUtils.resultSetToTableModel(rs));
-            valor_venda = Double.parseDouble(tbAuxilio2.getModel().getValueAt(0, 0).toString());
+            valor_venda = Double.parseDouble(tbAuxilio2.getModel().getValueAt(0, 0).toString().replace(".", "")) / 100;
 
             String sql = "update tbprodutos set quantidade=? where produto=?";
             pst = conexao.prepareStatement(sql);
@@ -378,7 +445,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, txtNome.getText());
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString());
+            valor_compra = Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString().replace(".", "")) / 100;
 
             String sqk = "select valor_venda from tbprodutos where produto=?";
 
@@ -386,7 +453,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, txtNome.getText());
             rs = pst.executeQuery();
             tbAuxilio2.setModel(DbUtils.resultSetToTableModel(rs));
-            valor_venda = Double.parseDouble(tbAuxilio2.getModel().getValueAt(0, 0).toString());
+            valor_venda = Double.parseDouble(tbAuxilio2.getModel().getValueAt(0, 0).toString().replace(".", "")) / 100;
 
             String sql = "update tbprodutos set quantidade=? where produto=?";
             pst = conexao.prepareStatement(sql);
@@ -400,7 +467,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, txtNome.getText());
             rs = pst.executeQuery();
             tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
-            auxilioQuantidade = Double.parseDouble(tbAuxilio1.getModel().getValueAt(0, 0).toString());
+            auxilioQuantidade = Double.parseDouble(tbAuxilio1.getModel().getValueAt(0, 0).toString().replace(".", "")) / 100;
 
             String sqo = "update tbprodutos set referencial_compra=?, referencial_venda=? where produto=?";
             pst = conexao.prepareStatement(sqo);
@@ -447,48 +514,43 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void soma() {
-        double preco;
+        double preco, x;
 
-        String sql = "select sum(preco) FROM tbvenda;";
+        String sql = "select preco from tbvenda";
         try {
+
+            preco = 0;
+
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbTotal.setModel(DbUtils.resultSetToTableModel(rs));
-            preco = Double.parseDouble((tbTotal.getModel().getValueAt(0, 0).toString()));
+            for (int i = 0; i < tbTotal.getRowCount(); i++) {
+                x = Double.parseDouble(tbTotal.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100;
+                preco = preco + x;
+
+            }
+
             lblValorTotal.setText(new DecimalFormat("#,##0.00").format(preco).replace(",", "."));
-
         } catch (java.lang.NullPointerException e) {
-
+            lblValorTotal.setText("0.00");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
 
         }
 
-    }
-
-    public void instanciarTabelaCliente() {
-        String sql = "select idcli as ID, nomecli as Nome, telefonecli as Telefone, endcli as Endereço from tbclientes";
-        try {
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
-
-            tipo = "Cliente";
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
     }
 
     public void instanciarTabelaProduto() {
         String sql = "select produto as Produto, valor_venda as Preço, obs as Observações, idproduto as ID, fornecedor as Fornecedor, valor_compra as Custo, estoque as Estoque, quantidade as Quantidade from tbprodutos";
         try {
+            limpar();
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
             txtQuantidade.setEnabled(true);
+            pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
+
             tipo = "Produto";
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -498,12 +560,14 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void instanciarTabelaOS() {
-        String sql = "select servico as Serviço, Valor as Valor, equipamento as Equipamento, previsao_entreg_os as Entrega, defeito as Defeito, os as OS, tecnico as Tecnico, data_os as Data, idcli as ID_Cliente from tbos";
+        String sql = "select servico as Serviço, Valor as Valor, equipamento as Equipamento, previsao_entreg_os as Entrega, defeito as Defeito, os as OS, tecnico as Tecnico, data_os as Data, cliente as Cliente from tbos";
         try {
+            limpar();
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbListaDeInformaçoes.setModel(DbUtils.resultSetToTableModel(rs));
             txtQuantidade.setEnabled(false);
+            pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ordem de Serviço", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
             tipo = "OS";
         } catch (Exception e) {
@@ -518,23 +582,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
         btnAdicionar.setEnabled(true);
         btnRemove.setEnabled(false);
 
-    }
-
-    public void calculoQuantidade() {
-
-        try {
-            double preco = Double.parseDouble(txtPreco.getText());
-            double quantidade = Double.parseDouble(txtQuantidade.getText());
-            double precoFinal = preco * quantidade;
-
-            lblPrecoFinal.setText(String.valueOf(precoFinal));
-        } catch (java.lang.NumberFormatException e) {
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
     }
 
     public void criar_relatorio() {
@@ -572,15 +619,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         try {
 
-            double preco;
-
-            String sql = "select sum(preco) FROM tbvenda;";
-
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            tbTotal.setModel(DbUtils.resultSetToTableModel(rs));
-            preco = Double.parseDouble((tbTotal.getModel().getValueAt(0, 0).toString()));
-
             String sqo = "insert into tbtotalvendas(dia, nome, hora, venda, obs)values(?,?,?,?,?)";
 
             pst = conexao.prepareStatement(sqo);
@@ -588,13 +626,40 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pst.setString(1, dSql.toString());
             pst.setString(2, dSql.toString());
             pst.setString(3, hora);
-            pst.setDouble(4, preco);
+            pst.setString(4, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(lblValorTotal.getText().replace(".", "")) / 100))));
             pst.setString(5, taRelatorio.getText());
 
             pst.executeUpdate();
 
-        } catch (java.lang.NullPointerException e) {
+            String sql = "select nome from tbvenda where quantidade=0";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbOS.setModel(DbUtils.resultSetToTableModel(rs));
 
+            for (int i = 0; i < tbOS.getRowCount(); i++) {
+
+                String OS = "'" + tbOS.getModel().getValueAt(i, 0).toString() + "'";
+
+                String sqr = "select os from tbos where servico=" + OS;
+                pst = conexao.prepareStatement(sqr);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String id_OS = tbAuxilio.getModel().getValueAt(0, 0).toString();
+
+                String sqy = "delete from tbos where os=" + id_OS;
+                pst = conexao.prepareStatement(sqy);
+                pst.executeUpdate();
+
+            }
+
+            imprimir_nota();
+            JOptionPane.showMessageDialog(null, "Aguarde.");
+            limpar_nota();
+            JOptionPane.showMessageDialog(null, "Concluido.");
+            limpar();
+
+        } catch (java.lang.NullPointerException e) {
+            JOptionPane.showMessageDialog(null, e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
@@ -607,43 +672,29 @@ public class PontoDeVendas extends javax.swing.JFrame {
         habilitarAdicionar();
         int setar = tbListaDeInformaçoes.getSelectedRow();
 
-        if (tipo.equals("Cliente")) {
-            txtCliente.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 1).toString());
-            btnAdicionar.setEnabled(true);
-        }
         if (tipo.equals("OS")) {
-
+            cbCliente.addItem(tbListaDeInformaçoes.getModel().getValueAt(setar, 8).toString());
             txtNome.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 0).toString());
-            txtPreco.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 1).toString().replace(",", "."));
-            taOBS.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 2).toString());
-            txtCliente.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 8).toString());
+            txtPreco.setText(String.valueOf(Double.parseDouble(tbListaDeInformaçoes.getModel().getValueAt(setar, 1).toString().replace(".", "")) / 100));
+            taOBS.setText("Equipamento: " + tbListaDeInformaçoes.getModel().getValueAt(setar, 2).toString() + "\n" + "Defeito: " + tbListaDeInformaçoes.getModel().getValueAt(setar, 3).toString() + "\n" + "Previsão de entrega: " + tbListaDeInformaçoes.getModel().getValueAt(setar, 4).toString());
+            cbCliente.setSelectedItem(tbListaDeInformaçoes.getModel().getValueAt(setar, 8).toString());
 
-            String sql = "select nomecli FROM tbclientes where idcli=?";
-            try {
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtCliente.getText());
-                rs = pst.executeQuery();
-                tbCliente.setModel(DbUtils.resultSetToTableModel(rs));
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-                limpar();
-
-            }
-
-            txtCliente.setText(tbCliente.getModel().getValueAt(0, 0).toString());
             txtQuantidade.setEnabled(false);
             txtQuantidade.setText("0");
             txtEstoque.setText("0");
             btnAdicionar.setEnabled(true);
+            cbCliente.setEnabled(false);
         }
+
         if (tipo.equals("Produto")) {
 
             txtNome.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 0).toString());
-            txtPreco.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 1).toString().replace(",", "."));
+            txtPreco.setText(String.valueOf(Double.parseDouble(tbListaDeInformaçoes.getModel().getValueAt(setar, 1).toString().replace(".", "")) / 100));
             taOBS.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 2).toString());
             txtEstoque.setText(tbListaDeInformaçoes.getModel().getValueAt(setar, 7).toString());
-            txtCliente.setText("Caixa");
+            InstanciarCombobox();
             btnAdicionar.setEnabled(true);
+            cbCliente.setEnabled(true);
         }
     }
 
@@ -651,10 +702,11 @@ public class PontoDeVendas extends javax.swing.JFrame {
         int setar = tbItens.getSelectedRow();
         limpar();
         try {
+            cbCliente.addItem(tbItens.getModel().getValueAt(setar, 3).toString());
             txtID.setText(tbItens.getModel().getValueAt(setar, 0).toString());
             txtNome.setText(tbItens.getModel().getValueAt(setar, 1).toString());
-            txtPreco.setText(tbItens.getModel().getValueAt(setar, 2).toString().replace(",", "."));
-            txtCliente.setText(tbItens.getModel().getValueAt(setar, 3).toString());
+            txtPreco.setText(String.valueOf(Double.parseDouble(tbItens.getModel().getValueAt(setar, 2).toString().replace(".", "")) / 100));
+            cbCliente.setSelectedItem(tbItens.getModel().getValueAt(setar, 3).toString());
             cbFormaDePagamento.setSelectedItem(tbItens.getModel().getValueAt(setar, 4).toString());
             txtQuantidade.setText(tbItens.getModel().getValueAt(setar, 5).toString());
 
@@ -682,7 +734,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         txtNome.setText(null);
         txtPreco.setText(null);
         txtID.setText(null);
-        txtCliente.setText(null);
+
         taOBS.setText(null);
         taRelatorio.setText(null);
         txtEstoque.setText(null);
@@ -690,6 +742,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         btnAdicionar.setEnabled(false);
         btnRemove.setEnabled(false);
         txtQuantidade.setEnabled(false);
+        cbCliente.setEnabled(false);
         lblValorTotal.setText("0.00");
         ((DefaultTableModel) tbListaDeInformaçoes.getModel()).setRowCount(0);
         instanciarTabelaVenda();
@@ -706,12 +759,13 @@ public class PontoDeVendas extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblPrecoFinal = new javax.swing.JLabel();
+        txtID = new javax.swing.JTextField();
         OS_Produtos = new javax.swing.ButtonGroup();
         scTotal = new javax.swing.JScrollPane();
         tbTotal = new javax.swing.JTable();
         scCliente = new javax.swing.JScrollPane();
         tbCliente = new javax.swing.JTable();
-        lblPrecoFinal = new javax.swing.JLabel();
         scSetar = new javax.swing.JScrollPane();
         tbSetar = new javax.swing.JTable();
         scRelatorio = new javax.swing.JScrollPane();
@@ -724,42 +778,49 @@ public class PontoDeVendas extends javax.swing.JFrame {
         tbAuxilio1 = new javax.swing.JTable();
         scAuxilio2 = new javax.swing.JScrollPane();
         tbAuxilio2 = new javax.swing.JTable();
+        scDesconto = new javax.swing.JScrollPane();
+        tbDesconto = new javax.swing.JTable();
+        scOS = new javax.swing.JScrollPane();
+        tbOS = new javax.swing.JTable();
         lblPesquisa = new javax.swing.JLabel();
         lblNome = new javax.swing.JLabel();
         lblPreco = new javax.swing.JLabel();
-        lblOBS = new javax.swing.JLabel();
-        lblID = new javax.swing.JLabel();
         lblUsuarioPDV = new javax.swing.JLabel();
-        lblCliente = new javax.swing.JLabel();
         lblCamposObrigatorios = new javax.swing.JLabel();
+        lblQuantidade = new javax.swing.JLabel();
+        lblEstoque = new javax.swing.JLabel();
         rbOrdemDeServico = new javax.swing.JRadioButton();
         rbProduto = new javax.swing.JRadioButton();
-        rbCliente = new javax.swing.JRadioButton();
         txtPesquisa = new javax.swing.JTextField();
         txtNome = new javax.swing.JTextField();
         txtPreco = new javax.swing.JTextField();
+        txtEstoque = new javax.swing.JTextField();
+        txtQuantidade = new javax.swing.JTextField();
         btnAdicionar = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnCliente = new javax.swing.JButton();
-        scPdv = new javax.swing.JScrollPane();
-        tbListaDeInformaçoes = new javax.swing.JTable();
-        scText = new javax.swing.JScrollPane();
-        taOBS = new javax.swing.JTextArea();
-        txtID = new javax.swing.JTextField();
-        txtCliente = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
+        pnNota = new javax.swing.JPanel();
+        pnTbNota = new javax.swing.JPanel();
         scItens = new javax.swing.JScrollPane();
         tbItens = new javax.swing.JTable();
         lblTotal = new javax.swing.JLabel();
         lblValorTotal = new javax.swing.JLabel();
         btnConcluir = new javax.swing.JButton();
         btnConcluir1 = new javax.swing.JButton();
-        lblEstoque = new javax.swing.JLabel();
-        txtEstoque = new javax.swing.JTextField();
-        lblQuantidade = new javax.swing.JLabel();
-        txtQuantidade = new javax.swing.JTextField();
-        lblFormadePagamento = new javax.swing.JLabel();
+        pnTbPrincipal = new javax.swing.JPanel();
+        scPdv = new javax.swing.JScrollPane();
+        tbListaDeInformaçoes = new javax.swing.JTable();
+        pnOBS = new javax.swing.JPanel();
+        scText = new javax.swing.JScrollPane();
+        taOBS = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
         cbFormaDePagamento = new javax.swing.JComboBox<>();
+        jPanel2 = new javax.swing.JPanel();
+        cbCliente = new javax.swing.JComboBox<>();
+
+        lblPrecoFinal.setText("jLabel1");
+
+        txtID.setEnabled(false);
 
         tbTotal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -786,8 +847,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
             }
         ));
         scCliente.setViewportView(tbCliente);
-
-        lblPrecoFinal.setText("jLabel1");
 
         tbSetar.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -858,7 +917,34 @@ public class PontoDeVendas extends javax.swing.JFrame {
         ));
         scAuxilio2.setViewportView(tbAuxilio2);
 
+        tbDesconto.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scDesconto.setViewportView(tbDesconto);
+
+        tbOS.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scOS.setViewportView(tbOS);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Ponto de Vendas");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -874,20 +960,17 @@ public class PontoDeVendas extends javax.swing.JFrame {
         lblPreco.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPreco.setText("*Preço(R$):");
 
-        lblOBS.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblOBS.setText("OBS:");
-
-        lblID.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblID.setText("ID:");
-
         lblUsuarioPDV.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblUsuarioPDV.setText("Usuario");
 
-        lblCliente.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblCliente.setText("Cliente:");
-
         lblCamposObrigatorios.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblCamposObrigatorios.setText("*Campos Obrigatorios");
+
+        lblQuantidade.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblQuantidade.setText("Quantidade:");
+
+        lblEstoque.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblEstoque.setText("Estoque:");
 
         OS_Produtos.add(rbOrdemDeServico);
         rbOrdemDeServico.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -904,15 +987,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
         rbProduto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rbProdutoActionPerformed(evt);
-            }
-        });
-
-        OS_Produtos.add(rbCliente);
-        rbCliente.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        rbCliente.setText("Clientes");
-        rbCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbClienteActionPerformed(evt);
             }
         });
 
@@ -934,6 +1008,17 @@ public class PontoDeVendas extends javax.swing.JFrame {
         txtPreco.setEditable(false);
         txtPreco.setEnabled(false);
         txtPreco.setFocusable(false);
+
+        txtEstoque.setEditable(false);
+        txtEstoque.setEnabled(false);
+        txtEstoque.setFocusable(false);
+
+        txtQuantidade.setEnabled(false);
+        txtQuantidade.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtQuantidadeKeyReleased(evt);
+            }
+        });
 
         btnAdicionar.setBackground(new java.awt.Color(51, 255, 51));
         btnAdicionar.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
@@ -974,55 +1059,9 @@ public class PontoDeVendas extends javax.swing.JFrame {
             }
         });
 
-        scPdv.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                scPdvMouseClicked(evt);
-            }
-        });
+        pnNota.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        tbListaDeInformaçoes = new javax.swing.JTable(){
-            public boolean isCellEditable(int rowIndex, int colIndex){
-                return false;
-            }
-        };
-        tbListaDeInformaçoes.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
-            }
-        ));
-        tbListaDeInformaçoes.setFocusable(false);
-        tbListaDeInformaçoes.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tbListaDeInformaçoesMouseClicked(evt);
-            }
-        });
-        scPdv.setViewportView(tbListaDeInformaçoes);
-
-        taOBS.setEditable(false);
-        taOBS.setColumns(20);
-        taOBS.setRows(5);
-        taOBS.setEnabled(false);
-        taOBS.setFocusable(false);
-        scText.setViewportView(taOBS);
-
-        txtID.setEnabled(false);
-
-        txtCliente.setEditable(false);
-        txtCliente.setEnabled(false);
-        txtCliente.setFocusable(false);
-        txtCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtClienteActionPerformed(evt);
-            }
-        });
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), "Nota", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 14))); // NOI18N
+        pnTbNota.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nota", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         tbItens = new javax.swing.JTable(){
             public boolean isCellEditable(int rowIndex, int colIndex){
@@ -1048,6 +1087,21 @@ public class PontoDeVendas extends javax.swing.JFrame {
             }
         });
         scItens.setViewportView(tbItens);
+
+        javax.swing.GroupLayout pnTbNotaLayout = new javax.swing.GroupLayout(pnTbNota);
+        pnTbNota.setLayout(pnTbNotaLayout);
+        pnTbNotaLayout.setHorizontalGroup(
+            pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 483, Short.MAX_VALUE)
+            .addGroup(pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(scItens, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE))
+        );
+        pnTbNotaLayout.setVerticalGroup(
+            pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 403, Short.MAX_VALUE)
+            .addGroup(pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(scItens, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE))
+        );
 
         lblTotal.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
         lblTotal.setText("Total:");
@@ -1081,191 +1135,247 @@ public class PontoDeVendas extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout pnNotaLayout = new javax.swing.GroupLayout(pnNota);
+        pnNota.setLayout(pnNotaLayout);
+        pnNotaLayout.setHorizontalGroup(
+            pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnNotaLayout.createSequentialGroup()
+                .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnNotaLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnConcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 495, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnNotaLayout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(pnTbNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(pnNotaLayout.createSequentialGroup()
+                                .addComponent(lblTotal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblValorTotal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnConcluir1)))))
+                .addGap(16, 16, 16))
+        );
+        pnNotaLayout.setVerticalGroup(
+            pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnNotaLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(pnTbNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblTotal)
+                        .addComponent(lblValorTotal))
+                    .addComponent(btnConcluir1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnConcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
+        );
+
+        pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        scPdv.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                scPdvMouseClicked(evt);
+            }
+        });
+
+        tbListaDeInformaçoes = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
+        tbListaDeInformaçoes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        tbListaDeInformaçoes.setFocusable(false);
+        tbListaDeInformaçoes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbListaDeInformaçoesMouseClicked(evt);
+            }
+        });
+        scPdv.setViewportView(tbListaDeInformaçoes);
+
+        javax.swing.GroupLayout pnTbPrincipalLayout = new javax.swing.GroupLayout(pnTbPrincipal);
+        pnTbPrincipal.setLayout(pnTbPrincipalLayout);
+        pnTbPrincipalLayout.setHorizontalGroup(
+            pnTbPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scPdv, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
+        );
+        pnTbPrincipalLayout.setVerticalGroup(
+            pnTbPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scPdv, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+        );
+
+        pnOBS.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OBS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        taOBS.setEditable(false);
+        taOBS.setColumns(20);
+        taOBS.setRows(5);
+        taOBS.setEnabled(false);
+        taOBS.setFocusable(false);
+        scText.setViewportView(taOBS);
+
+        javax.swing.GroupLayout pnOBSLayout = new javax.swing.GroupLayout(pnOBS);
+        pnOBS.setLayout(pnOBSLayout);
+        pnOBSLayout.setHorizontalGroup(
+            pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(scText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE))
+        );
+        pnOBSLayout.setVerticalGroup(
+            pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 131, Short.MAX_VALUE)
+            .addGroup(pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(scText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Forma de Pagamento", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        cbFormaDePagamento.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        cbFormaDePagamento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A Vista (Dinhero)", "Cartão Debito", "Pix", "Cartão Credito", "Crediario" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scItens, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 570, Short.MAX_VALUE)
-                    .addComponent(btnConcluir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lblTotal)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblValorTotal)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnConcluir1)))
-                .addContainerGap())
+            .addComponent(cbFormaDePagamento, javax.swing.GroupLayout.Alignment.TRAILING, 0, 168, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scItens, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblTotal)
-                        .addComponent(lblValorTotal))
-                    .addComponent(btnConcluir1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(btnConcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addComponent(cbFormaDePagamento, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
         );
 
-        lblEstoque.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblEstoque.setText("Estoque:");
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
-        txtEstoque.setEditable(false);
-        txtEstoque.setEnabled(false);
-        txtEstoque.setFocusable(false);
+        cbCliente.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        cbCliente.setEnabled(false);
 
-        lblQuantidade.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblQuantidade.setText("Quantidade:");
-
-        txtQuantidade.setEnabled(false);
-        txtQuantidade.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtQuantidadeKeyReleased(evt);
-            }
-        });
-
-        lblFormadePagamento.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblFormadePagamento.setText("*Forma de Pagamento:");
-
-        cbFormaDePagamento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dinhero", "Pix", "Cartão de Credito", "Cartão de Debito" }));
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(cbCliente, javax.swing.GroupLayout.Alignment.TRAILING, 0, 168, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(cbCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(rbOrdemDeServico)
-                        .addGap(21, 21, 21)
-                        .addComponent(rbProduto)
-                        .addGap(23, 23, 23)
-                        .addComponent(rbCliente))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblNome)
-                        .addGap(5, 5, 5)
-                        .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20)
-                        .addComponent(lblCliente)
-                        .addGap(6, 6, 6)
-                        .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(lblID)
-                        .addGap(22, 22, 22)
-                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblCamposObrigatorios))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblPesquisa)
-                        .addGap(12, 12, 12)
-                        .addComponent(txtPesquisa))
-                    .addComponent(scPdv)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblOBS)
-                                .addGap(6, 6, 6)
-                                .addComponent(scText, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblUsuarioPDV))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblFormadePagamento)
+                                .addComponent(lblQuantidade)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cbFormaDePagamento, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(lblEstoque)
+                                .addGap(12, 12, 12)
+                                .addComponent(txtEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblPreco)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnCliente))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblPreco)
+                                .addComponent(lblNome)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCliente)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addComponent(lblEstoque)
-                        .addGap(8, 8, 8)
-                        .addComponent(txtEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(lblQuantidade)
-                        .addGap(5, 5, 5)
-                        .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(pnOBS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGap(12, 12, 12)
+                            .addComponent(rbOrdemDeServico)
+                            .addGap(21, 21, 21)
+                            .addComponent(rbProduto))
+                        .addComponent(lblUsuarioPDV, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(pnTbPrincipal, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(lblPesquisa)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblCamposObrigatorios)))
+                .addGap(16, 16, 16)
+                .addComponent(pnNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblID)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblCamposObrigatorios)))
-                .addGap(8, 8, 8)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblPesquisa)
-                    .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(8, 8, 8)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rbOrdemDeServico)
-                    .addComponent(rbProduto)
-                    .addComponent(rbCliente))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(pnNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(scPdv, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(1, 1, 1)
+                                .addGap(36, 36, 36)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblNome)
-                                    .addComponent(lblCliente)
-                                    .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(rbOrdemDeServico)
+                                    .addComponent(rbProduto)))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblPreco))
-                            .addComponent(lblEstoque)
-                            .addComponent(txtEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblQuantidade)
-                            .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblCamposObrigatorios)
+                                .addComponent(lblPesquisa))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(77, 77, 77)
+                                .addComponent(pnTbPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(lblOBS))
-                            .addComponent(scText, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(1, 1, 1)
+                                        .addComponent(lblNome))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnCliente)))
+                                .addGap(20, 20, 20)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lblQuantidade)
+                                    .addComponent(lblEstoque)
+                                    .addComponent(txtEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblPreco)
+                                    .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(pnOBS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblFormadePagamento)
-                            .addComponent(cbFormaDePagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(lblUsuarioPDV)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(lblUsuarioPDV)))
+                .addGap(16, 16, 16))
         );
 
         pack();
@@ -1294,8 +1404,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
     private void btnConcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConcluirActionPerformed
         // TODO add your handling code here:
         concluir();
-        imprimir_nota();
-        limpar_nota();
+
 
     }//GEN-LAST:event_btnConcluirActionPerformed
 
@@ -1325,20 +1434,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
         pesquisar();
     }//GEN-LAST:event_txtPesquisaKeyReleased
 
-    private void rbClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbClienteActionPerformed
-        // TODO add your handling code here:
-        instanciarTabelaCliente();
-
-    }//GEN-LAST:event_rbClienteActionPerformed
-
     private void btnClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClienteActionPerformed
         // TODO add your handling code here:
         CadastroCliente();
     }//GEN-LAST:event_btnClienteActionPerformed
-
-    private void txtClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClienteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtClienteActionPerformed
 
     private void btnConcluir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConcluir1ActionPerformed
         // TODO add your handling code here:
@@ -1351,7 +1450,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     private void txtQuantidadeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQuantidadeKeyReleased
         // TODO add your handling code here:
-        calculoQuantidade();
+
     }//GEN-LAST:event_txtQuantidadeKeyReleased
 
     /**
@@ -1396,30 +1495,33 @@ public class PontoDeVendas extends javax.swing.JFrame {
     private javax.swing.JButton btnConcluir;
     private javax.swing.JButton btnConcluir1;
     private javax.swing.JButton btnRemove;
+    private javax.swing.JComboBox<String> cbCliente;
     private javax.swing.JComboBox<String> cbFormaDePagamento;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblCamposObrigatorios;
-    private javax.swing.JLabel lblCliente;
     private javax.swing.JLabel lblEstoque;
-    private javax.swing.JLabel lblFormadePagamento;
-    private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblNome;
-    private javax.swing.JLabel lblOBS;
     private javax.swing.JLabel lblPesquisa;
     private javax.swing.JLabel lblPreco;
     private javax.swing.JLabel lblPrecoFinal;
     private javax.swing.JLabel lblQuantidade;
     private javax.swing.JLabel lblTotal;
     public static javax.swing.JLabel lblUsuarioPDV;
-    private javax.swing.JLabel lblValorTotal;
-    private javax.swing.JRadioButton rbCliente;
+    public static javax.swing.JLabel lblValorTotal;
+    private javax.swing.JPanel pnNota;
+    private javax.swing.JPanel pnOBS;
+    private javax.swing.JPanel pnTbNota;
+    private javax.swing.JPanel pnTbPrincipal;
     private javax.swing.JRadioButton rbOrdemDeServico;
     private javax.swing.JRadioButton rbProduto;
     private javax.swing.JScrollPane scAuxilio;
     private javax.swing.JScrollPane scAuxilio1;
     private javax.swing.JScrollPane scAuxilio2;
     private javax.swing.JScrollPane scCliente;
+    private javax.swing.JScrollPane scDesconto;
     private javax.swing.JScrollPane scItens;
+    private javax.swing.JScrollPane scOS;
     private javax.swing.JScrollPane scPdv;
     private javax.swing.JScrollPane scRelatorio;
     private javax.swing.JScrollPane scRelatoriotb;
@@ -1432,12 +1534,13 @@ public class PontoDeVendas extends javax.swing.JFrame {
     private javax.swing.JTable tbAuxilio1;
     private javax.swing.JTable tbAuxilio2;
     private javax.swing.JTable tbCliente;
+    private javax.swing.JTable tbDesconto;
     private javax.swing.JTable tbItens;
     private javax.swing.JTable tbListaDeInformaçoes;
+    private javax.swing.JTable tbOS;
     private javax.swing.JTable tbRelatorio;
     private javax.swing.JTable tbSetar;
     private javax.swing.JTable tbTotal;
-    private javax.swing.JTextField txtCliente;
     private javax.swing.JTextField txtEstoque;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtNome;

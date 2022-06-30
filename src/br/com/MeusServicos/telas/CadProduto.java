@@ -116,8 +116,8 @@ public class CadProduto extends javax.swing.JFrame {
         txtID.setText(tbProduto.getModel().getValueAt(setar, 0).toString());
         txtCodigo.setText(tbProduto.getModel().getValueAt(setar, 1).toString());
         txtDescricao.setText(tbProduto.getModel().getValueAt(setar, 2).toString());
-        double custo = Integer.parseInt(tbProduto.getModel().getValueAt(setar, 3).toString().replace(".", "")) / 100;
-        double preco = Integer.parseInt(tbProduto.getModel().getValueAt(setar, 4).toString().replace(".", "")) / 100;
+        double custo = Double.parseDouble(tbProduto.getModel().getValueAt(setar, 3).toString().replace(".", "")) / 100;
+        double preco = Double.parseDouble(tbProduto.getModel().getValueAt(setar, 4).toString().replace(".", "")) / 100;
         txtCusto.setText(String.valueOf(custo));
         txtPreco.setText(String.valueOf(preco));
         if (tbProduto.getModel().getValueAt(setar, 5).toString() != null) {
@@ -302,39 +302,81 @@ public class CadProduto extends javax.swing.JFrame {
     private void initComponents() {
 
         txtID = new javax.swing.JTextField();
-        txtPreco = new javax.swing.JTextField();
-        cbFornecedor = new javax.swing.JComboBox<>();
-        txtCodigo = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        scTbProduto = new javax.swing.JScrollPane();
-        tbProduto = new javax.swing.JTable();
         lblCusto = new javax.swing.JLabel();
-        btnAdicionar = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        scProduto = new javax.swing.JScrollPane();
-        taProduto = new javax.swing.JTextArea();
         lblPreco = new javax.swing.JLabel();
-        btnEditar = new javax.swing.JButton();
         lblFornecedor = new javax.swing.JLabel();
-        btnRemover = new javax.swing.JButton();
         lblCodigoDeBarras = new javax.swing.JLabel();
-        btnAtualizar = new javax.swing.JButton();
         lblEstoque = new javax.swing.JLabel();
-        cbEstoque = new javax.swing.JComboBox<>();
-        txtDescricao = new javax.swing.JTextField();
         lblDescricao = new javax.swing.JLabel();
         lblCamposObrigatorios = new javax.swing.JLabel();
-        txtPesquisa = new javax.swing.JTextField();
         lblPesquisa = new javax.swing.JLabel();
+        txtPreco = new javax.swing.JTextField();
+        txtDescricao = new javax.swing.JTextField();
+        txtPesquisa = new javax.swing.JTextField();
         txtCusto = new javax.swing.JTextField();
+        txtCodigo = new javax.swing.JTextField();
+        cbFornecedor = new javax.swing.JComboBox<>();
+        cbEstoque = new javax.swing.JComboBox<>();
+        btnAdicionar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnRemover = new javax.swing.JButton();
+        btnAtualizar = new javax.swing.JButton();
+        pnProduto = new javax.swing.JPanel();
+        scTbProduto = new javax.swing.JScrollPane();
+        tbProduto = new javax.swing.JTable();
+        pnOBS = new javax.swing.JPanel();
+        scProduto = new javax.swing.JScrollPane();
+        taProduto = new javax.swing.JTextArea();
 
         txtID.setEnabled(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cadastro de Produtos");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
+            }
+        });
+
+        lblCusto.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblCusto.setText("*Valor Compra(R$):");
+
+        lblPreco.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblPreco.setText("*Valor Venda(R$):");
+
+        lblFornecedor.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblFornecedor.setText("Fornecedor:");
+
+        lblCodigoDeBarras.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblCodigoDeBarras.setText("Codigo de Barras:");
+
+        lblEstoque.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblEstoque.setText("*Estoque:");
+
+        lblDescricao.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblDescricao.setText("*Nome_Produto:");
+
+        lblCamposObrigatorios.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblCamposObrigatorios.setText("*Campos Obrigatorios");
+
+        lblPesquisa.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblPesquisa.setText("Pesquisa:");
+
+        txtPesquisa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPesquisaActionPerformed(evt);
+            }
+        });
+        txtPesquisa.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesquisaKeyReleased(evt);
+            }
+        });
+
+        txtCusto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCustoActionPerformed(evt);
             }
         });
 
@@ -344,7 +386,48 @@ public class CadProduto extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        cbEstoque.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        cbEstoque.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Com controle de estoque.", "Sem controle de estoque." }));
+
+        btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeAdicionar-removebg-preview.png"))); // NOI18N
+        btnAdicionar.setContentAreaFilled(false);
+        btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdicionarActionPerformed(evt);
+            }
+        });
+
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeEditar-removebg-preview.png"))); // NOI18N
+        btnEditar.setContentAreaFilled(false);
+        btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditar.setEnabled(false);
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+
+        btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRemover-removebg-preview.png"))); // NOI18N
+        btnRemover.setContentAreaFilled(false);
+        btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRemover.setEnabled(false);
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
+        });
+
+        btnAtualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRestart-removebg-preview.png"))); // NOI18N
+        btnAtualizar.setContentAreaFilled(false);
+        btnAtualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAtualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAtualizarActionPerformed(evt);
+            }
+        });
+
+        pnProduto.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         tbProduto = new javax.swing.JTable(){
             public boolean isCellEditable(int rowIndex, int colIndex){
@@ -370,115 +453,33 @@ public class CadProduto extends javax.swing.JFrame {
         });
         scTbProduto.setViewportView(tbProduto);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout pnProdutoLayout = new javax.swing.GroupLayout(pnProduto);
+        pnProduto.setLayout(pnProdutoLayout);
+        pnProdutoLayout.setHorizontalGroup(
+            pnProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(scTbProduto, javax.swing.GroupLayout.Alignment.TRAILING)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pnProdutoLayout.setVerticalGroup(
+            pnProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(scTbProduto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
         );
 
-        lblCusto.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblCusto.setText("*Valor Compra(R$):");
-
-        btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeAdicionar-removebg-preview.png"))); // NOI18N
-        btnAdicionar.setContentAreaFilled(false);
-        btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAdicionarActionPerformed(evt);
-            }
-        });
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OBS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        pnOBS.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OBS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         taProduto.setColumns(20);
         taProduto.setRows(5);
         scProduto.setViewportView(taProduto);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout pnOBSLayout = new javax.swing.GroupLayout(pnOBS);
+        pnOBS.setLayout(pnOBSLayout);
+        pnOBSLayout.setHorizontalGroup(
+            pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(scProduto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pnOBSLayout.setVerticalGroup(
+            pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(scProduto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
         );
-
-        lblPreco.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblPreco.setText("*Valor Venda(R$):");
-
-        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeEditar-removebg-preview.png"))); // NOI18N
-        btnEditar.setContentAreaFilled(false);
-        btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnEditar.setEnabled(false);
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-
-        lblFornecedor.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblFornecedor.setText("Fornecedor:");
-
-        btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRemover-removebg-preview.png"))); // NOI18N
-        btnRemover.setContentAreaFilled(false);
-        btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnRemover.setEnabled(false);
-        btnRemover.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRemoverActionPerformed(evt);
-            }
-        });
-
-        lblCodigoDeBarras.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblCodigoDeBarras.setText("Codigo de Barras:");
-
-        btnAtualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRestart-removebg-preview.png"))); // NOI18N
-        btnAtualizar.setContentAreaFilled(false);
-        btnAtualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnAtualizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAtualizarActionPerformed(evt);
-            }
-        });
-
-        lblEstoque.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblEstoque.setText("*Estoque:");
-
-        cbEstoque.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        cbEstoque.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Com controle de estoque.", "Sem controle de estoque." }));
-
-        lblDescricao.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblDescricao.setText("*Nome_Produto:");
-
-        lblCamposObrigatorios.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblCamposObrigatorios.setText("*Campos Obrigatorios");
-
-        txtPesquisa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPesquisaActionPerformed(evt);
-            }
-        });
-        txtPesquisa.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtPesquisaKeyReleased(evt);
-            }
-        });
-
-        lblPesquisa.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblPesquisa.setText("Pesquisa:");
-
-        txtCusto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCustoActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -493,7 +494,7 @@ public class CadProduto extends javax.swing.JFrame {
                         .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblCamposObrigatorios))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnProduto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -521,7 +522,7 @@ public class CadProduto extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(pnOBS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(16, 16, 16))
             .addGroup(layout.createSequentialGroup()
                 .addGap(254, 254, 254)
@@ -543,7 +544,7 @@ public class CadProduto extends javax.swing.JFrame {
                     .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCamposObrigatorios))
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(38, 38, 38)
@@ -566,7 +567,7 @@ public class CadProduto extends javax.swing.JFrame {
                             .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(30, 30, 30)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(pnOBS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAtualizar)
@@ -670,8 +671,6 @@ public class CadProduto extends javax.swing.JFrame {
     private javax.swing.JButton btnRemover;
     private javax.swing.JComboBox<String> cbEstoque;
     private javax.swing.JComboBox<String> cbFornecedor;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblCamposObrigatorios;
     private javax.swing.JLabel lblCodigoDeBarras;
     private javax.swing.JLabel lblCusto;
@@ -680,6 +679,8 @@ public class CadProduto extends javax.swing.JFrame {
     private javax.swing.JLabel lblFornecedor;
     private javax.swing.JLabel lblPesquisa;
     private javax.swing.JLabel lblPreco;
+    private javax.swing.JPanel pnOBS;
+    private javax.swing.JPanel pnProduto;
     private javax.swing.JScrollPane scProduto;
     private javax.swing.JScrollPane scTbProduto;
     private javax.swing.JTextArea taProduto;
