@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
@@ -69,10 +70,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCadUsu = new javax.swing.JMenuItem();
         menServicos = new javax.swing.JMenuItem();
         menCadastroFornecedor = new javax.swing.JMenuItem();
-        MenRel = new javax.swing.JMenu();
-        menRelCli = new javax.swing.JMenuItem();
-        MenRelSer = new javax.swing.JMenuItem();
-        menVendas = new javax.swing.JMenuItem();
         menEstoque = new javax.swing.JMenu();
         menEstoqueProdutoQuantidade = new javax.swing.JMenuItem();
         menEstoqueInventario = new javax.swing.JMenuItem();
@@ -80,8 +77,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menCaixaCaixa = new javax.swing.JMenuItem();
         menCaixaSuplemento = new javax.swing.JMenuItem();
         menCaixaSangria = new javax.swing.JMenuItem();
-        menConferencia = new javax.swing.JMenu();
-        menConferenciaCaixa = new javax.swing.JMenuItem();
         menCompra = new javax.swing.JMenu();
         menCompraCompra = new javax.swing.JMenuItem();
         menPontoDeVendas = new javax.swing.JMenu();
@@ -210,7 +205,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCad.setText("Cadastro");
         MenCad.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
-        MenCadCli.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenCadCli.setText("Clientes");
         MenCadCli.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -219,7 +213,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         MenCad.add(MenCadCli);
 
-        MenCadOs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenCadOs.setText("OS");
         MenCadOs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -228,7 +221,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         MenCad.add(MenCadOs);
 
-        MenCadUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenCadUsu.setText("Usuários");
         MenCadUsu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -254,39 +246,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCad.add(menCadastroFornecedor);
 
         Menu.add(MenCad);
-
-        MenRel.setText("Relatorio");
-        MenRel.setEnabled(false);
-        MenRel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-
-        menRelCli.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menRelCli.setText("Clientes");
-        menRelCli.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menRelCliActionPerformed(evt);
-            }
-        });
-        MenRel.add(menRelCli);
-
-        MenRelSer.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        MenRelSer.setText("Serviços");
-        MenRelSer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MenRelSerActionPerformed(evt);
-            }
-        });
-        MenRel.add(MenRelSer);
-
-        menVendas.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menVendas.setText("Vendas");
-        menVendas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menVendasActionPerformed(evt);
-            }
-        });
-        MenRel.add(menVendas);
-
-        Menu.add(MenRel);
 
         menEstoque.setText("Estoque");
         menEstoque.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -320,7 +279,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         menCaixa.add(menCaixaCaixa);
 
-        menCaixaSuplemento.setText("Suplemento");
+        menCaixaSuplemento.setText("Suprimento");
         menCaixaSuplemento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menCaixaSuplementoActionPerformed(evt);
@@ -337,19 +296,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menCaixa.add(menCaixaSangria);
 
         Menu.add(menCaixa);
-
-        menConferencia.setText("Conferencia");
-        menConferencia.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-
-        menConferenciaCaixa.setText("Caixa");
-        menConferenciaCaixa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menConferenciaCaixaActionPerformed(evt);
-            }
-        });
-        menConferencia.add(menConferenciaCaixa);
-
-        Menu.add(menConferencia);
 
         menCompra.setText("Compra");
         menCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -386,7 +332,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenAju.setText("Ajuda");
         MenAju.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
-        MenAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenAjuSob.setText("Sobre");
         MenAjuSob.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -400,7 +345,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenOpc.setText("Opções");
         MenOpc.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
-        MenOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
         MenOpcSai.setText("Sair");
         MenOpcSai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -456,8 +400,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         //As Linhas abaixo substituem a label lblData pela Data Atual
         Date data = new Date();
-        DateFormat formatador = DateFormat.getDateInstance(DateFormat.DATE_FIELD);
-        lblData.setText(formatador.format(data));
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        lblData.setText(df.format(data));
     }//GEN-LAST:event_formWindowActivated
 
     private void MenAjuSobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenAjuSobActionPerformed
@@ -483,33 +427,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
      
     }//GEN-LAST:event_MenCadOsActionPerformed
 
-    private void menRelCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelCliActionPerformed
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
-        if (confirma == JOptionPane.YES_OPTION) {
-            try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/clientes.jasper"), null, conexao);
-
-                JasperViewer.viewReport(print, false);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-        }
-    }//GEN-LAST:event_menRelCliActionPerformed
-
-    private void MenRelSerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenRelSerActionPerformed
-        // TODO add your handling code here:
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
-        if (confirma == JOptionPane.YES_OPTION) {
-            try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/servicos.jasper"), null, conexao);
-
-                JasperViewer.viewReport(print, false);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-        }
-    }//GEN-LAST:event_MenRelSerActionPerformed
-
     private void menServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menServicosActionPerformed
         // TODO add your handling code here:
         CadProduto produto = new CadProduto();
@@ -526,27 +443,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here: 
         pontoDeVendas();
     }//GEN-LAST:event_menPontoDeVendasMouseClicked
-
-    private void menVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menVendasActionPerformed
-        // TODO add your handling code here:
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
-        if (confirma == JOptionPane.YES_OPTION) {
-            try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/relatorioTodasVendas.jasper"), null, conexao);
-
-                JasperViewer.viewReport(print, false);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-        }
-    }//GEN-LAST:event_menVendasActionPerformed
-
-    private void menConferenciaCaixaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menConferenciaCaixaActionPerformed
-        // TODO add your handling code here:
-        conCaixa concaixa = new conCaixa();
-        concaixa.setVisible(true);
-
-    }//GEN-LAST:event_menConferenciaCaixaActionPerformed
 
     private void menCadastroFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadastroFornecedorActionPerformed
         // TODO add your handling code here:
@@ -577,7 +473,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void menCaixaSuplementoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCaixaSuplementoActionPerformed
         // TODO add your handling code here:
-        telaSuplemento suplemento = new telaSuplemento();
+        telaSuprimento suplemento = new telaSuprimento();
         suplemento.setVisible(true);
     }//GEN-LAST:event_menCaixaSuplementoActionPerformed
 
@@ -649,8 +545,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenuItem MenCadUsu;
     private javax.swing.JMenu MenOpc;
     private javax.swing.JMenuItem MenOpcSai;
-    public static javax.swing.JMenu MenRel;
-    private javax.swing.JMenuItem MenRelSer;
     private javax.swing.JMenuBar Menu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -671,14 +565,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem menCaixaSuplemento;
     private javax.swing.JMenu menCompra;
     private javax.swing.JMenuItem menCompraCompra;
-    private javax.swing.JMenu menConferencia;
-    private javax.swing.JMenuItem menConferenciaCaixa;
     private javax.swing.JMenu menEstoque;
     private javax.swing.JMenuItem menEstoqueInventario;
     private javax.swing.JMenuItem menEstoqueProdutoQuantidade;
     private javax.swing.JMenu menPontoDeVendas;
-    private javax.swing.JMenuItem menRelCli;
     private javax.swing.JMenuItem menServicos;
-    private javax.swing.JMenuItem menVendas;
     // End of variables declaration//GEN-END:variables
 }

@@ -85,7 +85,7 @@ public class telaDesconto extends javax.swing.JFrame {
                 //A Linha abaixo serve de apoio ao entendimento da logica
                 //System.out.println(adicionado);
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Item adicionado com sucesso");
+                    JOptionPane.showMessageDialog(null, "Desconto adicionado com sucesso");
                     dispose();
                     
                    

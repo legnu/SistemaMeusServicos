@@ -294,7 +294,7 @@ public class CadOS extends javax.swing.JFrame {
                 pst.setString(1, txtOs.getText());
                 int apagado = pst.executeUpdate();
                 if (apagado > 0) {
-                    JOptionPane.showMessageDialog(null, "Aguarde.");
+                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                     tirarId();
                     criarId();
                     JOptionPane.showMessageDialog(null, "OS excluida com sucesso.");

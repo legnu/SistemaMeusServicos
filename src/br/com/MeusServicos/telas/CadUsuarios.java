@@ -173,7 +173,7 @@ public class CadUsuarios extends javax.swing.JFrame {
                 pst.setString(1, txtId.getText());
                 int apagado = pst.executeUpdate();
                 if (apagado > 0) {
-                    JOptionPane.showMessageDialog(null, "Aguarde.");
+                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                     tirarId();
                     criarId();
                     JOptionPane.showMessageDialog(null, "Usuário removido com sucesso");

@@ -48,8 +48,6 @@ public class TelaInventario extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
     }
-    
-  
 
     public void instanciarTabelaCompra() {
         try {
@@ -59,13 +57,22 @@ public class TelaInventario extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
 
-            String sq0 = "select sum(referencial_compra) from tbprodutos";
+            double preco, x;
 
-            pst = conexao.prepareStatement(sq0);
+            String sqr = "select referencial_compra from tbprodutos";
+
+            preco = 0;
+
+            pst = conexao.prepareStatement(sqr);
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            lblValor.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString())).replace(",", "."));
-            lblNome.setText("Total Compras(R$):");
+            for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
+                x = Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100;
+                preco = preco + x;
+                lblValor.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
+                lblNome.setText("Total Compras(R$):");
+
+            }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -79,48 +86,76 @@ public class TelaInventario extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
 
-            String sq0 = "select sum(referencial_venda) from tbprodutos";
+            double preco, x;
 
-            pst = conexao.prepareStatement(sq0);
+            String sqr = "select referencial_venda from tbprodutos";
+
+            preco = 0;
+
+            pst = conexao.prepareStatement(sqr);
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            lblValor.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString())).replace(",", "."));
-            lblNome.setText("Total Vendas(R$):");
+            for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
+                x = Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100;
+                preco = preco + x;
+                lblValor.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
+                lblNome.setText("Total Vendas(R$):");
+
+            }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
 
-    public void instanciarTabelaCompra_X_Venda() {      
+    public void instanciarTabelaCompra_X_Venda() {
 
         try {
-            
-           String squ = "select idproduto as ID, produto as Produto, quantidade as Quantidade,"
-                    + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos";
+            int confirma = JOptionPane.showConfirmDialog(null, "Voce deseja calcular Compra_X_Venda ?", "Atençao" ,JOptionPane.YES_OPTION);
+           
+            if (confirma == JOptionPane.YES_OPTION) {
+                tirar();
+                criar();
 
-            pst = conexao.prepareStatement(squ);
-            rs = pst.executeQuery();
-            tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
-            
-            calculoLucro();
-            
-            String sqo = "select idproduto as ID, produto as Produto, quantidade as Quantidade,"
-                    + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos";
+                String squ = "select idproduto as ID, produto as Produto, quantidade as Quantidade,"
+                        + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos";
 
-            pst = conexao.prepareStatement(sqo);
-            rs = pst.executeQuery();
-            tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
-            
-            String sqz = "select sum(compra_x_venda) from tbprodutos";
+                pst = conexao.prepareStatement(squ);
+                rs = pst.executeQuery();
+                tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
 
-            pst = conexao.prepareStatement(sqz);
-            rs = pst.executeQuery();
-            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            lblValor.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString())).replace(",", "."));
-            lblNome.setText("Lucro Bruto(R$):");
-            
+                calculoLucro();
 
+                String sqo = "select idproduto as ID, produto as Produto, quantidade as Quantidade,"
+                        + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos";
+
+                pst = conexao.prepareStatement(sqo);
+                rs = pst.executeQuery();
+                tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
+
+                double preco, x;
+
+                String sqr = "select compra_x_venda from tbprodutos";
+
+                preco = 0;
+
+                pst = conexao.prepareStatement(sqr);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
+                    x = Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100;
+                    preco = preco + x;
+                    lblValor.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
+                    lblNome.setText("Lucro Bruto(R$):");
+
+                }
+            }else{
+                rbReferrencialVenda.setSelected(true);
+                instanciarTabelaVenda();
+            }
+            
+        }catch (java.lang.NullPointerException e) {
+          
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -129,60 +164,54 @@ public class TelaInventario extends javax.swing.JFrame {
     public void calculoLucro() {
 
         try {
-            
-            int linha;
-            linha = tbProdutos.getRowCount();
+
             double x;
             double y;
-            double z;
             int t = 1;
-            
-            for (int i = 0; i <= linha; i++) {
-                x = Double.parseDouble(tbProdutos.getModel().getValueAt(i, 3).toString());
-                y = Double.parseDouble(tbProdutos.getModel().getValueAt(i, 4).toString());
-                z = y - x;
-                
 
-                String sqr = "update tbprodutos set compra_x_venda=? where idproduto=?";
-
+            for (int i = 0; i < tbProdutos.getRowCount(); i++) {
+                x = Double.parseDouble(String.valueOf(Double.parseDouble(tbProdutos.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100));
+                y = Double.parseDouble(String.valueOf(Double.parseDouble(tbProdutos.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100));
+                String sqr = "update tbprodutos set compra_x_venda=? where idproduto=" + t;
                 pst = conexao.prepareStatement(sqr);
-                pst.setDouble(1, z);
-                pst.setInt(2, t);
+                pst.setString(1, new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(y - x))).replace(",", "."));
+
                 pst.executeUpdate();
                 t++;
 
             }
 
-        } catch (Exception sqlEx) {
+        } catch (java.lang.NullPointerException e) {
+          
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
 
         }
     }
-    
-     private void tirar() {
-        
-            String sql = "alter table tbprodutos drop compra_x_venda";
-            try {
-                pst = conexao.prepareStatement(sql);                
-                pst.executeUpdate();
-               
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-            
-            
-        
+
+    private void tirar() {
+
+        String sql = "alter table tbprodutos drop compra_x_venda";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
     }
-    
-    private void criar(){
-        String sql = "alter table tbprodutos add compra_x_venda float(12,2)";
-            try {
-                pst = conexao.prepareStatement(sql);                
-                pst.executeUpdate();
-               
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-    } 
+
+    private void criar() {
+        String sql = "alter table tbprodutos add compra_x_venda varchar(22)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -196,7 +225,7 @@ public class TelaInventario extends javax.swing.JFrame {
         grupo1 = new javax.swing.ButtonGroup();
         scAuxilio = new javax.swing.JScrollPane();
         tbAuxilio = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
+        pnPrincipal = new javax.swing.JPanel();
         lblValor = new javax.swing.JLabel();
         lblNome = new javax.swing.JLabel();
         scProdutos = new javax.swing.JScrollPane();
@@ -219,13 +248,15 @@ public class TelaInventario extends javax.swing.JFrame {
         scAuxilio.setViewportView(tbAuxilio);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Inventario");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        pnPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         lblValor.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblValor.setText("0.00");
@@ -285,20 +316,20 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnPrincipalLayout = new javax.swing.GroupLayout(pnPrincipal);
+        pnPrincipal.setLayout(pnPrincipalLayout);
+        pnPrincipalLayout.setHorizontalGroup(
+            pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnPrincipalLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnPrincipalLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lblNome)
                         .addGap(18, 18, 18)
                         .addComponent(lblValor))
-                    .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 1262, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 813, Short.MAX_VALUE)
+                    .addGroup(pnPrincipalLayout.createSequentialGroup()
                         .addComponent(rbReferencialCompra)
                         .addGap(1, 1, 1)
                         .addComponent(rbReferrencialVenda)
@@ -307,18 +338,18 @@ public class TelaInventario extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(16, 16, 16))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        pnPrincipalLayout.setVerticalGroup(
+            pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnPrincipalLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rbVendaCompra)
                     .addComponent(rbReferrencialVenda)
                     .addComponent(rbReferencialCompra))
                 .addGap(13, 13, 13)
-                .addComponent(scProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 665, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(13, 13, 13)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(scProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblNome)
                     .addComponent(lblValor))
                 .addContainerGap())
@@ -328,11 +359,11 @@ public class TelaInventario extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -340,8 +371,7 @@ public class TelaInventario extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         // TODO add your handling code here:
-       tirar();
-       criar();
+
     }//GEN-LAST:event_formWindowActivated
 
     private void tbProdutosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbProdutosMouseClicked
@@ -401,9 +431,9 @@ public class TelaInventario extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup grupo1;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblValor;
+    private javax.swing.JPanel pnPrincipal;
     private javax.swing.JRadioButton rbReferencialCompra;
     private javax.swing.JRadioButton rbReferrencialVenda;
     private javax.swing.JRadioButton rbVendaCompra;

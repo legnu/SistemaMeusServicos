@@ -31,13 +31,13 @@ public class TelaLogin extends javax.swing.JFrame {
            
                 try {
                     if (rs.next()) {
-                        String perfil = rs.getString(6);
+                        String perfil = rs.getString(7);
                         //System.out.println(perfil);
                         //Linha acima competi a teste e a estrutura abaixo trata do perfil do usuario
-                        if (perfil.equals("Administrador")) {
+                        if (perfil.equals("Administrador") == true) {                                           
                             TelaPrincipal principal = new TelaPrincipal();
                             principal.setVisible(true);
-                            TelaPrincipal.MenRel.setEnabled(true);
+                           
                             TelaPrincipal.MenCadUsu.setEnabled(true);
                             TelaPrincipal.lblUsuario.setText(rs.getString(2));
                             TelaPrincipal.lblUsuario.setForeground(Color.red);

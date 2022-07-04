@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -53,7 +54,7 @@ public class telaSangria extends javax.swing.JFrame {
 
     private void adicionar() {
 
-        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, obs)values(?,?,?,?,?)";
+        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor)values(?,?,?,?)";
 
         try {
             Date d = new Date();
@@ -61,19 +62,26 @@ public class telaSangria extends javax.swing.JFrame {
             java.sql.Date dSql = new java.sql.Date(d.getTime());
             df.format(dSql);
             pst = conexao.prepareStatement(sql);
-
-            pst.setString(1, "Sangria");
+            
+            if(txtDescricao.getText().isEmpty()){
+                pst.setString(1, "Sangria");
+            }else{
+                pst.setString(1, txtDescricao.getText());
+            }
+                
             pst.setDate(2, dSql);
             pst.setString(3, "Pago");
-            pst.setString(4, txtSuplemento.getText());
-            pst.setString(5, taDescricao.getText());
+            pst.setString(4, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(txtSangria.getText())))).replace(",", "."));
+           
 
             //Validação dos Campos Obrigatorios
-            if ((txtSuplemento.getText().isEmpty())) {
+            if ((txtSangria.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Adicione uma Sangria.");
+                limpar();
 
-            } else if (Integer.parseInt(txtSuplemento.getText()) <= 0) {
+            } else if (Integer.parseInt(txtSangria.getText()) <= 0) {
                 JOptionPane.showMessageDialog(null, "Adicione uma Sangria maior que 0.");
+                limpar();
 
             } else {
 
@@ -82,7 +90,7 @@ public class telaSangria extends javax.swing.JFrame {
                 //A Linha abaixo serve de apoio ao entendimento da logica
                 //System.out.println(adicionado);
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Produto adicionado com sucesso");
+                    JOptionPane.showMessageDialog(null, "Sangria adicionada com sucesso.");
                     this.dispose();
 
                 }
@@ -90,11 +98,18 @@ public class telaSangria extends javax.swing.JFrame {
 
         } catch (java.lang.NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Somente Numeros.");
-
+            limpar();
+            
         }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            limpar();
 
         }
+    }
+    
+    public void limpar(){
+        txtDescricao.setText(null);
+        txtSangria.setText(null);
     }
 
     /**
@@ -108,13 +123,14 @@ public class telaSangria extends javax.swing.JFrame {
 
         pnPrincipalSangria = new javax.swing.JPanel();
         btnAdicionarSangria = new javax.swing.JToggleButton();
-        lblSangria = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         txtSangria = new javax.swing.JTextField();
-        pnDescricaoSangria = new javax.swing.JPanel();
-        scDescricaoSangria = new javax.swing.JScrollPane();
-        taDescricaoSangria = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
+        txtDescricao = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Sangria");
+        setResizable(false);
 
         pnPrincipalSangria.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -129,24 +145,30 @@ public class telaSangria extends javax.swing.JFrame {
             }
         });
 
-        lblSangria.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblSangria.setText("Valor Sangria:");
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Valor da Sangria", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
-        pnDescricaoSangria.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OBS:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
-
-        taDescricaoSangria.setColumns(20);
-        taDescricaoSangria.setRows(5);
-        scDescricaoSangria.setViewportView(taDescricaoSangria);
-
-        javax.swing.GroupLayout pnDescricaoSangriaLayout = new javax.swing.GroupLayout(pnDescricaoSangria);
-        pnDescricaoSangria.setLayout(pnDescricaoSangriaLayout);
-        pnDescricaoSangriaLayout.setHorizontalGroup(
-            pnDescricaoSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scDescricaoSangria, javax.swing.GroupLayout.DEFAULT_SIZE, 681, Short.MAX_VALUE)
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtSangria, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
         );
-        pnDescricaoSangriaLayout.setVerticalGroup(
-            pnDescricaoSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scDescricaoSangria, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtSangria, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Descrição", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtDescricao)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtDescricao, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout pnPrincipalSangriaLayout = new javax.swing.GroupLayout(pnPrincipalSangria);
@@ -157,26 +179,22 @@ public class telaSangria extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnPrincipalSangriaLayout.createSequentialGroup()
-                        .addComponent(lblSangria)
-                        .addGap(11, 11, 11)
-                        .addComponent(txtSangria, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(pnDescricaoSangria, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnAdicionarSangria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAdicionarSangria, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE))
                 .addGap(16, 16, 16))
         );
         pnPrincipalSangriaLayout.setVerticalGroup(
             pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalSangriaLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtSangria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblSangria))
-                .addGap(16, 16, 16)
-                .addComponent(pnDescricaoSangria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(16, 16, 16)
+                .addGroup(pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(btnAdicionarSangria, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -234,26 +252,11 @@ public class telaSangria extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton btnAdicionar;
-    private javax.swing.JToggleButton btnAdicionar1;
     private javax.swing.JToggleButton btnAdicionarSangria;
-    private javax.swing.JLabel lblSangria;
-    private javax.swing.JLabel lblSupleento;
-    private javax.swing.JLabel lblSupleento1;
-    private javax.swing.JPanel pnDescricao;
-    private javax.swing.JPanel pnDescricao1;
-    private javax.swing.JPanel pnDescricaoSangria;
-    private javax.swing.JPanel pnPrincipal;
-    private javax.swing.JPanel pnPrincipal1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel pnPrincipalSangria;
-    private javax.swing.JScrollPane scDescricao;
-    private javax.swing.JScrollPane scDescricao1;
-    private javax.swing.JScrollPane scDescricaoSangria;
-    private javax.swing.JTextArea taDescricao;
-    private javax.swing.JTextArea taDescricao1;
-    private javax.swing.JTextArea taDescricaoSangria;
+    private javax.swing.JTextField txtDescricao;
     private javax.swing.JTextField txtSangria;
-    private javax.swing.JTextField txtSuplemento;
-    private javax.swing.JTextField txtSuplemento1;
     // End of variables declaration//GEN-END:variables
 }

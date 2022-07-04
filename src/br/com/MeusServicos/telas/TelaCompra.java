@@ -47,7 +47,7 @@ public class TelaCompra extends javax.swing.JFrame {
 
     public void InstanciarCombobox() {
         try {
-            cbFormaDePagamento.addItem(" ");
+           
             String sql = "select nome_fornecedor from tbfornecedor";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -93,7 +93,7 @@ public class TelaCompra extends javax.swing.JFrame {
             pst.setString(5, txtQuantidade.getText());
 
             //Validação dos Campos Obrigatorios
-            if ((txtProduto.getText().isEmpty()) || (txtValorFinal.getText().isEmpty()) || txtQuantidade.getText().isEmpty()) {
+            if ((txtProduto.getText().isEmpty()) || (txtValorFinal.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
                 Limpar();
 
@@ -116,7 +116,7 @@ public class TelaCompra extends javax.swing.JFrame {
                     pst.setString(2, txtID.getText());
                     int adicionado = pst.executeUpdate();
 
-                    double valor_compra = Double.parseDouble(txtValorUnidade.getText());
+                    double valor_compra = Double.parseDouble(txtValorUnidade.getText().replace(".", "")) / 100;
                     double referencial_compra = quantidadeFinal * valor_compra;
 
                     String sqy = "update tbprodutos set referencial_compra=? where idproduto=?";
@@ -125,8 +125,6 @@ public class TelaCompra extends javax.swing.JFrame {
                     pst.setString(2, txtID.getText());
                     pst.executeUpdate();
 
-                    double valor_venda;
-
                     String squ = "select valor_venda from tbprodutos where produto=?";
 
                     pst = conexao.prepareStatement(squ);
@@ -134,7 +132,7 @@ public class TelaCompra extends javax.swing.JFrame {
                     rs = pst.executeQuery();
                     tbEstoque.setModel(DbUtils.resultSetToTableModel(rs));
 
-                    valor_venda = Double.parseDouble(tbEstoque.getModel().getValueAt(0, 0).toString());
+                    double valor_venda = Double.parseDouble(tbEstoque.getModel().getValueAt(0, 0).toString().replace(".", "")) / 100;
                     double referencial_venda = quantidadeFinal * valor_venda;
 
                     String sqo = "update tbprodutos set referencial_venda=? where idproduto=?";
@@ -146,7 +144,7 @@ public class TelaCompra extends javax.swing.JFrame {
                     //A Linha abaixo serve de apoio ao entendimento da logica
                     //System.out.println(adicionado);
                     if (adicionado > 0) {
-                        JOptionPane.showMessageDialog(null, "Produto(s) comprado(s) com sucesso.");
+                        JOptionPane.showMessageDialog(null, "Produto(s) Adicionado(s) com sucesso.");
                         Limpar();
 
                         instanciarTabelaNotaCompra();
@@ -158,8 +156,13 @@ public class TelaCompra extends javax.swing.JFrame {
 
             }
         } catch (java.lang.NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Campo Quantidade não suporta letras.");
-            Limpar();
+            if (txtQuantidade.getText().isEmpty() == true) {
+                JOptionPane.showMessageDialog(null, "Quantidade não pode ser nula.");
+                Limpar();
+            } else {
+                JOptionPane.showMessageDialog(null, "Campo Quantidade não suporta letras.");
+                Limpar();
+            }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -299,10 +302,10 @@ public class TelaCompra extends javax.swing.JFrame {
                         String sqr = "delete from tbcompra";
                         pst = conexao.prepareStatement(sqr);
                         pst.executeUpdate();
-                        JOptionPane.showMessageDialog(null, "Aguarde.");
+                        JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                         tirarId();
                         criarId();
-                        JOptionPane.showMessageDialog(null, "Item(s) comprado(s) com sucesso.");
+                        JOptionPane.showMessageDialog(null, "Produto(s) comprado(s) com sucesso.");
                         Limpar();
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(null, e);
@@ -391,7 +394,7 @@ public class TelaCompra extends javax.swing.JFrame {
                 int apagado = pst.executeUpdate();
 
                 if (apagado > 0) {
-                    JOptionPane.showMessageDialog(null, "Aguarde.");
+                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                     tirarId();
                     criarId();
                     JOptionPane.showMessageDialog(null, "Produto removido com sucesso.");
@@ -414,7 +417,7 @@ public class TelaCompra extends javax.swing.JFrame {
         cbFornecedor.addItem(tbProduto.getModel().getValueAt(setar, 4).toString());
         txtID.setText(tbProduto.getModel().getValueAt(setar, 0).toString());
         txtProduto.setText(tbProduto.getModel().getValueAt(setar, 1).toString());
-        double valor = Double.parseDouble(tbProduto.getModel().getValueAt(setar, 2).toString().replace(".", "")) / 100;
+        String valor = new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(Double.parseDouble(tbProduto.getModel().getValueAt(setar, 2).toString().replace(".", "")) / 100))).replace(",", ".");
         txtValorUnidade.setText(String.valueOf(valor));
         txtQuantidadeInicial.setText(tbProduto.getModel().getValueAt(setar, 3).toString());
         cbFornecedor.setSelectedItem(tbProduto.getModel().getValueAt(setar, 4).toString());
@@ -428,7 +431,6 @@ public class TelaCompra extends javax.swing.JFrame {
 
     public void setar_campos_remover() {
         try {
-            
 
             int setar = tbNotaCompra.getSelectedRow();
             txtID.setText(tbNotaCompra.getModel().getValueAt(setar, 0).toString());
@@ -513,6 +515,12 @@ public class TelaCompra extends javax.swing.JFrame {
 
     }
 
+    public void CadastroProduto() {
+        CadProduto produto = new CadProduto();
+        produto.setVisible(true);
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -537,7 +545,6 @@ public class TelaCompra extends javax.swing.JFrame {
         lblQuantidade = new javax.swing.JLabel();
         lblValorFinal = new javax.swing.JLabel();
         lblFornecedor = new javax.swing.JLabel();
-        lblFormadePagamento = new javax.swing.JLabel();
         txtPesquisa = new javax.swing.JTextField();
         txtProduto = new javax.swing.JTextField();
         txtValorUnidade = new javax.swing.JTextField();
@@ -545,7 +552,6 @@ public class TelaCompra extends javax.swing.JFrame {
         txtQuantidade = new javax.swing.JTextField();
         txtValorFinal = new javax.swing.JTextField();
         cbFornecedor = new javax.swing.JComboBox<>();
-        cbFormaDePagamento = new javax.swing.JComboBox<>();
         btnAdicionar = new javax.swing.JButton();
         pnNota = new javax.swing.JPanel();
         btnRemove = new javax.swing.JButton();
@@ -560,6 +566,7 @@ public class TelaCompra extends javax.swing.JFrame {
         pnProduto = new javax.swing.JPanel();
         scProduto = new javax.swing.JScrollPane();
         tbProduto = new javax.swing.JTable();
+        jToggleButton1 = new javax.swing.JToggleButton();
 
         tbSoma.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -637,9 +644,6 @@ public class TelaCompra extends javax.swing.JFrame {
         lblFornecedor.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblFornecedor.setText("*Fornecedor:");
 
-        lblFormadePagamento.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblFormadePagamento.setText("*Forma de Pagamento:");
-
         txtProduto.setEditable(false);
         txtProduto.setEnabled(false);
         txtProduto.setFocusable(false);
@@ -664,8 +668,6 @@ public class TelaCompra extends javax.swing.JFrame {
         txtValorFinal.setFocusable(false);
 
         cbFornecedor.setEnabled(false);
-
-        cbFormaDePagamento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Boleto", "Pix", "Cartão de Credito", "Cartão de Debito", "Dinhero" }));
 
         btnAdicionar.setBackground(new java.awt.Color(0, 0, 255));
         btnAdicionar.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
@@ -843,6 +845,17 @@ public class TelaCompra extends javax.swing.JFrame {
             .addComponent(scProduto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
+        jToggleButton1.setBackground(new java.awt.Color(0, 0, 0));
+        jToggleButton1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jToggleButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jToggleButton1.setText("Cadastrar Produto");
+        jToggleButton1.setBorderPainted(false);
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -864,10 +877,9 @@ public class TelaCompra extends javax.swing.JFrame {
                                 .addComponent(pnProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(4, 4, 4)
+                                .addGap(20, 20, 20)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lblFornecedor)
@@ -876,33 +888,30 @@ public class TelaCompra extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(lblQuantidadeInicial)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtQuantidadeInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lblQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(7, 7, 7)
-                                        .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtQuantidadeInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lblNomeProduto)
                                         .addGap(12, 12, 12)
-                                        .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(7, 7, 7)
+                                        .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblFormadePagamento)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbFormaDePagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(6, 6, 6)
-                                        .addComponent(lblValorUnidade)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtValorUnidade, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lblValorFinal)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtValorFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(60, 60, 60)
-                                        .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(1, 1, 1)))
+                                .addGap(312, 312, 312)
+                                .addComponent(lblValorUnidade)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtValorUnidade, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblValorFinal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtValorFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(76, 76, 76)
+                                .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(pnNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
@@ -922,13 +931,14 @@ public class TelaCompra extends javax.swing.JFrame {
                                 .addComponent(lblPesquisar)))
                         .addGap(17, 17, 17)
                         .addComponent(pnProduto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
                                 .addComponent(lblNomeProduto))
-                            .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(16, 16, 16)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jToggleButton1)))
+                        .addGap(14, 14, 14)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblQuantidadeInicial)
                             .addComponent(txtQuantidadeInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -941,9 +951,7 @@ public class TelaCompra extends javax.swing.JFrame {
                             .addComponent(txtValorFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblValorFinal)
                             .addComponent(txtValorUnidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblValorUnidade)
-                            .addComponent(cbFormaDePagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblFormadePagamento))
+                            .addComponent(lblValorUnidade))
                         .addGap(18, 18, 18)
                         .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -990,6 +998,12 @@ public class TelaCompra extends javax.swing.JFrame {
         setar_campos_remover();
     }//GEN-LAST:event_tbNotaCompraMouseClicked
 
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        // TODO add your handling code here:
+        CadastroProduto();
+
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1030,12 +1044,11 @@ public class TelaCompra extends javax.swing.JFrame {
     private javax.swing.JButton btnAdicionar;
     private javax.swing.JToggleButton btnComprar;
     private javax.swing.JButton btnRemove;
-    private javax.swing.JComboBox<String> cbFormaDePagamento;
     private javax.swing.JComboBox<String> cbFornecedor;
     private com.toedter.calendar.JDateChooser dtPagamento;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JLabel lblCamposObrigatorios;
     private javax.swing.JLabel lblDataPagamento;
-    private javax.swing.JLabel lblFormadePagamento;
     private javax.swing.JLabel lblFornecedor;
     private javax.swing.JLabel lblNomeProduto;
     private javax.swing.JLabel lblPesquisar;

@@ -114,7 +114,11 @@ public class CadProduto extends javax.swing.JFrame {
     public void setar_campos() {
         int setar = tbProduto.getSelectedRow();
         txtID.setText(tbProduto.getModel().getValueAt(setar, 0).toString());
-        txtCodigo.setText(tbProduto.getModel().getValueAt(setar, 1).toString());
+        if (tbProduto.getModel().getValueAt(setar, 1) == null) {
+            txtCodigo.setText(null);
+        } else {
+            txtCodigo.setText(tbProduto.getModel().getValueAt(setar, 1).toString());
+        }
         txtDescricao.setText(tbProduto.getModel().getValueAt(setar, 2).toString());
         double custo = Double.parseDouble(tbProduto.getModel().getValueAt(setar, 3).toString().replace(".", "")) / 100;
         double preco = Double.parseDouble(tbProduto.getModel().getValueAt(setar, 4).toString().replace(".", "")) / 100;
@@ -143,8 +147,8 @@ public class CadProduto extends javax.swing.JFrame {
 
             pst.setString(1, txtDescricao.getText());
 
-            if (cbFornecedor.getSelectedItem() == null) {
-                pst.setString(2, txtCodigo.getText());
+            if (txtCodigo.getText().isEmpty() == true) {
+                pst.setString(2, null);
             } else {
                 pst.setString(2, txtCodigo.getText());
             }
@@ -163,8 +167,6 @@ public class CadProduto extends javax.swing.JFrame {
 
             } else if ((Double.parseDouble(txtCusto.getText()) <= 0) || (Double.parseDouble(txtPreco.getText()) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Valor de Compra ou Valor de Venda Deve ser maior que 0.");
-            } else if ((Double.parseDouble(txtCodigo.getText()) == 0)) {
-                JOptionPane.showMessageDialog(null, "Codigo não pode ser 0.");
             } else {
 
                 int adicionado = pst.executeUpdate();
@@ -179,6 +181,7 @@ public class CadProduto extends javax.swing.JFrame {
             limpar();
 
         } catch (java.lang.NumberFormatException c) {
+
             JOptionPane.showMessageDialog(null, "Campo Codigo so aceita Numeros. \n"
                     + "Valor de Compra e Valor de Venda deve ser Salvo no Formato 0.00 .");
 
@@ -198,8 +201,8 @@ public class CadProduto extends javax.swing.JFrame {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtDescricao.getText());
 
-            if (cbFornecedor.getSelectedItem() == null) {
-                pst.setString(2, txtCodigo.getText());
+            if (txtCodigo.getText().isEmpty() == true) {
+                pst.setString(2, null);
             } else {
                 pst.setString(2, txtCodigo.getText());
             }
@@ -253,7 +256,7 @@ public class CadProduto extends javax.swing.JFrame {
                 pst.setString(1, txtID.getText());
                 int apagado = pst.executeUpdate();
                 if (apagado > 0) {
-                    JOptionPane.showMessageDialog(null, "Aguarde.");
+                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                     tirarId();
                     criarId();
                     JOptionPane.showMessageDialog(null, "Produto removido com sucesso");
