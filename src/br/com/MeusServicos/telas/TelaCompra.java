@@ -24,6 +24,7 @@
 package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
+import static br.com.MeusServicos.telas.PontoDeVendas.lblValorTotal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,7 +48,7 @@ public class TelaCompra extends javax.swing.JFrame {
 
     public void InstanciarCombobox() {
         try {
-           
+
             String sql = "select nome_fornecedor from tbfornecedor";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -59,6 +60,19 @@ public class TelaCompra extends javax.swing.JFrame {
 
             Limpar();
 
+        }
+    }
+
+    public void InstanciarComboboxPagamento() {
+        if (String.valueOf(cbPagamento.getSelectedItem()).equals("A Vista (Dinhero)") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Debito") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Pix") == true) {
+            cbNumero.setSelectedItem("1x");
+            cbNumero.setEnabled(false);
+            dtPagamento.setEnabled(true);
+
+        } else if (String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Credito") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Crediario") == true) {
+            cbNumero.setEnabled(true);
+            dtPagamento.setDate(null);
+            dtPagamento.setEnabled(false);
         }
     }
 
@@ -248,74 +262,130 @@ public class TelaCompra extends javax.swing.JFrame {
     }
 
     public void comprar() {
-
+        int acumulo = 1;
         try {
+            if (Double.parseDouble(lblValorTotal.getText().replace(".", "")) / 100 <= 0) {
+                JOptionPane.showMessageDialog(null, "Valor total deve ser maior que 0");
+                Limpar();
+            } else if (String.valueOf(cbPagamento.getSelectedItem()).equals("A Vista (Dinhero)") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Debito") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Pix") == true) {
+                double preco;
 
-            double preco;
+                preco = Double.parseDouble(lblValorTotal.getText().replace(".", "")) / 100;
 
-            preco = Double.parseDouble(lblValorTotal.getText().replace(".", "")) / 100;
+                String compra = JOptionPane.showInputDialog("Escreva um identificador para esta compra.");
 
-            Date d = new Date();
-            Date y = dtPagamento.getDate();
-            String status;
+                Date d = new Date();
+                Date y = dtPagamento.getDate();
+                String status;
 
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-            java.sql.Date dSql = new java.sql.Date(d.getTime());
-            df.format(dSql);
+                java.sql.Date dSql = new java.sql.Date(d.getTime());
+                df.format(dSql);
 
-            java.sql.Date dSqo = new java.sql.Date(y.getTime());
-            df.format(dSqo);
+                java.sql.Date dSqo = new java.sql.Date(y.getTime());
+                df.format(dSqo);
 
-            if (d.before(y)) {
-                status = "Pendente";
-            } else {
-                status = "Pago";
-
-            }
-
-            String sql = "insert into tbgastos(valor, data_emicao, status_pagamento, data_pagamento, nome)values(?,?,?,?,?)";
-
-            pst = conexao.prepareStatement(sql);
-
-            pst.setString(1, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(preco))).replace(",", "."));
-            pst.setDate(2, dSql);
-            pst.setString(3, status);
-            pst.setDate(4, dSqo);
-            pst.setDate(5, dSql);
-            //Validação dos Campos Obrigatorios
-            if ((lblValorTotal.getText().isEmpty())) {
-                JOptionPane.showMessageDialog(null, "Sua lista de compras deve conter algo.");
-
-            } else if (dtPagamento.equals("")) {
-                JOptionPane.showMessageDialog(null, "Coloque uma Data.");
-
-            } else {
-
-                //A linha abaixo atualiza os dados do novo usuario
-                int adicionado = pst.executeUpdate();
-                //A Linha abaixo serve de apoio ao entendimento da logica
-                //System.out.println(adicionado);
-                if (adicionado > 0) {
-
-                    try {
-                        String sqr = "delete from tbcompra";
-                        pst = conexao.prepareStatement(sqr);
-                        pst.executeUpdate();
-                        JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                        tirarId();
-                        criarId();
-                        JOptionPane.showMessageDialog(null, "Produto(s) comprado(s) com sucesso.");
-                        Limpar();
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null, e);
-                        Limpar();
-
-                    }
+                if (d.before(y)) {
+                    status = "Pendente";
+                } else {
+                    status = "Pago";
 
                 }
+
+                String sql = "insert into tbgastos(valor, data_emicao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
+
+                pst = conexao.prepareStatement(sql);
+
+                pst.setString(1, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(preco))).replace(",", "."));
+                pst.setDate(2, dSql);
+                pst.setString(3, status);
+                pst.setDate(4, dSqo);
+                pst.setString(5, compra);
+                pst.setString(6, cbPagamento.getSelectedItem().toString());
+                pst.executeUpdate();
+
+                try {
+                    String sqr = "delete from tbcompra";
+                    pst = conexao.prepareStatement(sqr);
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
+                    tirarId();
+                    criarId();
+                    JOptionPane.showMessageDialog(null, "Produto(s) comprado(s) com sucesso.");
+                    Limpar();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                    Limpar();
+
+                }
+
+            } else if (String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Credito") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Crediario") == true) {
+
+                Date d = new Date();
+                int parcela = 1;
+
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+                java.sql.Date dSql = new java.sql.Date(d.getTime());
+                df.format(dSql);
+                String compra = JOptionPane.showInputDialog("Escreva um identificador para esta compra.");
+                
+                for (int i = 0; i < Integer.parseInt(String.valueOf(cbNumero.getSelectedItem()).replace("x", "")); i++) {
+
+                    String mes = new SimpleDateFormat("MM").format(d);
+                    String ano = new SimpleDateFormat("yyyy").format(d);
+
+                    System.out.println(mes + "x" + ano);
+
+                    int limite = Integer.parseInt(mes) + acumulo;
+
+                    if (limite > 12) {
+                        limite = limite - 12;
+                        ano = String.valueOf(Integer.parseInt(ano) + 1);
+                    }
+
+                    String dataLimite = ano + "-" + limite + "-05";
+
+                    Date data = df.parse(dataLimite);
+                    java.sql.Date dSqt = new java.sql.Date(data.getTime());
+                    df.format(dSqt);
+
+                    String sql = "insert into tbgastos(valor, data_emicao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
+
+                    pst = conexao.prepareStatement(sql);
+
+                    pst.setString(1, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(lblValorTotal.getText().replace(".", "")) / 100)) / Integer.parseInt(String.valueOf(cbNumero.getSelectedItem()).replace("x", ""))).replace(",", "."));
+                    pst.setDate(2, dSql);
+                    pst.setString(3, "Pendente");
+                    pst.setDate(4, dSqt);
+                    pst.setString(5, compra + " Parcela: "+parcela+"/"+String.valueOf(cbNumero.getSelectedItem()).replace("x",""));
+                    pst.setString(6, cbPagamento.getSelectedItem().toString());
+                    pst.executeUpdate();
+                    acumulo++;
+                    parcela++;
+                }
+
+                try {
+                    String sqr = "delete from tbcompra";
+                    pst = conexao.prepareStatement(sqr);
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
+                    tirarId();
+                    criarId();
+                    JOptionPane.showMessageDialog(null, "Produto(s) comprado(s) com sucesso.");
+                    Limpar();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                    Limpar();
+
+                }
+
             }
+
         } catch (java.lang.NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, e);
+            Limpar();
 
         } catch (java.lang.NullPointerException e) {
             JOptionPane.showMessageDialog(null, "Adicione uma Data de Pagamento.");
@@ -563,6 +633,9 @@ public class TelaCompra extends javax.swing.JFrame {
         pnTbNota = new javax.swing.JPanel();
         scNotaProduto1 = new javax.swing.JScrollPane();
         tbNotaCompra = new javax.swing.JTable();
+        pnPagamento = new javax.swing.JPanel();
+        cbPagamento = new javax.swing.JComboBox<>();
+        cbNumero = new javax.swing.JComboBox<>();
         pnProduto = new javax.swing.JPanel();
         scProduto = new javax.swing.JScrollPane();
         tbProduto = new javax.swing.JTable();
@@ -754,9 +827,39 @@ public class TelaCompra extends javax.swing.JFrame {
         );
         pnTbNotaLayout.setVerticalGroup(
             pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 343, Short.MAX_VALUE)
+            .addGap(0, 341, Short.MAX_VALUE)
             .addGroup(pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(scNotaProduto1, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE))
+                .addComponent(scNotaProduto1, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE))
+        );
+
+        pnPagamento.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Forma de Pagamento", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        cbPagamento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A Vista (Dinhero)", "Cartão Debito", "Pix", "Cartão Credito", "Crediario" }));
+        cbPagamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPagamentoActionPerformed(evt);
+            }
+        });
+
+        cbNumero.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        cbNumero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x", "9x", "10x", "11x", "12x" }));
+        cbNumero.setEnabled(false);
+
+        javax.swing.GroupLayout pnPagamentoLayout = new javax.swing.GroupLayout(pnPagamento);
+        pnPagamento.setLayout(pnPagamentoLayout);
+        pnPagamentoLayout.setHorizontalGroup(
+            pnPagamentoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnPagamentoLayout.createSequentialGroup()
+                .addComponent(cbPagamento, 0, 133, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
+        );
+        pnPagamentoLayout.setVerticalGroup(
+            pnPagamentoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnPagamentoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(cbPagamento)
+                .addComponent(cbNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout pnNotaLayout = new javax.swing.GroupLayout(pnNota);
@@ -776,12 +879,14 @@ public class TelaCompra extends javax.swing.JFrame {
                                 .addGap(202, 202, 202))))
                     .addGroup(pnNotaLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(pnNotaLayout.createSequentialGroup()
                                 .addGap(14, 14, 14)
                                 .addComponent(lblTotal)
                                 .addGap(12, 12, 12)
-                                .addComponent(lblValorTotal))
+                                .addComponent(lblValorTotal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(pnPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(pnNotaLayout.createSequentialGroup()
                                 .addComponent(btnComprar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -795,12 +900,16 @@ public class TelaCompra extends javax.swing.JFrame {
                 .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblDataPagamento)
                     .addComponent(dtPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
-                .addComponent(pnTbNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTotal)
-                    .addComponent(lblValorTotal))
+                .addComponent(pnTbNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnNotaLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblTotal)
+                            .addComponent(lblValorTotal)))
+                    .addComponent(pnPagamento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(16, 16, 16)
                 .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnComprar, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -882,17 +991,26 @@ public class TelaCompra extends javax.swing.JFrame {
                                 .addGap(20, 20, 20)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblFornecedor)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblQuantidadeInicial)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtQuantidadeInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
                                         .addComponent(lblNomeProduto)
                                         .addGap(12, 12, 12)
-                                        .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(txtProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(lblValorUnidade)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(txtValorUnidade, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(lblValorFinal)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(txtValorFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(lblFornecedor)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(lblQuantidadeInicial)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(txtQuantidadeInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
@@ -900,15 +1018,6 @@ public class TelaCompra extends javax.swing.JFrame {
                                         .addGap(7, 7, 7)
                                         .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(312, 312, 312)
-                                .addComponent(lblValorUnidade)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtValorUnidade, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblValorFinal)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtValorFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(76, 76, 76)
                                 .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -1004,6 +1113,11 @@ public class TelaCompra extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jToggleButton1ActionPerformed
 
+    private void cbPagamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPagamentoActionPerformed
+        // TODO add your handling code here:
+        InstanciarComboboxPagamento();
+    }//GEN-LAST:event_cbPagamentoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1045,6 +1159,8 @@ public class TelaCompra extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnComprar;
     private javax.swing.JButton btnRemove;
     private javax.swing.JComboBox<String> cbFornecedor;
+    private javax.swing.JComboBox<String> cbNumero;
+    private javax.swing.JComboBox<String> cbPagamento;
     private com.toedter.calendar.JDateChooser dtPagamento;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JLabel lblCamposObrigatorios;
@@ -1059,6 +1175,7 @@ public class TelaCompra extends javax.swing.JFrame {
     private javax.swing.JLabel lblValorTotal;
     private javax.swing.JLabel lblValorUnidade;
     private javax.swing.JPanel pnNota;
+    private javax.swing.JPanel pnPagamento;
     private javax.swing.JPanel pnProduto;
     private javax.swing.JPanel pnTbNota;
     private javax.swing.JScrollPane scAuxilio;

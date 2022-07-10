@@ -14,7 +14,7 @@ senha varchar(15) not null,
 perfil varchar(20) not  null
 );
 
-select * from tbusuarios;
+
 insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil)
 values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador');
 
@@ -22,21 +22,20 @@ create table tbclientes(
 idcli MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomecli varchar(60) not null,
 sexocli varcharacter(1),
-cepcli varchar(8),
+cepcli varchar(15),
 endcli varchar(150),
 bairrocli varchar(30),
 cidadecli varchar(30),
-telefonecli varchar(15),
+telefonecli varchar(20),
 emailcli varchar(50),
-quantidade_comprada varchar(50),
+quantidade_comprada int,
 valor_gasto varchar(50),
 ticket_medio varchar(50),
-ultima_compra date
+atividade varchar(50),
+ultima_compra date,
+prazo_inativo date,
+crediario varchar(50)
 );
-
-select * from tbclientes;
-insert into tbclientes(nomecli,sexocli,cepcli,endcli,bairrocli,cidadecli,telefonecli,emailcli)
-values('Caixa','F','00000000','Loja','loja','loja','000000000000000','loja@gmail.com');
 
 create table tbos(
 os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -52,9 +51,6 @@ valor varchar(20),
 cliente varchar(50)
 );
 
-select * from tbos;
-select os from tbos where servico='troca';
-
 create table tbvenda(
 idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 cliente_venda varchar(50),
@@ -64,25 +60,16 @@ quantidade int,
 pagamento varchar(50)
 );
 
-select nome from tbvenda where quantidade=0;
-select * from tbvenda;
-update tbvenda set preco="-100.00" where idvenda=1;
-select idvenda from tbvenda where nome='Desconto';
-delete from tbvenda where idvenda=2;
-select idcli  from tbvenda;
-
 create table tbtotalvendas(
 id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
-nome varchar(50),
 dia date,
 hora varchar(50),
 venda varchar(20),
-obs varchar(10000),
-status_pagamento varchar(50)
+forma_pagamento varchar(50),
+cliente varchar(50),
+status_pagamento varchar(50),
+dia_Pagamento date
 );
-select * from tbtotalvendas;	
-
-select * from tbgastos where status_pagamento='Pago' and data_pagamento between '2020-06-10' and '2025-06-12';
 
 create table tbprodutos(
 idproduto MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -99,8 +86,6 @@ referencial_venda varchar(22),
 compra_x_venda varchar(22)
 );
 
-select * from tbprodutos;
-
 create table tbcompra(
 idcompra MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nome_produto varchar(50),
@@ -110,7 +95,6 @@ quantidade_comprada int,
 fornecedor varchar(50)
 );
 
-select * from tbcompra;
 
 create table tbgastos(
 idgastos MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -118,16 +102,9 @@ valor varchar(20),
 data_emicao date,
 data_pagamento date,
 nome varchar(50),
-obs varchar(900),
+forma_pagamento varchar(50),
 status_pagamento varchar(50)
 );
-
-select * from tbgastos;	
-select valor from tbgastos where status_pagamento='Pago';
-update tbgastos set data_pagamento='2020-06-29' where idgastos=1;
-REPLACE into tbgastos(status_pagamento)
-
-select C.idcompra as ID_Nota, nome_produto as Produto, valor as Valor, quantidade_comprada as Quantidade_Adicionada, P.idproduto as ID_Produto, quantidade as Quantidade_em_Estoque from tbcompra as C right join tbprodutos as P on (C.idcompra = P.idproduto);
 
 create table tbfornecedor(
 idfornecedor MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -143,7 +120,7 @@ numero_fornecedor varchar(5),
 telefone_fornecedor varchar(15),
 email_fornecedor varchar(80)
 );
-select * from  tbfornecedor;
+
 
 
 

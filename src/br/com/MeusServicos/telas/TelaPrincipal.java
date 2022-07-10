@@ -79,6 +79,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menCaixaSangria = new javax.swing.JMenuItem();
         menCompra = new javax.swing.JMenu();
         menCompraCompra = new javax.swing.JMenuItem();
+        menContas = new javax.swing.JMenu();
+        menContasContas = new javax.swing.JMenuItem();
+        menContasClientes = new javax.swing.JMenuItem();
         menPontoDeVendas = new javax.swing.JMenu();
         MenAju = new javax.swing.JMenu();
         MenAjuSob = new javax.swing.JMenuItem();
@@ -315,6 +318,27 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         Menu.add(menCompra);
 
+        menContas.setText("Contas");
+        menContas.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+
+        menContasContas.setText("Contas");
+        menContasContas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menContasContasActionPerformed(evt);
+            }
+        });
+        menContas.add(menContasContas);
+
+        menContasClientes.setText("Clientes");
+        menContasClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menContasClientesActionPerformed(evt);
+            }
+        });
+        menContas.add(menContasClientes);
+
+        Menu.add(menContas);
+
         menPontoDeVendas.setText("PDV");
         menPontoDeVendas.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         menPontoDeVendas.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -501,6 +525,18 @@ public class TelaPrincipal extends javax.swing.JFrame {
         compra.setVisible(true);
     }//GEN-LAST:event_menCompraCompraActionPerformed
 
+    private void menContasContasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menContasContasActionPerformed
+        // TODO add your handling code here:
+        TelaCrediario contas = new TelaCrediario();
+        contas.setVisible(true);
+    }//GEN-LAST:event_menContasContasActionPerformed
+
+    private void menContasClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menContasClientesActionPerformed
+        // TODO add your handling code here:
+        RelacaoClientes clientes = new RelacaoClientes();
+        clientes.setVisible(true);
+    }//GEN-LAST:event_menContasClientesActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -565,6 +601,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem menCaixaSuplemento;
     private javax.swing.JMenu menCompra;
     private javax.swing.JMenuItem menCompraCompra;
+    private javax.swing.JMenu menContas;
+    private javax.swing.JMenuItem menContasClientes;
+    private javax.swing.JMenuItem menContasContas;
     private javax.swing.JMenu menEstoque;
     private javax.swing.JMenuItem menEstoqueInventario;
     private javax.swing.JMenuItem menEstoqueProdutoQuantidade;

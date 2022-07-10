@@ -80,7 +80,7 @@ public class telaCaixa extends javax.swing.JFrame {
                 java.util.Date aFinal = DaFinal.getDate();
                 java.sql.Date bFinal = new java.sql.Date(aFinal.getTime());
                 
-                String sql = "select id as Id, dia as Data, hora as Hora, venda as Valor from tbtotalvendas where dia between '" + bInicial + "' and '" + bFinal + "';";
+                String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and  dia between '" + bInicial + "' and '" + bFinal + "'";
 
                 pst = conexao.prepareStatement(sql);
                 rs = pst.executeQuery();
@@ -91,7 +91,7 @@ public class telaCaixa extends javax.swing.JFrame {
                 entrada = 0;
                 saida = 0;
 
-                String sqo = "select idgastos as ID, nome as Nome_Dia, data_pagamento as Data_Pagamento, valor  as Valor from tbgastos where status_pagamento='Pago' and data_pagamento between '" + bInicial + "' and '" + bFinal + "';";
+                String sqo = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago' and data_pagamento between '" + bInicial + "' and '" + bFinal + "';";
 
                 pst = conexao.prepareStatement(sqo);
                 rs = pst.executeQuery();
@@ -99,7 +99,7 @@ public class telaCaixa extends javax.swing.JFrame {
                 
 
                 for (int i = 0; i < tbCaixaRecebido.getRowCount(); i++) {
-                    x = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaRecebido.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100).replace(",", "."));
+                    x = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaRecebido.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100).replace(",", "."));
 
                     entrada = entrada + x;
                     lblTotalRecebido.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(entrada))).replace(",", "."));
@@ -180,7 +180,7 @@ public class telaCaixa extends javax.swing.JFrame {
 
         try {
 
-            String sql = "select id as ID, nome as Nome_Dia, hora as Hora, venda as Vendas from tbtotalvendas";
+            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago'";
             pst = conexao.prepareStatement(sql);
 
             rs = pst.executeQuery();
@@ -191,7 +191,7 @@ public class telaCaixa extends javax.swing.JFrame {
             preco = 0;
 
             for (int i = 0; i < tbCaixaRecebido.getRowCount(); i++) {
-                x = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaRecebido.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100).replace(",", "."));
+                x = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaRecebido.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100).replace(",", "."));
 
                 preco = preco + x;
                 lblTotalRecebido.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
@@ -211,9 +211,9 @@ public class telaCaixa extends javax.swing.JFrame {
         try {
             Status();
 
-            String sql = "select idgastos as ID, nome as Nome_Dia, data_pagamento as Data_Pagamento, valor  as Valor from tbgastos where status_pagamento=?";
+            String sql = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago'";
             pst = conexao.prepareStatement(sql);
-            pst.setString(1, "Pago");
+            
             rs = pst.executeQuery();
             tbCaixaPago.setModel(DbUtils.resultSetToTableModel(rs));
 
@@ -412,6 +412,11 @@ public class telaCaixa extends javax.swing.JFrame {
         pnPago.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Saida", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
         pnPago.setPreferredSize(new java.awt.Dimension(464, 398));
 
+        tbCaixaPago = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
         tbCaixaPago.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -443,7 +448,7 @@ public class telaCaixa extends javax.swing.JFrame {
         pnPago.setLayout(pnPagoLayout);
         pnPagoLayout.setHorizontalGroup(
             pnPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scCaixaPago, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+            .addComponent(scCaixaPago, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnPagoLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblNome2)
@@ -464,6 +469,11 @@ public class telaCaixa extends javax.swing.JFrame {
 
         pnRecebido.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Entrada", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
+        tbCaixaRecebido = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
         tbCaixaRecebido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -522,7 +532,7 @@ public class telaCaixa extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(pnRelatorio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnPago, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
+                    .addComponent(pnPago, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -558,7 +568,7 @@ public class telaCaixa extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

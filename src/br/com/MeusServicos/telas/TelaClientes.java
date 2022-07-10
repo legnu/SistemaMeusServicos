@@ -23,17 +23,200 @@
  */
 package br.com.MeusServicos.telas;
 
+import br.com.MeusServicos.dal.ModuloConexao;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
+
 /**
  *
  * @author Ad3ln0r
  */
 public class TelaClientes extends javax.swing.JFrame {
 
+    Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    String tipo = "Ativo";
+
     /**
      * Creates new form TelaClientes
      */
     public TelaClientes() {
         initComponents();
+        conexao = ModuloConexao.conector();
+
+    }
+
+    public void ClientesAtivos() {
+        instanciarTabelaClientesAtivos();
+        tipo = "Ativo";
+
+    }
+
+    public void ClientesInativos() {
+        instanciarTabelaClientesInativos();
+        tipo = "Inativo";
+
+    }
+
+    public void instanciarTabelaClientesAtivos() {
+        String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where atividade='Ativo' order by quantidade_comprada desc";
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbClientesAtivos.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+
+    }
+
+    public void Pesquisar() {
+        try {
+            if (tipo.equals("Ativo") == true) {
+                String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where nomecli like ? and atividade='Ativo' order by quantidade_comprada desc ";
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisar.getText());
+                System.out.println(sql);
+                rs = pst.executeQuery();
+                tbClientesAtivos.setModel(DbUtils.resultSetToTableModel(rs));
+                System.out.println(tipo);
+            }else if(tipo.equals("Inativo") == true){
+                String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where nomecli like ? and atividade='Inativo'  order by quantidade_comprada desc ";
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, "'"+txtPesquisar.getText()+"'");
+                rs = pst.executeQuery();
+                tbClientesAtivos.setModel(DbUtils.resultSetToTableModel(rs));
+                System.out.println(tipo);
+                
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+
+    }
+
+    public void instanciarTabelaClientesInativos() {
+        String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes  where atividade='Inativo' order by quantidade_comprada desc";
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbClientesAtivos.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+
+    }
+
+    public void instanciarTabelaAuxilioCliente() {
+        String sql = "select * from tbclientes";
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+
+    }
+
+    public void ValidarCliente() {
+        try {
+
+            Date d = new Date();
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            java.sql.Date dSql = new java.sql.Date(d.getTime());
+            df.format(dSql);
+
+            for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
+                Date base = df.parse(tbAuxilio.getModel().getValueAt(i, 13).toString());
+
+                String mes = new SimpleDateFormat("MM").format(base);
+                String ano = new SimpleDateFormat("yyyy").format(base);
+
+                int limite = Integer.parseInt(mes) + 3;
+
+                if (limite > 12) {
+                    limite = limite - 12;
+                    ano = String.valueOf(Integer.parseInt(ano) + 1);
+                }
+
+                String dataLimite = ano + "-" + limite + "-01";
+
+                Date data = df.parse(dataLimite);
+                java.sql.Date dSqt = new java.sql.Date(data.getTime());
+                df.format(dSqt);
+
+                String sqr = "update tbclientes set prazo_inativo=? where idcli=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setDate(1, dSqt);
+                pst.setString(2, tbAuxilio.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
+
+                if (dSql.after(dSqt) == true) {
+                    String sqy = "update tbclientes set atividade='Inativo' where idcli=?";
+                    pst = conexao.prepareStatement(sqy);
+                    pst.setString(1, tbAuxilio.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+                } else {
+                    String sqy = "update tbclientes set atividade='Ativo' where idcli=?";
+                    pst = conexao.prepareStatement(sqy);
+                    pst.setString(1, tbAuxilio.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+                }
+
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+
+    }
+
+    public void CalcularTicket() {
+
+        try {
+
+            double preco, x;
+
+            preco = 0;
+            for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
+                x = Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 10).toString().replace(".", "")) / 100;
+                preco = x / Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 9).toString());
+
+                String sqr = "update tbclientes set ticket_medio=? where idcli=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setString(1, new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
+                pst.setString(2, tbAuxilio.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
+
+    public void Iniciar() {
+        instanciarTabelaAuxilioCliente();
+        ValidarCliente();
+        CalcularTicket();
+        instanciarTabelaClientesAtivos();
+        rbAtivo.setSelected(true);
     }
 
     /**
@@ -45,21 +228,215 @@ public class TelaClientes extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        scAuxilio = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
+        Grupo1 = new javax.swing.ButtonGroup();
+        scPrincipal = new javax.swing.JScrollPane();
+        pnSC = new javax.swing.JPanel();
+        pnPrincipal = new javax.swing.JPanel();
+        btnLogo = new javax.swing.JToggleButton();
+        pnClientes = new javax.swing.JPanel();
+        scClientes = new javax.swing.JScrollPane();
+        tbClientesAtivos = new javax.swing.JTable();
+        rbAtivo = new javax.swing.JRadioButton();
+        rbInativo = new javax.swing.JRadioButton();
+        lblPesquisar = new javax.swing.JLabel();
+        txtPesquisar = new javax.swing.JTextField();
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio.setViewportView(tbAuxilio);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Tela Clientes");
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
+
+        scPrincipal.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scPrincipal.setToolTipText("");
+        scPrincipal.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        pnPrincipal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        btnLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
+        btnLogo.setBorderPainted(false);
+        btnLogo.setContentAreaFilled(false);
+
+        pnClientes.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Clientes Ativos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        tbClientesAtivos = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
+        tbClientesAtivos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        scClientes.setViewportView(tbClientesAtivos);
+
+        Grupo1.add(rbAtivo);
+        rbAtivo.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbAtivo.setText("Ativos");
+        rbAtivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbAtivoActionPerformed(evt);
+            }
+        });
+
+        Grupo1.add(rbInativo);
+        rbInativo.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbInativo.setText("Inativos");
+        rbInativo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbInativoActionPerformed(evt);
+            }
+        });
+
+        lblPesquisar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblPesquisar.setText("Pesquisar:");
+
+        txtPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPesquisarKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesquisarKeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnClientesLayout = new javax.swing.GroupLayout(pnClientes);
+        pnClientes.setLayout(pnClientesLayout);
+        pnClientesLayout.setHorizontalGroup(
+            pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+            .addGroup(pnClientesLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnClientesLayout.createSequentialGroup()
+                        .addComponent(rbAtivo)
+                        .addGap(34, 34, 34)
+                        .addComponent(rbInativo)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(pnClientesLayout.createSequentialGroup()
+                        .addComponent(lblPesquisar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtPesquisar)))
+                .addContainerGap())
+        );
+        pnClientesLayout.setVerticalGroup(
+            pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnClientesLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblPesquisar)
+                    .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16)
+                .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbAtivo)
+                    .addComponent(rbInativo))
+                .addGap(16, 16, 16)
+                .addComponent(scClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
+        );
+
+        javax.swing.GroupLayout pnPrincipalLayout = new javax.swing.GroupLayout(pnPrincipal);
+        pnPrincipal.setLayout(pnPrincipalLayout);
+        pnPrincipalLayout.setHorizontalGroup(
+            pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(pnPrincipalLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+        );
+        pnPrincipalLayout.setVerticalGroup(
+            pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnPrincipalLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(btnLogo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
+        );
+
+        javax.swing.GroupLayout pnSCLayout = new javax.swing.GroupLayout(pnSC);
+        pnSC.setLayout(pnSCLayout);
+        pnSCLayout.setHorizontalGroup(
+            pnSCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnSCLayout.createSequentialGroup()
+                .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        pnSCLayout.setVerticalGroup(
+            pnSCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnSCLayout.createSequentialGroup()
+                .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        scPrincipal.setViewportView(pnSC);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addComponent(scPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(scPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // TODO add your handling code here:
+        Iniciar();
+    }//GEN-LAST:event_formWindowActivated
+
+    private void rbAtivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbAtivoActionPerformed
+        // TODO add your handling code here:
+        ClientesAtivos();
+    }//GEN-LAST:event_rbAtivoActionPerformed
+
+    private void rbInativoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbInativoActionPerformed
+        // TODO add your handling code here:
+        ClientesInativos();
+    }//GEN-LAST:event_rbInativoActionPerformed
+
+    private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
+        // TODO add your handling code here:
+        Pesquisar();
+    }//GEN-LAST:event_txtPesquisarKeyReleased
+
+    private void txtPesquisarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPesquisarKeyPressed
 
     /**
      * @param args the command line arguments
@@ -97,5 +474,19 @@ public class TelaClientes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup Grupo1;
+    private javax.swing.JToggleButton btnLogo;
+    private javax.swing.JLabel lblPesquisar;
+    private javax.swing.JPanel pnClientes;
+    private javax.swing.JPanel pnPrincipal;
+    private javax.swing.JPanel pnSC;
+    private javax.swing.JRadioButton rbAtivo;
+    private javax.swing.JRadioButton rbInativo;
+    private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scClientes;
+    private javax.swing.JScrollPane scPrincipal;
+    private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbClientesAtivos;
+    private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 }

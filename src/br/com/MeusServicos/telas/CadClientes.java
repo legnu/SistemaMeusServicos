@@ -70,26 +70,25 @@ public class CadClientes extends javax.swing.JFrame {
     }
 
     private void adicionar() {
-        String sql = "insert into tbclientes(nomecli,sexocli,cepcli,endcli,bairrocli,cidadecli,telefonecli,emailcli)values(?,?,?,?,?,?,?,?)";
+        String sql = "insert into tbclientes(nomecli,sexocli,cepcli,endcli,bairrocli,cidadecli,telefonecli,emailcli,quantidade_comprada,valor_gasto,ticket_medio,crediario)values(?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtCliNome.getText());
-            pst.setString(2, cbSexo.getSelectedItem().toString());
-            if (txtCliCep.getText().isEmpty()) {
-                pst.setString(3, txtCliCep.getText());
-            } else {
-                pst.setLong(3, Long.parseLong(txtCliCep.getText()));
-            }
+            pst.setString(2, cbSexo.getSelectedItem().toString());           
+            pst.setString(3, txtCliCep.getText());            
             pst.setString(4, txtCliEndereco.getText());
             pst.setString(5, txtCliBairro.getText());
             pst.setString(6, txtCliCidade.getText());
-            pst.setLong(7, Long.parseLong(txtCliFone.getText()));
+            pst.setString(7, txtCliFone.getText());
             pst.setString(8, txtCliEmail.getText());
+            pst.setInt(9, 0);
+            pst.setInt(10, 0);
+            pst.setInt(11, 0);
+            pst.setString(12, "Habilitado");
             //Validação dos Campos Obrigatorios
-            if ((txtCliNome.getText().isEmpty())) {
+             if ((txtCliNome.getText().isEmpty() == true || txtCliFone.getText().isEmpty() ==  true)) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-                limpar();
-            } else {
+            }else {
 
                 //A linha abaixo atualiza os dados do novo usuario
                 int adicionado = pst.executeUpdate();
@@ -100,18 +99,7 @@ public class CadClientes extends javax.swing.JFrame {
                     limpar();
                 }
             }
-        } catch (java.lang.NumberFormatException e) {
-            if ((txtCliFone.getText().isEmpty())) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-                limpar();
-            } else {
-                JOptionPane.showMessageDialog(null, "Campo Telefone e CEP Suporta somente Numeros.");
-                limpar();
-            }
-        } catch (com.mysql.cj.jdbc.exceptions.MysqlDataTruncation e) {
-            JOptionPane.showMessageDialog(null, "Telefone suporta somente 15 numeros e CEP suporta somente 8 numeros.");
-            limpar();
-        } catch (Exception e) {
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
         }
@@ -152,24 +140,18 @@ public class CadClientes extends javax.swing.JFrame {
     private void alterar() {
         String sql = "update tbclientes set nomecli=?,sexocli=?,cepcli=?,endcli=?,bairrocli=?,cidadecli=?,telefonecli=?,emailcli=? where idcli=?";
         try {
-            pst = conexao.prepareStatement(sql);
+             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtCliNome.getText());
-            pst.setString(2, cbSexo.getSelectedItem().toString());
-
-            if (txtCliCep.getText().isEmpty()) {
-                pst.setString(3, txtCliCep.getText());
-            } else {
-                pst.setLong(3, Long.parseLong(txtCliCep.getText()));
-            }
+            pst.setString(2, cbSexo.getSelectedItem().toString());           
+            pst.setString(3, txtCliCep.getText());            
             pst.setString(4, txtCliEndereco.getText());
             pst.setString(5, txtCliBairro.getText());
             pst.setString(6, txtCliCidade.getText());
-             pst.setLong(7, Long.parseLong(txtCliFone.getText()));
-            new DecimalFormat("(##) ## #####-####").format(Long.parseLong(txtCliFone.getText().replace("(", "").replace(")", "").replace(" ", "").replace("-", "")));
+            pst.setString(7, txtCliFone.getText());
             pst.setString(8, txtCliEmail.getText());
             pst.setString(9, txtId.getText());
-
-            if ((txtCliNome.getText().isEmpty())) {
+          
+            if ((txtCliNome.getText().isEmpty() == true || txtCliFone.getText().isEmpty() ==  true)) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
             } else {
 
@@ -184,17 +166,7 @@ public class CadClientes extends javax.swing.JFrame {
 
                 }
             }
-        } catch (java.lang.NumberFormatException e) {
-            if ((txtCliFone.getText().isEmpty())) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-                limpar();
-            } else {
-                JOptionPane.showMessageDialog(null, "Campo Telefone e CEP Suporta somente Numeros.");
-                limpar();
-            }
-        } catch (com.mysql.cj.jdbc.exceptions.MysqlDataTruncation e) {
-            JOptionPane.showMessageDialog(null, "Telefone suporta somente 15 numeros e CEP suporta somente 8 numeros.");
-            limpar();
+        
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
@@ -295,7 +267,6 @@ public class CadClientes extends javax.swing.JFrame {
         lblTelefone = new javax.swing.JLabel();
         lblEmail = new javax.swing.JLabel();
         lblPesquisar = new javax.swing.JLabel();
-        txtCliCep = new javax.swing.JTextField();
         txtCliEndereco = new javax.swing.JTextField();
         txtCliBairro = new javax.swing.JTextField();
         txtCliCidade = new javax.swing.JTextField();
@@ -311,6 +282,7 @@ public class CadClientes extends javax.swing.JFrame {
         scClientes = new javax.swing.JScrollPane();
         tbClientes = new javax.swing.JTable();
         txtCliFone = new javax.swing.JFormattedTextField();
+        txtCliCep = new javax.swing.JFormattedTextField();
 
         txtId.setText("jTextField1");
 
@@ -452,6 +424,18 @@ public class CadClientes extends javax.swing.JFrame {
                 .addComponent(scClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        try {
+            txtCliFone.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##) #####-####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            txtCliCep.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("#####-###")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -526,11 +510,12 @@ public class CadClientes extends javax.swing.JFrame {
                         .addComponent(pnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblPesquisar))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNome)
-                    .addComponent(txtCliNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbSexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblSexo))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblNome)
+                        .addComponent(txtCliNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblSexo)))
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEmail)
@@ -651,7 +636,7 @@ public class CadClientes extends javax.swing.JFrame {
     private javax.swing.JScrollPane scClientes;
     private javax.swing.JTable tbClientes;
     private javax.swing.JTextField txtCliBairro;
-    private javax.swing.JTextField txtCliCep;
+    private javax.swing.JFormattedTextField txtCliCep;
     private javax.swing.JTextField txtCliCidade;
     private javax.swing.JTextField txtCliEmail;
     private javax.swing.JTextField txtCliEndereco;
