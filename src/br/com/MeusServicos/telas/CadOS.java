@@ -125,7 +125,7 @@ public class CadOS extends javax.swing.JFrame {
     }
 
     public void pesquisar() {
-        if (tipo == "Cliente") {
+        if (tipo.equals("Cliente") == true) {
 
             pesquisar_cliente();
 
@@ -136,7 +136,7 @@ public class CadOS extends javax.swing.JFrame {
     }
 
     private void setar_campos() {
-        if (tipo == "Cliente") {
+        if (tipo.equals("Cliente") == true) {
 
             int setar = tbPrincipal.getSelectedRow();
             txtCliente.setText(tbPrincipal.getModel().getValueAt(setar, 1).toString());
@@ -151,7 +151,7 @@ public class CadOS extends javax.swing.JFrame {
             btnAdicionar.setEnabled(true);
             btnResetar.setEnabled(true);
             btnRemover.setEnabled(false);
-            btnImprimir.setEnabled(false);
+         
             btnEditar.setEnabled(false);
 
         } else {
@@ -182,7 +182,7 @@ public class CadOS extends javax.swing.JFrame {
                 btnAdicionar.setEnabled(false);
                 btnResetar.setEnabled(true);
                 btnRemover.setEnabled(true);
-                btnImprimir.setEnabled(true);
+            
                 btnEditar.setEnabled(true);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
@@ -193,31 +193,33 @@ public class CadOS extends javax.swing.JFrame {
     }
 
     private void emitir_os() {
-        String sql = "insert into tbos(tipo,situacao,previsao_entreg_os,equipamento,defeito,servico,tecnico,valor,cliente) values(?,?,?,?,?,?,?,?,?)";
+
         try {
-            Date d = dtPrevisao.getDate();
-            java.sql.Date dSql = new java.sql.Date(d.getTime());
-            df.format(dSql);
-
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, cbTipo.getSelectedItem().toString());
-            pst.setString(2, cboOsSit.getSelectedItem().toString());
-            pst.setDate(3, dSql);
-            pst.setString(4, txtOsEquip.getText());
-            pst.setString(5, txtOsDef.getText());
-            pst.setString(6, txtOsServ.getText());
-            pst.setString(7, txtOsTec.getText());
-            pst.setString(8, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtOsValor.getText())).replace(",", "."));
-            pst.setString(9, txtCliente.getText());
-
-            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) || (dtPrevisao.getDate() == null) || (txtOsTec.getText().isEmpty())) {
+            int confirma = 0;
+            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) || (txtOsTec.getText().isEmpty()) || dtPrevisao.getDate() == null) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
                 limpar();
-
-            } else if ((Double.parseDouble(txtOsValor.getText()) <= 0)) {
+                confirma = 1;
+            } else if ((Double.parseDouble(txtOsValor.getText().replace(",", ".")) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
                 limpar();
-            } else {
+            } else if (confirma == 0) {
+                Date d = dtPrevisao.getDate();
+                java.sql.Date dSql = new java.sql.Date(d.getTime());
+                df.format(dSql);
+
+                String sql = "insert into tbos(tipo,situacao,previsao_entreg_os,equipamento,defeito,servico,tecnico,valor,cliente) values(?,?,?,?,?,?,?,?,?)";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, cbTipo.getSelectedItem().toString());
+                pst.setString(2, cboOsSit.getSelectedItem().toString());
+                pst.setDate(3, dSql);
+                pst.setString(4, txtOsEquip.getText());
+                pst.setString(5, txtOsDef.getText());
+                pst.setString(6, txtOsServ.getText());
+                pst.setString(7, txtOsTec.getText());
+                pst.setString(8, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtOsValor.getText().replace(",", "."))).replace(",", "."));
+                pst.setString(9, txtCliente.getText());
+
                 int adicionado = pst.executeUpdate();
                 if (adicionado > 0) {
                     JOptionPane.showMessageDialog(null, "OS emitida com sucesso.");
@@ -238,37 +240,38 @@ public class CadOS extends javax.swing.JFrame {
     }
 
     private void alterar_os() {
-        String sql = "update tbos set tipo=?,situacao=?,previsao_entreg_os=?,equipamento=?,defeito=?,servico=?,tecnico=?,valor=? where os=?";
+     
 
         try {
-
-            Date d = dtPrevisao.getDate();
-            java.sql.Date dSql = new java.sql.Date(d.getTime());
-            df.format(dSql);
-
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, cbTipo.getSelectedItem().toString());
-            pst.setString(2, cboOsSit.getSelectedItem().toString());
-            pst.setDate(3, dSql);
-            pst.setString(4, txtOsEquip.getText());
-            pst.setString(5, txtOsDef.getText());
-            pst.setString(6, txtOsServ.getText());
-            pst.setString(7, txtOsTec.getText());
-            pst.setString(8, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtOsValor.getText())).replace(",", "."));
-            pst.setString(9, txtOs.getText());
-
-            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) || (dtPrevisao.getDate() == null) || (txtOsTec.getText().isEmpty())) {
+            int confirma = 0;
+            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) || (txtOsTec.getText().isEmpty()) || dtPrevisao.getDate() == null) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
                 limpar();
-
-            } else if ((Double.parseDouble(txtOsValor.getText()) <= 0)) {
+                confirma = 1;
+            } else if ((Double.parseDouble(txtOsValor.getText().replace(",", ".")) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
                 limpar();
-            } else {
+            } else if (confirma == 0) {
+                Date d = dtPrevisao.getDate();
+                java.sql.Date dSql = new java.sql.Date(d.getTime());
+                df.format(dSql);
+
+                String sql = "update tbos set tipo=?,situacao=?,previsao_entreg_os=?,equipamento=?,defeito=?,servico=?,tecnico=?,valor=? where os=?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, cbTipo.getSelectedItem().toString());
+                pst.setString(2, cboOsSit.getSelectedItem().toString());
+                pst.setDate(3, dSql);
+                pst.setString(4, txtOsEquip.getText());
+                pst.setString(5, txtOsDef.getText());
+                pst.setString(6, txtOsServ.getText());
+                pst.setString(7, txtOsTec.getText());
+                pst.setString(8, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtOsValor.getText().replace(",", "."))).replace(",", "."));
+                pst.setString(9, txtOs.getText());
+          
+
                 int adicionado = pst.executeUpdate();
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "OS alterada com sucesso.");
-
+                    JOptionPane.showMessageDialog(null, "OS emitida com sucesso.");
                     limpar();
 
                 }
@@ -377,7 +380,7 @@ public class CadOS extends javax.swing.JFrame {
         btnAdicionar.setEnabled(false);
         btnResetar.setEnabled(false);
         btnRemover.setEnabled(false);
-        btnImprimir.setEnabled(false);
+       
         btnEditar.setEnabled(false);
 
         ((DefaultTableModel) tbPrincipal.getModel()).setRowCount(0);
@@ -422,10 +425,10 @@ public class CadOS extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnResetar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
-        btnImprimir = new javax.swing.JButton();
         pnTbPrincipal = new javax.swing.JPanel();
         scTbPrincipal = new javax.swing.JScrollPane();
         tbPrincipal = new javax.swing.JTable();
+        btnCliente = new javax.swing.JToggleButton();
 
         txtCliId.setEditable(false);
 
@@ -576,18 +579,6 @@ public class CadOS extends javax.swing.JFrame {
             }
         });
 
-        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/ImpresoraIcon.png"))); // NOI18N
-        btnImprimir.setToolTipText("Imprimir OS");
-        btnImprimir.setContentAreaFilled(false);
-        btnImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnImprimir.setEnabled(false);
-        btnImprimir.setPreferredSize(new java.awt.Dimension(80, 80));
-        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnImprimirActionPerformed(evt);
-            }
-        });
-
         pnTbPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         tbPrincipal = new javax.swing.JTable(){
@@ -625,6 +616,17 @@ public class CadOS extends javax.swing.JFrame {
             .addComponent(scTbPrincipal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
         );
 
+        btnCliente.setBackground(new java.awt.Color(0, 0, 0));
+        btnCliente.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        btnCliente.setForeground(new java.awt.Color(255, 255, 255));
+        btnCliente.setText("Cadastrar Cliente");
+        btnCliente.setBorderPainted(false);
+        btnCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClienteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -645,22 +647,6 @@ public class CadOS extends javax.swing.JFrame {
                     .addComponent(pnTbPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(lblCliente)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblSituacao)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cboOsSit, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblTipo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblPrevisaoEntrega)
-                                .addGap(12, 12, 12)
-                                .addComponent(dtPrevisao, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblServico)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -674,24 +660,42 @@ public class CadOS extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(txtOsValor))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(lblEquipamento)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblEquipamento)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(txtOsEquip, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(27, 27, 27)
+                                        .addComponent(lblDefeito)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtOsDef))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(lblCliente)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(txtCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblSituacao)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cboOsSit, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblTipo)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblPrevisaoEntrega)))
                                 .addGap(12, 12, 12)
-                                .addComponent(txtOsEquip)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblDefeito)
-                                .addGap(12, 12, 12)
-                                .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(dtPrevisao, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+                                    .addComponent(btnCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(4, 4, 4)))
                 .addGap(16, 16, 16))
             .addGroup(layout.createSequentialGroup()
-                .addGap(176, 176, 176)
+                .addGap(247, 247, 247)
                 .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48)
                 .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48)
                 .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48)
-                .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48)
                 .addComponent(btnResetar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -724,13 +728,14 @@ public class CadOS extends javax.swing.JFrame {
                                     .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(lblPrevisaoEntrega)))
                             .addComponent(dtPrevisao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(16, 16, 16)
+                        .addGap(15, 15, 15)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblEquipamento)
                             .addComponent(txtOsEquip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblDefeito)
-                            .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(16, 16, 16)
+                            .addComponent(txtOsDef, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnCliente))
+                        .addGap(14, 14, 14)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblServico)
                             .addComponent(txtOsServ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -740,11 +745,9 @@ public class CadOS extends javax.swing.JFrame {
                             .addComponent(txtOsValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btnEditar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnRemover, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnEditar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnRemover, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(btnResetar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -773,11 +776,6 @@ public class CadOS extends javax.swing.JFrame {
         // TODO add your handling code here:
         excluir_os();
     }//GEN-LAST:event_btnRemoverActionPerformed
-
-    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
-        // TODO add your handling code here:
-        imprimir_os();
-    }//GEN-LAST:event_btnImprimirActionPerformed
 
     private void txtCliPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCliPesquisarKeyReleased
         // TODO add your handling code here:
@@ -810,6 +808,12 @@ public class CadOS extends javax.swing.JFrame {
         // TODO add your handling code here:
         InstanciarTabelaCliente();
     }//GEN-LAST:event_rbClientesActionPerformed
+
+    private void btnClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClienteActionPerformed
+        // TODO add your handling code here:
+        CadClientes cliente = new CadClientes();
+        cliente.setVisible(true);
+    }//GEN-LAST:event_btnClienteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -848,8 +852,8 @@ public class CadOS extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdicionar;
+    private javax.swing.JToggleButton btnCliente;
     private javax.swing.JButton btnEditar;
-    private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnRemover;
     private javax.swing.JButton btnResetar;
     private javax.swing.JComboBox<String> cbTipo;

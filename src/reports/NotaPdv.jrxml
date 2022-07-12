@@ -4,8 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
-		<![CDATA[select * from tbvenda
-]]>
+		<![CDATA[select * from tbvenda]]>
 	</queryString>
 	<field name="cliente_venda" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -75,7 +74,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="37" splitType="Stretch">
+		<band height="28" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="100" height="20" uuid="f29a0db7-0a02-46f2-bd13-99a82f385f31"/>
 				<textElement>
@@ -98,13 +97,16 @@
 				<textFieldExpression><![CDATA[$F{preco}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="153" y="-33" width="1" height="70" uuid="f8b3d28c-5a59-408c-9a02-3ad4b7ed1e01"/>
+				<reportElement x="153" y="-33" width="1" height="61" uuid="f8b3d28c-5a59-408c-9a02-3ad4b7ed1e01"/>
 			</line>
 			<line>
-				<reportElement x="379" y="-33" width="1" height="70" uuid="4e6ceac9-80a4-4d8a-a403-6f422e78d396"/>
+				<reportElement x="379" y="-33" width="1" height="61" uuid="4e6ceac9-80a4-4d8a-a403-6f422e78d396"/>
 			</line>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="4456cb1c-1054-4641-9240-032327fa69c1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="27" width="555" height="1" uuid="22ee6e4a-db88-4fa2-8cf6-ed074906e82b"/>
 			</line>
 		</band>
 	</detail>

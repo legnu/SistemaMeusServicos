@@ -54,7 +54,7 @@ public class telaCaixa extends javax.swing.JFrame {
 
     public void instanciarTabela() {
         try {
-            String sql = "select * from tbgastos";
+            String sql = "select idgastos, data_pagamento from tbgastos";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
@@ -65,66 +65,103 @@ public class telaCaixa extends javax.swing.JFrame {
         } catch (java.lang.NullPointerException e) {
 
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
+    public void instanciarTabelaCliente() {
+        try {
+            String sql = "select id from tbtotalvendas where tipo='Venda'";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; i < tbAuxilio1.getRowCount(); i++) {
+               
+
+                String sqo = "select idcliente from tbtotalvendas where id=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());               
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String id = tbAuxilio.getModel().getValueAt(0, 0).toString();
+               
+                
+                String sqy = "select nomecli from tbclientes where idcli=?";
+                pst = conexao.prepareStatement(sqy);
+                pst.setString(1, id);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String nome = tbAuxilio.getModel().getValueAt(0, 0).toString();
+                System.out.println(nome + " " + id);
+                
+                String sqr = "update tbtotalvendas set cliente=? where id=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setString(1, nome);
+                pst.setString(2, tbAuxilio1.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
+                
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
     public void setarPorData() {
 
-        try {                  
-                           
-                java.util.Date aInicial = DaInicial.getDate();
-                java.sql.Date bInicial = new java.sql.Date(aInicial.getTime());
-                System.out.println(tbCaixaRecebido.getRowCount());
+        try {
 
-                java.util.Date aFinal = DaFinal.getDate();
-                java.sql.Date bFinal = new java.sql.Date(aFinal.getTime());
-                
-                String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and  dia between '" + bInicial + "' and '" + bFinal + "'";
+            java.util.Date aInicial = DaInicial.getDate();
+            java.sql.Date bInicial = new java.sql.Date(aInicial.getTime());
+            System.out.println(tbCaixaRecebido.getRowCount());
 
-                pst = conexao.prepareStatement(sql);
-                rs = pst.executeQuery();
-                tbCaixaRecebido.setModel(DbUtils.resultSetToTableModel(rs));
+            java.util.Date aFinal = DaFinal.getDate();
+            java.sql.Date bFinal = new java.sql.Date(aFinal.getTime());
 
-                double entrada, saida, x, y;
+            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and  dia between '" + bInicial + "' and '" + bFinal + "'";
 
-                entrada = 0;
-                saida = 0;
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbCaixaRecebido.setModel(DbUtils.resultSetToTableModel(rs));
 
-                String sqo = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago' and data_pagamento between '" + bInicial + "' and '" + bFinal + "';";
+            double entrada, saida, x, y;
 
-                pst = conexao.prepareStatement(sqo);
-                rs = pst.executeQuery();
-                tbCaixaPago.setModel(DbUtils.resultSetToTableModel(rs));
-                
+            entrada = 0;
+            saida = 0;
 
-                for (int i = 0; i < tbCaixaRecebido.getRowCount(); i++) {
-                    x = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaRecebido.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100).replace(",", "."));
+            String sqo = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago' and data_pagamento between '" + bInicial + "' and '" + bFinal + "';";
 
-                    entrada = entrada + x;
-                    lblTotalRecebido.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(entrada))).replace(",", "."));
+            pst = conexao.prepareStatement(sqo);
+            rs = pst.executeQuery();
+            tbCaixaPago.setModel(DbUtils.resultSetToTableModel(rs));
 
-                }
+            for (int i = 0; i < tbCaixaRecebido.getRowCount(); i++) {
+                x = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaRecebido.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100).replace(",", "."));
 
-                for (int i = 0; i < tbCaixaPago.getRowCount(); i++) {
-                    y = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaPago.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100).replace(",", "."));
-                    saida = saida + y;
-                    lblTotalPago.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(saida))).replace(",", "."));
+                entrada = entrada + x;
+                lblTotalRecebido.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(entrada))).replace(",", "."));
 
-                }
-                 
-                if(tbCaixaRecebido.getRowCount() == 0){
-                    lblTotalRecebido.setText("0.00");
-                }
-                
-                if(tbCaixaPago.getRowCount() == 0){
-                    lblTotalPago.setText("0.00");
-                    
-                }
+            }
 
-                double caixa = Double.parseDouble(lblTotalRecebido.getText().replace(".", "")) / 100 - Double.parseDouble(lblTotalPago.getText().replace(".", "")) / 100;
-                lblTotalCaixa.setText(new DecimalFormat("#,##0.00").format(caixa).replace(",", "."));
-            
+            for (int i = 0; i < tbCaixaPago.getRowCount(); i++) {
+                y = Double.parseDouble(String.valueOf(Double.parseDouble(tbCaixaPago.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100).replace(",", "."));
+                saida = saida + y;
+                lblTotalPago.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(saida))).replace(",", "."));
+
+            }
+
+            if (tbCaixaRecebido.getRowCount() == 0) {
+                lblTotalRecebido.setText("0.00");
+            }
+
+            if (tbCaixaPago.getRowCount() == 0) {
+                lblTotalPago.setText("0.00");
+
+            }
+
+            double caixa = Double.parseDouble(lblTotalRecebido.getText().replace(".", "")) / 100 - Double.parseDouble(lblTotalPago.getText().replace(".", "")) / 100;
+            lblTotalCaixa.setText(new DecimalFormat("#,##0.00").format(caixa).replace(",", "."));
 
         } catch (java.lang.NullPointerException e) {
 
@@ -147,7 +184,7 @@ public class telaCaixa extends javax.swing.JFrame {
             String x;
 
             for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
-                x = tbAuxilio.getModel().getValueAt(i, 3).toString();
+                x = tbAuxilio.getModel().getValueAt(i, 1).toString();
                 Date data = df.parse(x);
                 System.out.println();
 
@@ -180,7 +217,7 @@ public class telaCaixa extends javax.swing.JFrame {
 
         try {
 
-            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago'";
+            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago'";
             pst = conexao.prepareStatement(sql);
 
             rs = pst.executeQuery();
@@ -213,7 +250,7 @@ public class telaCaixa extends javax.swing.JFrame {
 
             String sql = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago'";
             pst = conexao.prepareStatement(sql);
-            
+
             rs = pst.executeQuery();
             tbCaixaPago.setModel(DbUtils.resultSetToTableModel(rs));
 
@@ -252,6 +289,8 @@ public class telaCaixa extends javax.swing.JFrame {
         tbAuxilioPago = new javax.swing.JTable();
         scAuxilioRecebido = new javax.swing.JScrollPane();
         tbAuxilioRecebido = new javax.swing.JTable();
+        scAuxilio1 = new javax.swing.JScrollPane();
+        tbAuxilio1 = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -312,6 +351,19 @@ public class telaCaixa extends javax.swing.JFrame {
             }
         ));
         scAuxilioRecebido.setViewportView(tbAuxilioRecebido);
+
+        tbAuxilio1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio1.setViewportView(tbAuxilio1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Caixa");
@@ -574,7 +626,7 @@ public class telaCaixa extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 611, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
         );
 
@@ -583,9 +635,11 @@ public class telaCaixa extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         // TODO add your handling code here:
+        instanciarTabelaCliente();
         instanciarTabelaGasto();
         instanciarTabelaVendas();
         instanciarTabela();
+       
 
     }//GEN-LAST:event_formWindowActivated
 
@@ -667,11 +721,13 @@ public class telaCaixa extends javax.swing.JFrame {
     private javax.swing.JPanel pnRecebido;
     private javax.swing.JPanel pnRelatorio;
     private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scAuxilio1;
     private javax.swing.JScrollPane scAuxilioPago;
     private javax.swing.JScrollPane scAuxilioRecebido;
     private javax.swing.JScrollPane scCaixaPago;
     private javax.swing.JScrollPane scCaixaRecebido;
     private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbAuxilio1;
     private javax.swing.JTable tbAuxilioPago;
     private javax.swing.JTable tbAuxilioRecebido;
     private javax.swing.JTable tbCaixaPago;

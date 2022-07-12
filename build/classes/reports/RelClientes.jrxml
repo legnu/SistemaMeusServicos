@@ -67,14 +67,14 @@
 	<detail>
 		<band height="34" splitType="Stretch">
 			<textField>
-				<reportElement x="1" y="14" width="171" height="20" uuid="a8ad9cfe-3357-4b22-85c2-a311a202cad6"/>
+				<reportElement x="1" y="13" width="171" height="20" uuid="a8ad9cfe-3357-4b22-85c2-a311a202cad6"/>
 				<textElement>
 					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Nome}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="187" y="14" width="128" height="20" uuid="4fbd5a6c-fdb5-488f-9f36-171635938581"/>
+				<reportElement x="187" y="13" width="128" height="20" uuid="4fbd5a6c-fdb5-488f-9f36-171635938581"/>
 				<textElement>
 					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
@@ -95,6 +95,9 @@
 			</line>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="e9d388e0-2721-4fe8-a62b-4e3113ddf5ba"/>
+			</line>
+			<line>
+				<reportElement x="0" y="33" width="554" height="1" uuid="c2f58c40-c6c8-4ec1-a303-dcd473ea92cf"/>
 			</line>
 		</band>
 	</detail>

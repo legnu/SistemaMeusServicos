@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RelGastosDoDia" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cb40181c-9cbe-4ee7-ad5f-705fefb47d88">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos
+where status_pagamento='Pago' and data_pagamento = current_date();]]>
+	</queryString>
+	<field name="ID" class="java.lang.Integer"/>
+	<field name="Identificador" class="java.lang.String"/>
+	<field name="Dia_Pagamento" class="java.sql.Date"/>
+	<field name="Valor" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="138" height="30" uuid="3217620e-5ff2-46f0-8f44-72eb7f64031f"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gastos do Dia]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="436" y="0" width="119" height="30" uuid="a958951e-8bfb-4f9e-a766-7118b94ca98a"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="38" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="114" height="20" uuid="01e85d0e-9205-4906-b4bc-a5a2d07ab203"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Identificador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="224" y="0" width="114" height="20" uuid="a84b6b2d-0231-40be-a669-b959022947bb"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dia_Pagamento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="0" width="100" height="20" uuid="56778c47-e73b-4835-82f5-584d446a4fe4"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="37" width="555" height="1" uuid="39eda323-55d8-4aae-bcc8-fe709df01ca2"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="34" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="114" height="20" uuid="4bf5c8b5-5fed-4672-adac-5dd3f8bd42c4"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Identificador}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="224" y="0" width="114" height="20" uuid="5a20c0e0-cd5b-454b-b04f-dfa3f55ec3b5"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Dia_Pagamento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="0" width="100" height="20" uuid="cae9eaff-5c79-45b6-994b-044d65414a0c"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Valor}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="168" y="-38" width="1" height="71" uuid="76358dbf-b09f-48a7-9eaf-5219ccf70031"/>
+			</line>
+			<line>
+				<reportElement x="401" y="-38" width="1" height="71" uuid="fd0726d7-4e59-475d-bb5d-cc075ff70519"/>
+			</line>
+			<line>
+				<reportElement x="0" y="32" width="555" height="1" uuid="6384b874-c18b-4a17-9c9e-277a0837fa67"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

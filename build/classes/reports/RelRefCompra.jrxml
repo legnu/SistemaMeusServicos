@@ -4,7 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
-		<![CDATA[Select * from tbProdutos
+		<![CDATA[Select * from tbProdutos where estoque='Com controle de estoque.'
 ]]>
 	</queryString>
 	<field name="idproduto" class="java.lang.Integer">
@@ -100,7 +100,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="38" splitType="Stretch">
+		<band height="32" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="100" height="20" uuid="3861efe9-c812-4e3c-bc7f-b26a38ef05ce"/>
 				<textElement>
@@ -130,16 +130,19 @@
 				<textFieldExpression><![CDATA[$F{referencial_compra}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="114" y="-35" width="1" height="73" uuid="1e654df4-7372-4c6a-8dc0-d7a5b4d4505e"/>
+				<reportElement x="114" y="-35" width="1" height="67" uuid="1e654df4-7372-4c6a-8dc0-d7a5b4d4505e"/>
 			</line>
 			<line>
-				<reportElement x="379" y="-33" width="1" height="71" uuid="74258069-c06a-44bd-97ff-0965af8eca91"/>
+				<reportElement x="379" y="-33" width="1" height="64" uuid="74258069-c06a-44bd-97ff-0965af8eca91"/>
 			</line>
 			<line>
-				<reportElement x="270" y="-35" width="1" height="70" uuid="2c26beb3-e905-4643-a271-6cfe5a9b1e2b"/>
+				<reportElement x="270" y="-35" width="1" height="66" uuid="2c26beb3-e905-4643-a271-6cfe5a9b1e2b"/>
 			</line>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="2b82d78a-bda5-4d5b-bae8-76ae4ad72bc6"/>
+			</line>
+			<line>
+				<reportElement x="2" y="31" width="553" height="1" uuid="861aeefc-b194-409f-b557-06cba5291c64"/>
 			</line>
 		</band>
 	</detail>

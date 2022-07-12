@@ -33,6 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -43,6 +46,7 @@ public class TelaInventario extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    String tipo = "0";
 
     public TelaInventario() {
         initComponents();
@@ -51,7 +55,8 @@ public class TelaInventario extends javax.swing.JFrame {
 
     public void instanciarTabelaCompra() {
         try {
-            String sql = "select idproduto as ID, produto as Produto, valor_compra as Valor_de_Compra, quantidade as Quantidade, referencial_compra as Valor_Total from tbprodutos";
+            tipo = "Compra";
+            String sql = "select idproduto as ID, produto as Produto, valor_compra as Valor_de_Compra, quantidade as Quantidade, referencial_compra as Valor_Total from tbprodutos where estoque='Com controle de estoque.'";
 
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -59,7 +64,7 @@ public class TelaInventario extends javax.swing.JFrame {
 
             double preco, x;
 
-            String sqr = "select referencial_compra from tbprodutos";
+            String sqr = "select referencial_compra from tbprodutos where estoque='Com controle de estoque.'";
 
             preco = 0;
 
@@ -80,15 +85,16 @@ public class TelaInventario extends javax.swing.JFrame {
     }
 
     public void instanciarTabelaVenda() {
-        String sql = "select idproduto as ID, produto as Produto, valor_venda as Valor_de_Venda, quantidade as Quantidade, referencial_venda as Valor_Total from tbprodutos";
+        String sql = "select idproduto as ID, produto as Produto, valor_venda as Valor_de_Venda, quantidade as Quantidade, referencial_venda as Valor_Total from tbprodutos where estoque='Com controle de estoque.'";
         try {
+            tipo = "Venda";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbProdutos.setModel(DbUtils.resultSetToTableModel(rs));
 
             double preco, x;
 
-            String sqr = "select referencial_venda from tbprodutos";
+            String sqr = "select referencial_venda from tbprodutos where estoque='Com controle de estoque.'";
 
             preco = 0;
 
@@ -111,14 +117,15 @@ public class TelaInventario extends javax.swing.JFrame {
     public void instanciarTabelaCompra_X_Venda() {
 
         try {
-            int confirma = JOptionPane.showConfirmDialog(null, "Voce deseja calcular Compra_X_Venda ?", "Atençao" ,JOptionPane.YES_OPTION);
-           
+            tipo = "CompraXVenda";
+            int confirma = JOptionPane.showConfirmDialog(null, "Voce deseja calcular Compra_X_Venda ?", "Atençao", JOptionPane.YES_OPTION);
+
             if (confirma == JOptionPane.YES_OPTION) {
                 tirar();
                 criar();
 
                 String squ = "select idproduto as ID, produto as Produto, quantidade as Quantidade,"
-                        + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos";
+                        + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos where estoque='Com controle de estoque.'";
 
                 pst = conexao.prepareStatement(squ);
                 rs = pst.executeQuery();
@@ -127,7 +134,7 @@ public class TelaInventario extends javax.swing.JFrame {
                 calculoLucro();
 
                 String sqo = "select idproduto as ID, produto as Produto, quantidade as Quantidade,"
-                        + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos";
+                        + " referencial_compra as Referencial_Compra, referencial_venda as Referencial_Venda, compra_x_venda as Lucratividade from tbprodutos where estoque='Com controle de estoque.'";
 
                 pst = conexao.prepareStatement(sqo);
                 rs = pst.executeQuery();
@@ -135,7 +142,7 @@ public class TelaInventario extends javax.swing.JFrame {
 
                 double preco, x;
 
-                String sqr = "select compra_x_venda from tbprodutos";
+                String sqr = "select compra_x_venda from tbprodutos where estoque='Com controle de estoque.'";
 
                 preco = 0;
 
@@ -149,15 +156,52 @@ public class TelaInventario extends javax.swing.JFrame {
                     lblNome.setText("Lucro Bruto(R$):");
 
                 }
-            }else{
+            } else {
                 rbReferrencialVenda.setSelected(true);
                 instanciarTabelaVenda();
             }
-            
-        }catch (java.lang.NullPointerException e) {
-          
+
+        } catch (java.lang.NullPointerException e) {
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void imprimir() {
+        if (tipo.equals("Compra") == true) {
+            int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão do relatorio Referencial de Compra?", "Atençao", JOptionPane.YES_OPTION);
+            if (confirma == JOptionPane.YES_OPTION) {
+                try {
+                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelRefCompra.jasper"), null, conexao);
+
+                    JasperViewer.viewReport(print, false);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+            }
+        } else if (tipo.equals("Venda") == true) {
+            int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão do relatorio Referencial de Venda?", "Atençao", JOptionPane.YES_OPTION);
+            if (confirma == JOptionPane.YES_OPTION) {
+                try {
+                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelRefVenda.jasper"), null, conexao);
+
+                    JasperViewer.viewReport(print, false);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+            }
+        } else if (tipo.equals("CompraXVenda") == true) {
+            int confirma = JOptionPane.showConfirmDialog(null, " impressão do relatorio Referencial de Compra_X_Venda", "Atençao", JOptionPane.YES_OPTION);
+            if (confirma == JOptionPane.YES_OPTION) {
+                try {
+                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelVendaXCompra.jasper"), null, conexao);
+
+                    JasperViewer.viewReport(print, false);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+            }
         }
     }
 
@@ -182,7 +226,7 @@ public class TelaInventario extends javax.swing.JFrame {
             }
 
         } catch (java.lang.NullPointerException e) {
-          
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
@@ -233,6 +277,7 @@ public class TelaInventario extends javax.swing.JFrame {
         rbVendaCompra = new javax.swing.JRadioButton();
         rbReferrencialVenda = new javax.swing.JRadioButton();
         rbReferencialCompra = new javax.swing.JRadioButton();
+        btnImprimir = new javax.swing.JToggleButton();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -316,6 +361,15 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/ImpresoraIcon.png"))); // NOI18N
+        btnImprimir.setBorderPainted(false);
+        btnImprimir.setContentAreaFilled(false);
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnPrincipalLayout = new javax.swing.GroupLayout(pnPrincipal);
         pnPrincipal.setLayout(pnPrincipalLayout);
         pnPrincipalLayout.setHorizontalGroup(
@@ -323,20 +377,25 @@ public class TelaInventario extends javax.swing.JFrame {
             .addGroup(pnPrincipalLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnPrincipalLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lblNome)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblValor))
-                    .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 813, Short.MAX_VALUE)
                     .addGroup(pnPrincipalLayout.createSequentialGroup()
-                        .addComponent(rbReferencialCompra)
-                        .addGap(1, 1, 1)
-                        .addComponent(rbReferrencialVenda)
-                        .addGap(18, 18, 18)
-                        .addComponent(rbVendaCompra)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(16, 16, 16))
+                        .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(pnPrincipalLayout.createSequentialGroup()
+                        .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(pnPrincipalLayout.createSequentialGroup()
+                                .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblNome)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblValor))
+                            .addGroup(pnPrincipalLayout.createSequentialGroup()
+                                .addComponent(rbReferencialCompra)
+                                .addGap(16, 16, 16)
+                                .addComponent(rbReferrencialVenda)
+                                .addGap(16, 16, 16)
+                                .addComponent(rbVendaCompra)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(16, 16, 16))))
         );
         pnPrincipalLayout.setVerticalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -346,13 +405,15 @@ public class TelaInventario extends javax.swing.JFrame {
                     .addComponent(rbVendaCompra)
                     .addComponent(rbReferrencialVenda)
                     .addComponent(rbReferencialCompra))
-                .addGap(13, 13, 13)
-                .addComponent(scProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNome)
-                    .addComponent(lblValor))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addComponent(scProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblNome)
+                        .addComponent(lblValor))
+                    .addComponent(btnImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -393,6 +454,11 @@ public class TelaInventario extends javax.swing.JFrame {
         instanciarTabelaCompra_X_Venda();
     }//GEN-LAST:event_rbVendaCompraActionPerformed
 
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        // TODO add your handling code here:
+        imprimir();
+    }//GEN-LAST:event_btnImprimirActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -430,6 +496,7 @@ public class TelaInventario extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btnImprimir;
     private javax.swing.ButtonGroup grupo1;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblValor;

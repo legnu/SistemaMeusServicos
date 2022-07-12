@@ -65,7 +65,7 @@ public class telaDesconto extends javax.swing.JFrame {
             pst = conexao.prepareStatement(sql);
             
             pst.setString(1, "Desconto");            
-            pst.setString(2, "-" + new DecimalFormat("#,##0.00").format(Float.parseFloat(txtDesconto.getText())).replace(",", "."));
+            pst.setString(2, "-" + new DecimalFormat("#,##0.00").format(Double.parseDouble(txtDesconto.getText().replace(",", "."))).replace(",", "."));
         
           
 
@@ -74,7 +74,7 @@ public class telaDesconto extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Adicione um desconto maior que 0.");
                 
            
-            }else if (Float.parseFloat(txtDesconto.getText().replace(",", ".")) > Valor_Total) {
+            }else if (Double.parseDouble(txtDesconto.getText().replace(",", ".")) > Valor_Total) {
                 JOptionPane.showMessageDialog(null, "Desconto maximo e de 10%.");
                 
            

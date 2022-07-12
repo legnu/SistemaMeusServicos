@@ -4,7 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
-		<![CDATA[select * from tbprodutos]]>
+		<![CDATA[select * from tbprodutos  where estoque='Com controle de estoque.']]>
 	</queryString>
 	<field name="idproduto" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -67,7 +67,7 @@
 		<band splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="42" splitType="Stretch">
+		<band height="33" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="90" height="20" uuid="df085571-83dd-4da9-bd6c-86b122730ee7"/>
 				<textElement>
@@ -106,7 +106,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="38" splitType="Stretch">
+		<band height="31" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="90" height="20" uuid="d4b69ac8-2e8c-46c7-b614-8f0ee85c8842"/>
 				<textElement>
@@ -143,19 +143,22 @@
 				<textFieldExpression><![CDATA[$F{referencial_venda}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="422" y="-42" width="1" height="80" uuid="c50935ec-bd7d-4ccd-8327-936ca980986c"/>
+				<reportElement x="422" y="-33" width="1" height="63" uuid="c50935ec-bd7d-4ccd-8327-936ca980986c"/>
 			</line>
 			<line>
-				<reportElement x="206" y="-42" width="1" height="80" uuid="78c5e911-87ea-4ac4-bdc8-d2bc04973af4"/>
+				<reportElement x="206" y="-33" width="1" height="63" uuid="78c5e911-87ea-4ac4-bdc8-d2bc04973af4"/>
 			</line>
 			<line>
-				<reportElement x="319" y="-42" width="1" height="80" uuid="071958f7-c2be-4f40-aa34-23a7ae1d890f"/>
+				<reportElement x="319" y="-33" width="1" height="63" uuid="071958f7-c2be-4f40-aa34-23a7ae1d890f"/>
 			</line>
 			<line>
-				<reportElement x="103" y="-42" width="1" height="80" uuid="da7cf653-c15f-4afa-be67-d65849f22ce7"/>
+				<reportElement x="103" y="-33" width="1" height="63" uuid="da7cf653-c15f-4afa-be67-d65849f22ce7"/>
 			</line>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="3a2cd71e-dfe7-4191-aa66-1d43723f70e2"/>
+			</line>
+			<line>
+				<reportElement x="0" y="30" width="555" height="1" uuid="80339511-8f19-4d96-a191-f58bd382ca14"/>
 			</line>
 		</band>
 	</detail>

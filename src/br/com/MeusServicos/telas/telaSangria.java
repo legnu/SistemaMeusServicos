@@ -71,7 +71,7 @@ public class telaSangria extends javax.swing.JFrame {
                 
             pst.setDate(2, dSql);
             pst.setString(3, "Pago");
-            pst.setString(4, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(txtSangria.getText())))).replace(",", "."));
+            pst.setString(4, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtSangria.getText().replace(",", "."))).replace(",", "."));
            
 
             //Validação dos Campos Obrigatorios
@@ -79,7 +79,7 @@ public class telaSangria extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Adicione uma Sangria.");
                 limpar();
 
-            } else if (Integer.parseInt(txtSangria.getText()) <= 0) {
+            } else if (Double.parseDouble(txtSangria.getText().replace(",", ".")) <= 0) {
                 JOptionPane.showMessageDialog(null, "Adicione uma Sangria maior que 0.");
                 limpar();
 

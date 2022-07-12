@@ -14,7 +14,6 @@ senha varchar(15) not null,
 perfil varchar(20) not  null
 );
 
-
 insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil)
 values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador');
 
@@ -36,6 +35,9 @@ ultima_compra date,
 prazo_inativo date,
 crediario varchar(50)
 );
+select * from tbclientes;
+insert into tbclientes(nomecli,quantidade_comprada,valor_gasto,ticket_medio,crediario)values('Caixa','0.00','0.00','0.00','Habilitado');
+select * from tbclientes where quantidade_comprada > 0;
 
 create table tbos(
 os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -50,6 +52,9 @@ tecnico varchar(30),
 valor varchar(20),
 cliente varchar(50)
 );
+
+select os as Numero_da_Ordem_de_Serviço, data_os as Emição, tipo as Tipo, situacao as Situação, previsao_entreg_os as Previsão_de_Entrega, equipamento as Equipamento, 
+defeito as Defeito, servico as Serviço, tecnico as Tecnico, valor as Valor, cliente as Cliente from tbos where tipo = 'Orçamento';
 
 create table tbvenda(
 idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -66,10 +71,20 @@ dia date,
 hora varchar(50),
 venda varchar(20),
 forma_pagamento varchar(50),
-cliente varchar(50),
 status_pagamento varchar(50),
-dia_Pagamento date
+dia_Pagamento date,
+idcliente varchar(10),
+cliente varchar(50),
+tipo varchar(50)
 );
+
+select *  from tbtotalvendas where tipo = null;
+
+select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas 
+where status_pagamento='Pago' and  dia = current_date();
+
+select *  from tbtotalvendas;
+describe tbtotalvendas;
 
 create table tbprodutos(
 idproduto MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -85,6 +100,8 @@ referencial_compra varchar(22),
 referencial_venda varchar(22),
 compra_x_venda varchar(22)
 );
+
+select * from tbprodutos;
 
 create table tbcompra(
 idcompra MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -106,6 +123,12 @@ forma_pagamento varchar(50),
 status_pagamento varchar(50)
 );
 
+select * from tbgastos;
+select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos 
+where status_pagamento='Pago' and data_pagamento = current_date();
+
+
+
 create table tbfornecedor(
 idfornecedor MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nome_fornecedor varchar(80),
@@ -115,9 +138,9 @@ cnpj varchar(80),
 cidade_fornecedor varchar(80),
 bairro_fornecedor varchar(80),
 complemento_fornecedor varchar(80),
-cep_fornecedor varchar(8),
+cep_fornecedor varchar(20),
 numero_fornecedor varchar(5),
-telefone_fornecedor varchar(15),
+telefone_fornecedor varchar(20),
 email_fornecedor varchar(80)
 );
 

@@ -11,7 +11,9 @@ import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
@@ -22,7 +24,10 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class TelaPrincipal extends javax.swing.JFrame {
 
+   
     Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
 
     /**
      * Creates new form TelaPrincipal
@@ -41,6 +46,66 @@ public class TelaPrincipal extends javax.swing.JFrame {
         this.dispose();
 
     }
+    
+    public void instanciarTabelaVendas() {
+
+        try {
+
+            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and dia_Pagamento = current_date()";
+            pst = conexao.prepareStatement(sql);
+
+            rs = pst.executeQuery();
+            tbRecebido.setModel(DbUtils.resultSetToTableModel(rs));
+
+            double preco, x;
+
+            preco = 0;
+
+            for (int i = 0; i < tbRecebido.getRowCount(); i++) {
+                x = Double.parseDouble(String.valueOf(Double.parseDouble(tbRecebido.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100).replace(",", "."));
+
+                preco = preco + x;
+                lblResultadoVendas.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
+
+            }
+
+        } catch (java.lang.NullPointerException e) {
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
+
+    public void instanciarTabelaGasto() {
+
+        try {
+           
+
+            String sql = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago' and data_pagamento = current_date()";
+            pst = conexao.prepareStatement(sql);
+
+            rs = pst.executeQuery();
+            tbPago.setModel(DbUtils.resultSetToTableModel(rs));
+
+            double preco, x;
+
+            preco = 0;
+
+            for (int i = 0; i < tbPago.getRowCount(); i++) {
+                x = Double.parseDouble(String.valueOf(Double.parseDouble(tbPago.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100).replace(",", "."));
+                preco = preco + x;
+                lblResultadoGastos.setText(new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(preco))).replace(",", "."));
+
+            }
+
+        } catch (java.lang.NullPointerException e) {
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -51,18 +116,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        scRecebido = new javax.swing.JScrollPane();
+        tbRecebido = new javax.swing.JTable();
+        scPago = new javax.swing.JScrollPane();
+        tbPago = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         lblData = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         lblUsuario = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        lblResultadoVendas = new javax.swing.JLabel();
         lblVendas = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
         lblGastos = new javax.swing.JLabel();
         lblResultadoGastos = new javax.swing.JLabel();
-        lblResultadoVendas = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
         Menu = new javax.swing.JMenuBar();
         MenCad = new javax.swing.JMenu();
         MenCadCli = new javax.swing.JMenuItem();
@@ -70,6 +140,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCadUsu = new javax.swing.JMenuItem();
         menServicos = new javax.swing.JMenuItem();
         menCadastroFornecedor = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        relAtividadeClientes = new javax.swing.JMenuItem();
+        relClientes = new javax.swing.JMenuItem();
+        menVendasDoDia = new javax.swing.JMenuItem();
+        menGastosDoDia = new javax.swing.JMenuItem();
+        relOrdemServico = new javax.swing.JMenuItem();
+        RelOrçamento = new javax.swing.JMenuItem();
         menEstoque = new javax.swing.JMenu();
         menEstoqueProdutoQuantidade = new javax.swing.JMenuItem();
         menEstoqueInventario = new javax.swing.JMenuItem();
@@ -88,6 +165,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenOpc = new javax.swing.JMenu();
         MenOpcSai = new javax.swing.JMenuItem();
 
+        tbRecebido.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scRecebido.setViewportView(tbRecebido);
+
+        tbPago.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scPago.setViewportView(tbPago);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Meus Serviços - Controle de Ordens de Serviços");
         setResizable(false);
@@ -96,32 +199,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 formWindowActivated(evt);
             }
         });
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Cadastro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 14))); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 251, Short.MAX_VALUE)
-        );
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Administrativo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 14))); // NOI18N
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 828, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -140,9 +217,38 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 0, new java.awt.Color(0, 0, 0)));
+
+        lblResultadoVendas.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblResultadoVendas.setForeground(new java.awt.Color(0, 51, 204));
+        lblResultadoVendas.setText("0.00");
+
         lblVendas.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblVendas.setForeground(new java.awt.Color(0, 51, 204));
         lblVendas.setText("Vendas:");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblVendas)
+                .addGap(8, 8, 8)
+                .addComponent(lblResultadoVendas)
+                .addGap(0, 0, 0))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(13, 13, 13)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblResultadoVendas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblVendas))
+                .addGap(13, 13, 13))
+        );
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 1, 1, 0, new java.awt.Color(0, 0, 0)));
 
         lblGastos.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblGastos.setForeground(new java.awt.Color(255, 0, 0));
@@ -150,11 +256,28 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         lblResultadoGastos.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblResultadoGastos.setForeground(new java.awt.Color(255, 0, 0));
-        lblResultadoGastos.setText("(R$)");
+        lblResultadoGastos.setText("0.00");
 
-        lblResultadoVendas.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblResultadoVendas.setForeground(new java.awt.Color(0, 51, 204));
-        lblResultadoVendas.setText("(R$)");
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblGastos)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblResultadoGastos)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblGastos)
+                    .addComponent(lblResultadoGastos))
+                .addGap(13, 13, 13))
+        );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -165,19 +288,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblUsuario)
-                    .addComponent(jLabel3)
                     .addComponent(lblData)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(lblVendas)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblResultadoVendas))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(lblGastos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblResultadoGastos))
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,15 +312,24 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblData)
-                .addGap(93, 93, 93)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblVendas)
-                    .addComponent(lblResultadoVendas))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblGastos)
-                    .addComponent(lblResultadoGastos))
-                .addGap(80, 80, 80))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72))
+        );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 827, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         Menu.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -249,6 +378,59 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCad.add(menCadastroFornecedor);
 
         Menu.add(MenCad);
+
+        jMenu1.setText("Relatorios");
+        jMenu1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+
+        relAtividadeClientes.setText("Atividade Clientes");
+        relAtividadeClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relAtividadeClientesActionPerformed(evt);
+            }
+        });
+        jMenu1.add(relAtividadeClientes);
+
+        relClientes.setText("Clientes");
+        relClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relClientesActionPerformed(evt);
+            }
+        });
+        jMenu1.add(relClientes);
+
+        menVendasDoDia.setText("Vendas do Dia");
+        menVendasDoDia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menVendasDoDiaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menVendasDoDia);
+
+        menGastosDoDia.setText("Gastos do Dia");
+        menGastosDoDia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menGastosDoDiaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menGastosDoDia);
+
+        relOrdemServico.setText("Ordem De Serviço");
+        relOrdemServico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relOrdemServicoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(relOrdemServico);
+
+        RelOrçamento.setText("Orçamento");
+        RelOrçamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RelOrçamentoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(RelOrçamento);
+
+        Menu.add(jMenu1);
 
         menEstoque.setText("Estoque");
         menEstoque.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -387,29 +569,22 @@ public class TelaPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(16, 16, 16)
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(25, 25, 25)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(13, 13, 13)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(16, 16, 16))
         );
 
-        setSize(new java.awt.Dimension(1143, 656));
+        setSize(new java.awt.Dimension(1143, 643));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -423,6 +598,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         //As Linhas abaixo substituem a label lblData pela Data Atual
+        instanciarTabelaVendas();
+        instanciarTabelaGasto();
         Date data = new Date();
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         lblData.setText(df.format(data));
@@ -480,7 +657,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Produto_quantidade.jasper"), null, conexao);
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelProduto.jasper"), null, conexao);
 
                 JasperViewer.viewReport(print, false);
             } catch (Exception e) {
@@ -537,6 +714,83 @@ public class TelaPrincipal extends javax.swing.JFrame {
         clientes.setVisible(true);
     }//GEN-LAST:event_menContasClientesActionPerformed
 
+    private void relAtividadeClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relAtividadeClientesActionPerformed
+        // TODO add your handling code here:
+        TelaClientes clientes = new TelaClientes();
+        clientes.setVisible(true);
+    }//GEN-LAST:event_relAtividadeClientesActionPerformed
+
+    private void relClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relClientesActionPerformed
+        // TODO add your handling code here:
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelClientes.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }//GEN-LAST:event_relClientesActionPerformed
+
+    private void menVendasDoDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menVendasDoDiaActionPerformed
+        // TODO add your handling code here: 
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelVendaDoDia.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+        
+    }//GEN-LAST:event_menVendasDoDiaActionPerformed
+
+    private void menGastosDoDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGastosDoDiaActionPerformed
+        // TODO add your handling code here:
+           int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelGastosDoDia.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }//GEN-LAST:event_menGastosDoDiaActionPerformed
+
+    private void RelOrçamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RelOrçamentoActionPerformed
+        // TODO add your handling code here:
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelOrcamento.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }//GEN-LAST:event_RelOrçamentoActionPerformed
+
+    private void relOrdemServicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relOrdemServicoActionPerformed
+        // TODO add your handling code here:
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelOS.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }//GEN-LAST:event_relOrdemServicoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -582,12 +836,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu MenOpc;
     private javax.swing.JMenuItem MenOpcSai;
     private javax.swing.JMenuBar Menu;
+    private javax.swing.JMenuItem RelOrçamento;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel lblData;
     private javax.swing.JLabel lblGastos;
     private javax.swing.JLabel lblResultadoGastos;
@@ -607,7 +864,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu menEstoque;
     private javax.swing.JMenuItem menEstoqueInventario;
     private javax.swing.JMenuItem menEstoqueProdutoQuantidade;
+    private javax.swing.JMenuItem menGastosDoDia;
     private javax.swing.JMenu menPontoDeVendas;
     private javax.swing.JMenuItem menServicos;
+    private javax.swing.JMenuItem menVendasDoDia;
+    private javax.swing.JMenuItem relAtividadeClientes;
+    private javax.swing.JMenuItem relClientes;
+    private javax.swing.JMenuItem relOrdemServico;
+    private javax.swing.JScrollPane scPago;
+    private javax.swing.JScrollPane scRecebido;
+    private javax.swing.JTable tbPago;
+    private javax.swing.JTable tbRecebido;
     // End of variables declaration//GEN-END:variables
 }

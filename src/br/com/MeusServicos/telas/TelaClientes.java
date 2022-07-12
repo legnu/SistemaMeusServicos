@@ -67,7 +67,7 @@ public class TelaClientes extends javax.swing.JFrame {
     }
 
     public void instanciarTabelaClientesAtivos() {
-        String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where atividade='Ativo' order by quantidade_comprada desc";
+        String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where quantidade_comprada > 0 and atividade='Ativo' order by quantidade_comprada desc";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -82,19 +82,19 @@ public class TelaClientes extends javax.swing.JFrame {
     public void Pesquisar() {
         try {
             if (tipo.equals("Ativo") == true) {
-                String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where nomecli like ? and atividade='Ativo' order by quantidade_comprada desc ";
+                String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where quantidade_comprada > 0 and nomecli like ? and atividade='Ativo' order by quantidade_comprada desc ";
 
                 pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtPesquisar.getText());
+                pst.setString(1, txtPesquisar.getText() + "%");
                 System.out.println(sql);
                 rs = pst.executeQuery();
                 tbClientesAtivos.setModel(DbUtils.resultSetToTableModel(rs));
                 System.out.println(tipo);
             }else if(tipo.equals("Inativo") == true){
-                String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where nomecli like ? and atividade='Inativo'  order by quantidade_comprada desc ";
+                String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where quantidade_comprada > 0 and nomecli like ? and atividade='Inativo'  order by quantidade_comprada desc ";
 
                 pst = conexao.prepareStatement(sql);
-                pst.setString(1, "'"+txtPesquisar.getText()+"'");
+                pst.setString(1, txtPesquisar.getText() + "%");
                 rs = pst.executeQuery();
                 tbClientesAtivos.setModel(DbUtils.resultSetToTableModel(rs));
                 System.out.println(tipo);
@@ -108,7 +108,7 @@ public class TelaClientes extends javax.swing.JFrame {
     }
 
     public void instanciarTabelaClientesInativos() {
-        String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes  where atividade='Inativo' order by quantidade_comprada desc";
+        String sql = "select nomecli as Cliente, quantidade_comprada as N_Compras, valor_gasto As Valor_Gasto, ticket_medio as Ticket_Medio from tbclientes where quantidade_comprada > 0 and atividade='Inativo' order by quantidade_comprada desc";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -121,7 +121,7 @@ public class TelaClientes extends javax.swing.JFrame {
     }
 
     public void instanciarTabelaAuxilioCliente() {
-        String sql = "select * from tbclientes";
+        String sql = "select idcli, valor_gasto, quantidade_comprada, ultima_compra from tbclientes where quantidade_comprada > 0";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -142,7 +142,7 @@ public class TelaClientes extends javax.swing.JFrame {
             df.format(dSql);
 
             for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
-                Date base = df.parse(tbAuxilio.getModel().getValueAt(i, 13).toString());
+                Date base = df.parse(tbAuxilio.getModel().getValueAt(i, 3).toString());
 
                 String mes = new SimpleDateFormat("MM").format(base);
                 String ano = new SimpleDateFormat("yyyy").format(base);
@@ -195,8 +195,8 @@ public class TelaClientes extends javax.swing.JFrame {
 
             preco = 0;
             for (int i = 0; i < tbAuxilio.getRowCount(); i++) {
-                x = Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 10).toString().replace(".", "")) / 100;
-                preco = x / Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 9).toString());
+                x = Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 1).toString().replace(".", "")) / 100;
+                preco = x / Double.parseDouble(tbAuxilio.getModel().getValueAt(i, 2).toString());
 
                 String sqr = "update tbclientes set ticket_medio=? where idcli=?";
                 pst = conexao.prepareStatement(sqr);
@@ -242,6 +242,7 @@ public class TelaClientes extends javax.swing.JFrame {
         rbInativo = new javax.swing.JRadioButton();
         lblPesquisar = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -293,6 +294,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
             }
         ));
+        tbClientesAtivos.setFocusable(false);
         scClientes.setViewportView(tbClientesAtivos);
 
         Grupo1.add(rbAtivo);
@@ -356,9 +358,12 @@ public class TelaClientes extends javax.swing.JFrame {
                     .addComponent(rbAtivo)
                     .addComponent(rbInativo))
                 .addGap(16, 16, 16)
-                .addComponent(scClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addComponent(scClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jLabel1.setText("OBS: Cliente só aparecera se tiver feito ao menos uma compra.");
 
         javax.swing.GroupLayout pnPrincipalLayout = new javax.swing.GroupLayout(pnPrincipal);
         pnPrincipal.setLayout(pnPrincipalLayout);
@@ -367,16 +372,23 @@ public class TelaClientes extends javax.swing.JFrame {
             .addComponent(btnLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(16, 16, 16))
+                .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnPrincipalLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pnPrincipalLayout.createSequentialGroup()
+                        .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(16, 16, 16))))
         );
         pnPrincipalLayout.setVerticalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(btnLogo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addComponent(pnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
+                .addComponent(jLabel1)
                 .addGap(16, 16, 16))
         );
 
@@ -384,7 +396,7 @@ public class TelaClientes extends javax.swing.JFrame {
         pnSC.setLayout(pnSCLayout);
         pnSCLayout.setHorizontalGroup(
             pnSCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnSCLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnSCLayout.createSequentialGroup()
                 .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -392,7 +404,7 @@ public class TelaClientes extends javax.swing.JFrame {
             pnSCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnSCLayout.createSequentialGroup()
                 .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
 
         scPrincipal.setViewportView(pnSC);
@@ -405,10 +417,7 @@ public class TelaClientes extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(scPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+            .addComponent(scPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -476,6 +485,7 @@ public class TelaClientes extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup Grupo1;
     private javax.swing.JToggleButton btnLogo;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblPesquisar;
     private javax.swing.JPanel pnClientes;
     private javax.swing.JPanel pnPrincipal;

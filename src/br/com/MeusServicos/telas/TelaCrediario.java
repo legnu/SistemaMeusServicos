@@ -61,6 +61,44 @@ public class TelaCrediario extends javax.swing.JFrame {
         tipo = "Receber";
         instanciarTabelaContas();
     }
+    
+     public void instanciarTabelaCliente() {
+        try {
+
+            String sql = "select id from tbtotalvendas where tipo='Venda'";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; i < tbAuxilio1.getRowCount(); i++) {
+
+                String sqo = "select idcliente from tbtotalvendas where id=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());               
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String id = tbAuxilio.getModel().getValueAt(0, 0).toString();
+               
+                
+                String sqy = "select nomecli from tbclientes where idcli=?";
+                pst = conexao.prepareStatement(sqy);
+                pst.setString(1, id);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String nome = tbAuxilio.getModel().getValueAt(0, 0).toString();
+                System.out.println(nome + " " + id);
+                
+                String sqr = "update tbtotalvendas set cliente=? where id=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setString(1, nome);
+                pst.setString(2, tbAuxilio1.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     public void Contas() {
 
@@ -327,6 +365,8 @@ public class TelaCrediario extends javax.swing.JFrame {
         grupo1 = new javax.swing.ButtonGroup();
         scAuxilio = new javax.swing.JScrollPane();
         tbAuxilio = new javax.swing.JTable();
+        scAuxilio1 = new javax.swing.JScrollPane();
+        tbAuxilio1 = new javax.swing.JTable();
         pnPrincipal = new javax.swing.JPanel();
         btnLogo = new javax.swing.JToggleButton();
         pnTabela = new javax.swing.JPanel();
@@ -347,6 +387,19 @@ public class TelaCrediario extends javax.swing.JFrame {
             }
         ));
         scAuxilio.setViewportView(tbAuxilio);
+
+        tbAuxilio1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio1.setViewportView(tbAuxilio1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Tela Contas");
@@ -481,6 +534,7 @@ public class TelaCrediario extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         // TODO add your handling code here:
+        instanciarTabelaCliente();
         Contas();
     }//GEN-LAST:event_formWindowActivated
 
@@ -541,8 +595,10 @@ public class TelaCrediario extends javax.swing.JFrame {
     private javax.swing.JRadioButton rbPagar;
     private javax.swing.JRadioButton rbReceber;
     private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scAuxilio1;
     private javax.swing.JScrollPane scContas;
     private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbAuxilio1;
     private javax.swing.JTable tbContas;
     // End of variables declaration//GEN-END:variables
 }

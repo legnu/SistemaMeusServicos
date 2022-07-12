@@ -51,7 +51,7 @@ public class CadProduto extends javax.swing.JFrame {
 
     public void InstanciarCombobox() {
         try {
-            cbFornecedor.addItem("Estoque");
+            cbFornecedor.addItem("Selecione");
             String sql = "select nome_fornecedor from tbfornecedor";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -139,7 +139,7 @@ public class CadProduto extends javax.swing.JFrame {
 
     private void adicionar() {
 
-        String sql = "insert into tbprodutos(produto,codigo,valor_compra,valor_venda,fornecedor,obs,estoque,quantidade)values(?,?,?,?,?,?,?,?)";
+        String sql = "insert into tbprodutos(produto,codigo,valor_compra,valor_venda,fornecedor,obs,estoque,quantidade,referencial_compra,referencial_venda,compra_x_venda)values(?,?,?,?,?,?,?,?,?,?,?)";
 
         try {
 
@@ -153,19 +153,26 @@ public class CadProduto extends javax.swing.JFrame {
                 pst.setString(2, txtCodigo.getText());
             }
 
-            pst.setString(3, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtCusto.getText())).replace(",", "."));
-            pst.setString(4, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtPreco.getText())).replace(",", "."));
+            pst.setString(3, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtCusto.getText().replace(",", "."))).replace(",", "."));
+            pst.setString(4, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtPreco.getText().replace(",", "."))).replace(",", "."));
 
             pst.setString(5, cbFornecedor.getSelectedItem().toString());
 
             pst.setString(6, taProduto.getText());
             pst.setString(7, cbEstoque.getSelectedItem().toString());
-            pst.setInt(8, 0);
+            if(cbEstoque.getSelectedItem().toString().equals("Sem controle de estoque.") == true){
+                pst.setInt(8, 1);
+            }else{
+                pst.setInt(8, 0);
+            }
+            pst.setString(9, "0.00");
+            pst.setString(10, "0.00");
+            pst.setString(11, "0.00");
 
             if ((txtDescricao.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
 
-            } else if ((Double.parseDouble(txtCusto.getText()) <= 0) || (Double.parseDouble(txtPreco.getText()) <= 0)) {
+            } else if ((Double.parseDouble(txtCusto.getText().replace(",", ".")) <= 0) || (Double.parseDouble(txtPreco.getText().replace(",", ".")) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Valor de Compra ou Valor de Venda Deve ser maior que 0.");
             } else {
 
@@ -195,9 +202,9 @@ public class CadProduto extends javax.swing.JFrame {
     }
 
     private void alterar() {
-        String sql = "update tbprodutos set produto=?,codigo=?,valor_compra=?,valor_venda=?,fornecedor=?,obs=?,estoque=? where idproduto=?";
+        String sql = "update tbprodutos set produto=?,codigo=?,valor_compra=?,valor_venda=?,fornecedor=?,obs=?,estoque=?,quantidade=?,referencial_compra=?,referencial_venda=?,compra_x_venda=? where idproduto=?";
         try {
-            ;
+      
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtDescricao.getText());
 
@@ -207,18 +214,26 @@ public class CadProduto extends javax.swing.JFrame {
                 pst.setString(2, txtCodigo.getText());
             }
 
-            pst.setString(3, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtCusto.getText())).replace(",", "."));
-            pst.setString(4, new DecimalFormat("#,##0.00").format(Float.parseFloat(txtPreco.getText())).replace(",", "."));
+            pst.setString(3, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtCusto.getText().replace(",", "."))).replace(",", "."));
+            pst.setString(4, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtPreco.getText().replace(",", "."))).replace(",", "."));
 
             pst.setString(5, cbFornecedor.getSelectedItem().toString());
 
             pst.setString(6, taProduto.getText());
             pst.setString(7, cbEstoque.getSelectedItem().toString());
-            pst.setString(8, txtID.getText());
+           if(cbEstoque.getSelectedItem().toString().equals("Sem controle de estoque.") == true){
+                pst.setInt(8, 1);
+            }else{
+                pst.setInt(8, 0);
+            }          
+            pst.setString(9, "0.00");
+            pst.setString(10, "0.00");
+            pst.setString(11, "0.00");
+            pst.setString(12, txtID.getText());
 
             if ((txtDescricao.getText().isEmpty()) || (txtCusto.getText().isEmpty()) || (txtPreco.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-            } else if ((Double.parseDouble(txtCusto.getText()) <= 0) || (Double.parseDouble(txtPreco.getText()) <= 0)) {
+            } else if ((Double.parseDouble(txtCusto.getText().replace(",", ".")) <= 0) || (Double.parseDouble(txtPreco.getText().replace(",", ".")) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Valor de Compra ou Valor de Venda Deve ser maior que 0.");
             } else {
 
@@ -330,6 +345,7 @@ public class CadProduto extends javax.swing.JFrame {
         pnOBS = new javax.swing.JPanel();
         scProduto = new javax.swing.JScrollPane();
         taProduto = new javax.swing.JTextArea();
+        btnFornecedor = new javax.swing.JToggleButton();
 
         txtID.setEnabled(false);
 
@@ -358,7 +374,7 @@ public class CadProduto extends javax.swing.JFrame {
         lblEstoque.setText("*Estoque:");
 
         lblDescricao.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblDescricao.setText("*Nome_Produto:");
+        lblDescricao.setText("*Produto:");
 
         lblCamposObrigatorios.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblCamposObrigatorios.setText("*Campos Obrigatorios");
@@ -484,6 +500,15 @@ public class CadProduto extends javax.swing.JFrame {
             .addComponent(scProduto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
         );
 
+        btnFornecedor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/plus.png"))); // NOI18N
+        btnFornecedor.setBorderPainted(false);
+        btnFornecedor.setContentAreaFilled(false);
+        btnFornecedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFornecedorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -501,22 +526,29 @@ public class CadProduto extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblDescricao)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblCodigoDeBarras)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblFornecedor)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbFornecedor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblEstoque)
-                                .addGap(18, 18, 18)
-                                .addComponent(cbEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblDescricao)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblFornecedor)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cbFornecedor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(23, 23, 23)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(lblEstoque)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(cbEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(46, 46, 46)
+                                        .addComponent(lblCodigoDeBarras)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(lblCusto)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtCusto)
@@ -524,7 +556,7 @@ public class CadProduto extends javax.swing.JFrame {
                                 .addComponent(lblPreco)
                                 .addGap(18, 18, 18)
                                 .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                         .addComponent(pnOBS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(16, 16, 16))
             .addGroup(layout.createSequentialGroup()
@@ -557,11 +589,13 @@ public class CadProduto extends javax.swing.JFrame {
                             .addComponent(lblCodigoDeBarras)
                             .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblFornecedor)
-                            .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblEstoque)
-                            .addComponent(cbEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(lblFornecedor)
+                                .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblEstoque)
+                                .addComponent(cbEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblCusto)
@@ -578,7 +612,7 @@ public class CadProduto extends javax.swing.JFrame {
                         .addComponent(btnEditar)
                         .addComponent(btnRemover)
                         .addComponent(btnAdicionar, javax.swing.GroupLayout.Alignment.TRAILING)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -632,6 +666,12 @@ public class CadProduto extends javax.swing.JFrame {
         InstanciarCombobox();
     }//GEN-LAST:event_formWindowActivated
 
+    private void btnFornecedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFornecedorActionPerformed
+        // TODO add your handling code here:
+        CadFornecedor fornecedor = new CadFornecedor();
+        fornecedor.setVisible(true);
+    }//GEN-LAST:event_btnFornecedorActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -671,6 +711,7 @@ public class CadProduto extends javax.swing.JFrame {
     private javax.swing.JButton btnAdicionar;
     private javax.swing.JButton btnAtualizar;
     private javax.swing.JButton btnEditar;
+    private javax.swing.JToggleButton btnFornecedor;
     private javax.swing.JButton btnRemover;
     private javax.swing.JComboBox<String> cbEstoque;
     private javax.swing.JComboBox<String> cbFornecedor;

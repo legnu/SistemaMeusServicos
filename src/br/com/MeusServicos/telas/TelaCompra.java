@@ -171,10 +171,10 @@ public class TelaCompra extends javax.swing.JFrame {
             }
         } catch (java.lang.NumberFormatException e) {
             if (txtQuantidade.getText().isEmpty() == true) {
-                JOptionPane.showMessageDialog(null, "Quantidade não pode ser nula.");
+                JOptionPane.showMessageDialog(null, "Quantidade não pode ser nula.");                
                 Limpar();
-            } else {
-                JOptionPane.showMessageDialog(null, "Campo Quantidade não suporta letras.");
+            } else {               
+                JOptionPane.showMessageDialog(null, "Quantidade deve ser um numero Inteiro.");
                 Limpar();
             }
 
@@ -776,6 +776,7 @@ public class TelaCompra extends javax.swing.JFrame {
         btnComprar.setForeground(new java.awt.Color(255, 255, 255));
         btnComprar.setText("Comprar");
         btnComprar.setBorderPainted(false);
+        btnComprar.setPreferredSize(new java.awt.Dimension(110, 41));
         btnComprar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnComprarActionPerformed(evt);
@@ -823,7 +824,7 @@ public class TelaCompra extends javax.swing.JFrame {
             pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
             .addGroup(pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(scNotaProduto1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE))
+                .addComponent(scNotaProduto1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE))
         );
         pnTbNotaLayout.setVerticalGroup(
             pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -867,31 +868,26 @@ public class TelaCompra extends javax.swing.JFrame {
         pnNotaLayout.setHorizontalGroup(
             pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnNotaLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(pnTbNota, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnNotaLayout.createSequentialGroup()
+                            .addGap(14, 14, 14)
+                            .addComponent(lblTotal)
+                            .addGap(12, 12, 12)
+                            .addComponent(lblValorTotal)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnNotaLayout.createSequentialGroup()
+                            .addComponent(btnComprar, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(pnNotaLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(pnTbNota, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(pnNotaLayout.createSequentialGroup()
-                                .addComponent(lblDataPagamento)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dtPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(202, 202, 202))))
-                    .addGroup(pnNotaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(pnNotaLayout.createSequentialGroup()
-                                .addGap(14, 14, 14)
-                                .addComponent(lblTotal)
-                                .addGap(12, 12, 12)
-                                .addComponent(lblValorTotal)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(pnPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(pnNotaLayout.createSequentialGroup()
-                                .addComponent(btnComprar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(16, Short.MAX_VALUE))
+                        .addComponent(lblDataPagamento)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dtPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnNotaLayout.setVerticalGroup(
             pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -982,7 +978,7 @@ public class TelaCompra extends javax.swing.JFrame {
                                 .addComponent(lblCamposObrigatorios)
                                 .addGap(2, 2, 2))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(16, Short.MAX_VALUE)
+                                .addContainerGap(14, Short.MAX_VALUE)
                                 .addComponent(pnProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()

@@ -52,6 +52,44 @@ public class RelacaoClientes extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
     }
+    
+     public void instanciarTabelaCliente() {
+        try {
+
+            String sql = "select id from tbtotalvendas where tipo='Venda'";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; i < tbAuxilio1.getRowCount(); i++) {
+
+                String sqo = "select idcliente from tbtotalvendas where id=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());               
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String id = tbAuxilio.getModel().getValueAt(0, 0).toString();
+               
+                
+                String sqy = "select nomecli from tbclientes where idcli=?";
+                pst = conexao.prepareStatement(sqy);
+                pst.setString(1, id);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String nome = tbAuxilio.getModel().getValueAt(0, 0).toString();
+                System.out.println(nome + " " + id);
+                
+                String sqr = "update tbtotalvendas set cliente=? where id=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setString(1, nome);
+                pst.setString(2, tbAuxilio1.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     public void habilitarCrediario() {
         try {
@@ -196,6 +234,13 @@ public class RelacaoClientes extends javax.swing.JFrame {
     private void initComponents() {
 
         txtId = new javax.swing.JTextField();
+        scAuxilio = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
+        scAuxilio1 = new javax.swing.JScrollPane();
+        tbAuxilio1 = new javax.swing.JTable();
+        btnLogo = new javax.swing.JToggleButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel1 = new javax.swing.JPanel();
         pnContas = new javax.swing.JPanel();
         scContas = new javax.swing.JScrollPane();
         tbContas = new javax.swing.JTable();
@@ -210,7 +255,32 @@ public class RelacaoClientes extends javax.swing.JFrame {
         txtCrediario = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
-        btnLogo = new javax.swing.JToggleButton();
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio.setViewportView(tbAuxilio);
+
+        tbAuxilio1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio1.setViewportView(tbAuxilio1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gerenciador de Clientes");
@@ -220,6 +290,12 @@ public class RelacaoClientes extends javax.swing.JFrame {
                 formWindowActivated(evt);
             }
         });
+
+        btnLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
+        btnLogo.setBorderPainted(false);
+        btnLogo.setContentAreaFilled(false);
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         pnContas.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas a Receber", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
@@ -251,11 +327,11 @@ public class RelacaoClientes extends javax.swing.JFrame {
         pnContas.setLayout(pnContasLayout);
         pnContasLayout.setHorizontalGroup(
             pnContasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scContas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(scContas)
         );
         pnContasLayout.setVerticalGroup(
             pnContasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scContas, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
+            .addComponent(scContas, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
         );
 
         pnClientes.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Clientes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
@@ -331,7 +407,7 @@ public class RelacaoClientes extends javax.swing.JFrame {
         pnClientes.setLayout(pnClientesLayout);
         pnClientesLayout.setHorizontalGroup(
             pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+            .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 517, Short.MAX_VALUE)
             .addGroup(pnClientesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -377,20 +453,37 @@ public class RelacaoClientes extends javax.swing.JFrame {
                 .addComponent(scClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        btnLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
-        btnLogo.setBorderPainted(false);
-        btnLogo.setContentAreaFilled(false);
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnContas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(pnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(pnContas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
+        );
+
+        jScrollPane1.setViewportView(jPanel1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnLogo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnContas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 605, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
@@ -398,10 +491,8 @@ public class RelacaoClientes extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(btnLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16)
-                .addComponent(pnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16)
-                .addComponent(pnContas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
         );
 
@@ -415,6 +506,7 @@ public class RelacaoClientes extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         // TODO add your handling code here:
+        instanciarTabelaCliente();
         instanciarTabelaClientes();
     }//GEN-LAST:event_formWindowActivated
 
@@ -478,12 +570,18 @@ public class RelacaoClientes extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnHabilitar;
     private javax.swing.JToggleButton btnLogo;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblCrediario;
     private javax.swing.JPanel pnClientes;
     private javax.swing.JPanel pnContas;
+    private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scAuxilio1;
     private javax.swing.JScrollPane scClientes;
     private javax.swing.JScrollPane scContas;
+    private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbAuxilio1;
     private javax.swing.JTable tbClientes;
     private javax.swing.JTable tbContas;
     private javax.swing.JLabel txtClientes;

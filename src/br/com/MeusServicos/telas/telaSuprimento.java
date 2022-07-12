@@ -53,9 +53,13 @@ public class telaSuprimento extends javax.swing.JFrame {
 
     private void adicionar() {
 
-        String sql = "insert into tbtotalvendas(nome, venda)values(?,?)";
+        String sql = "insert into tbtotalvendas(cliente, venda, tipo, status_pagamento, dia, dia_Pagamento, hora)values(?,?,?,?,?,?,?)";
 
         try {
+            
+            Date dataHoraAtual = new Date();
+        String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
+            
             Date d = new Date();
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             java.sql.Date dSql = new java.sql.Date(d.getTime());
@@ -68,7 +72,12 @@ public class telaSuprimento extends javax.swing.JFrame {
                 pst.setString(1, txtDescricao.getText());
             }
                       
-            pst.setString(2, new DecimalFormat("#,##0.00").format(Float.parseFloat(String.valueOf(Double.parseDouble(txtSuprimento.getText())))).replace(",", "."));
+            pst.setString(2, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtSuprimento.getText().replace(",", "."))).replace(",", "."));
+            pst.setString(3, "Suprimento");
+            pst.setString(4, "Pago");
+            pst.setDate(5, dSql);
+            pst.setDate(6, dSql);
+            pst.setString(7, hora);
             
 
             //Validação dos Campos Obrigatorios
@@ -76,7 +85,7 @@ public class telaSuprimento extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Adicione uma Suprimento.");
                 limpar();
 
-            } else if (Integer.parseInt(txtSuprimento.getText()) <= 0) {
+            } else if (Double.parseDouble(txtSuprimento.getText().replace(",", ".")) <= 0) {
                 JOptionPane.showMessageDialog(null, "Adicione uma Suprimento maior que 0.");
                 limpar();
 
@@ -125,7 +134,7 @@ public class telaSuprimento extends javax.swing.JFrame {
         txtDescricao = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Suplemento");
+        setTitle("Suprimento");
         setResizable(false);
 
         pnPrincipal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));

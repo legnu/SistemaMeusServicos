@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RelVendaDoDia" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="027c9f07-a55e-4906-889d-4468c51a91cf">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas
+where status_pagamento='Pago' and  dia = current_date();]]>
+	</queryString>
+	<field name="ID" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Data_Emicao" class="java.sql.Date"/>
+	<field name="Hora" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Cliente_Suprimento" class="java.lang.String"/>
+	<field name="Valor" class="java.lang.String"/>
+	<field name="Dia_Pagamento" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="435" y="0" width="120" height="31" uuid="1b2286f1-e430-4c4e-bc84-736fdfcb9476"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="138" height="31" uuid="6122be33-a817-467d-ad7a-3e336402a144"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vendas do Dia]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="191" y="0" width="196" height="20" uuid="52021c4c-8d38-4409-b72c-89403f73a57e"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="150" height="20" uuid="386818e6-efde-4238-a073-f09683c80ae7"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente_Suprimento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="410" y="0" width="145" height="20" uuid="b61f79cd-0100-4721-ba36-bb4d5bd59984"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="29" width="555" height="1" uuid="a67d2689-833d-4779-a52e-3c9dac68cdb5"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="150" height="20" uuid="72907cbf-f434-4abc-bb47-93f43ba54dbe"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Cliente_Suprimento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="410" y="0" width="145" height="20" uuid="709a48de-9280-4f62-aa5f-576ae7acf3d7"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Valor}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="170" y="-30" width="1" height="58" uuid="37705556-c075-4efa-b046-00ee63748b4a"/>
+			</line>
+			<line>
+				<reportElement x="387" y="-30" width="1" height="58" uuid="e2f1e08d-e5d1-4cd2-87a1-92af1735e3d1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="27" width="555" height="1" uuid="24629944-79b9-416b-8a52-efdab6ddef5c"/>
+			</line>
+			<textField>
+				<reportElement x="191" y="0" width="197" height="20" uuid="00a5bff8-48e6-41b6-a557-1a84411f21b8"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Hora}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

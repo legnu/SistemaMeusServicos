@@ -45,7 +45,6 @@ public class CadClientes extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
- 
 
     /**
      * Creates new form TelaCliente
@@ -74,21 +73,21 @@ public class CadClientes extends javax.swing.JFrame {
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtCliNome.getText());
-            pst.setString(2, cbSexo.getSelectedItem().toString());           
-            pst.setString(3, txtCliCep.getText());            
+            pst.setString(2, cbSexo.getSelectedItem().toString());
+            pst.setString(3, txtCliCep.getText());
             pst.setString(4, txtCliEndereco.getText());
             pst.setString(5, txtCliBairro.getText());
             pst.setString(6, txtCliCidade.getText());
             pst.setString(7, txtCliFone.getText());
             pst.setString(8, txtCliEmail.getText());
             pst.setInt(9, 0);
-            pst.setInt(10, 0);
-            pst.setInt(11, 0);
+            pst.setString(10, "0.00");
+            pst.setString(11, "0.00");
             pst.setString(12, "Habilitado");
             //Validação dos Campos Obrigatorios
-             if ((txtCliNome.getText().isEmpty() == true || txtCliFone.getText().isEmpty() ==  true)) {
+            if ((txtCliNome.getText().isEmpty() == true || txtCliFone.getText().isEmpty() == true)) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-            }else {
+            } else {
 
                 //A linha abaixo atualiza os dados do novo usuario
                 int adicionado = pst.executeUpdate();
@@ -99,7 +98,7 @@ public class CadClientes extends javax.swing.JFrame {
                     limpar();
                 }
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
         }
@@ -122,36 +121,41 @@ public class CadClientes extends javax.swing.JFrame {
     public void setar_campos() {
         int setar = tbClientes.getSelectedRow();
         txtId.setText(tbClientes.getModel().getValueAt(setar, 0).toString());
-        txtCliNome.setText(tbClientes.getModel().getValueAt(setar, 1).toString());
-        txtCliEmail.setText(tbClientes.getModel().getValueAt(setar, 8).toString());
-        txtCliFone.setText(tbClientes.getModel().getValueAt(setar, 7).toString());
-        cbSexo.setSelectedItem(tbClientes.getModel().getValueAt(setar, 2).toString());
-        txtCliEndereco.setText(tbClientes.getModel().getValueAt(setar, 4).toString());
-        txtCliCep.setText(tbClientes.getModel().getValueAt(setar, 3).toString());
-        txtCliBairro.setText(tbClientes.getModel().getValueAt(setar, 5).toString());
-        txtCliCidade.setText(tbClientes.getModel().getValueAt(setar, 6).toString());
-        //A Linha Abaixo desabilita o botão adicionar
-        btnAdicionar.setEnabled(false);
-        btnAtualizar.setEnabled(true);
-        btnAlterar.setEnabled(true);
-        btnRemover.setEnabled(true);
+        if (Integer.parseInt(txtId.getText()) == 1) {
+            JOptionPane.showMessageDialog(null, "Caixa não pode ser alterado");
+            limpar();
+        } else {
+            txtCliNome.setText(tbClientes.getModel().getValueAt(setar, 1).toString());
+            txtCliEmail.setText(tbClientes.getModel().getValueAt(setar, 8).toString());
+            txtCliFone.setText(tbClientes.getModel().getValueAt(setar, 7).toString());
+            cbSexo.setSelectedItem(tbClientes.getModel().getValueAt(setar, 2).toString());
+            txtCliEndereco.setText(tbClientes.getModel().getValueAt(setar, 4).toString());
+            txtCliCep.setText(tbClientes.getModel().getValueAt(setar, 3).toString());
+            txtCliBairro.setText(tbClientes.getModel().getValueAt(setar, 5).toString());
+            txtCliCidade.setText(tbClientes.getModel().getValueAt(setar, 6).toString());
+            //A Linha Abaixo desabilita o botão adicionar
+            btnAdicionar.setEnabled(false);
+            btnAtualizar.setEnabled(true);
+            btnAlterar.setEnabled(true);
+            btnRemover.setEnabled(true);
+        }
     }
 
     private void alterar() {
         String sql = "update tbclientes set nomecli=?,sexocli=?,cepcli=?,endcli=?,bairrocli=?,cidadecli=?,telefonecli=?,emailcli=? where idcli=?";
         try {
-             pst = conexao.prepareStatement(sql);
+            pst = conexao.prepareStatement(sql);
             pst.setString(1, txtCliNome.getText());
-            pst.setString(2, cbSexo.getSelectedItem().toString());           
-            pst.setString(3, txtCliCep.getText());            
+            pst.setString(2, cbSexo.getSelectedItem().toString());
+            pst.setString(3, txtCliCep.getText());
             pst.setString(4, txtCliEndereco.getText());
             pst.setString(5, txtCliBairro.getText());
             pst.setString(6, txtCliCidade.getText());
             pst.setString(7, txtCliFone.getText());
             pst.setString(8, txtCliEmail.getText());
             pst.setString(9, txtId.getText());
-          
-            if ((txtCliNome.getText().isEmpty() == true || txtCliFone.getText().isEmpty() ==  true)) {
+
+            if ((txtCliNome.getText().isEmpty() == true || txtCliFone.getText().isEmpty() == true)) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
             } else {
 
@@ -166,7 +170,7 @@ public class CadClientes extends javax.swing.JFrame {
 
                 }
             }
-        
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
@@ -180,23 +184,30 @@ public class CadClientes extends javax.swing.JFrame {
         if (confirma == JOptionPane.YES_OPTION) {
 
             try {
-
-                String sql = "delete from tbclientes where idcli=?";
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtId.getText());
-                int apagado = pst.executeUpdate();
-
-                if (apagado > 0) {
-                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                    this.setEnabled(false);
-                    tirarId();
-                    criarId();
-                    this.setEnabled(true);
-                 
-                    JOptionPane.showMessageDialog(null, "Cliente removido com sucesso.");
+                if (Integer.parseInt(txtId.getText()) == 1) {
+                    JOptionPane.showMessageDialog(null, "Caixa não pode ser removido");
                     limpar();
+                } else {
+                    removeComprasDoCliente();
 
+                    String sql = "delete from tbclientes where idcli=?";
+                    pst = conexao.prepareStatement(sql);
+                    pst.setString(1, txtId.getText());
+                    int apagado = pst.executeUpdate();
+
+                    if (apagado > 0) {
+                        JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
+                        this.setEnabled(false);
+                        tirarId();
+                        criarId();
+                        this.setEnabled(true);
+
+                        JOptionPane.showMessageDialog(null, "Cliente removido com sucesso.");
+                        limpar();
+
+                    }
                 }
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 limpar();
@@ -205,31 +216,23 @@ public class CadClientes extends javax.swing.JFrame {
 
     }
 
-    private void tirarId() {
-
-        String sql = "alter table tbclientes drop idcli";
+    public void removeComprasDoCliente() {
         try {
-            pst = conexao.prepareStatement(sql);
-            pst.executeUpdate();
 
+            String sql = "select id from tbtotalvendas";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; i < tbAuxilio1.getRowCount(); i++) {
+                String sqr = "delete from tbtotalvendas where idcliente=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setString(1, txtId.getText());
+                pst.executeUpdate();
+
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
-
-    }
-
-    private void criarId() {
-        String sql = "alter table tbclientes add idcli MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.executeUpdate();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
         }
     }
 
@@ -252,11 +255,43 @@ public class CadClientes extends javax.swing.JFrame {
 
     }
 
+    private void tirarId() {
+
+        String sql = "alter table tbtotalvendas drop id";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+
+    }
+
+    private void criarId() {
+        String sql = "alter table tbtotalvendas add id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         txtId = new javax.swing.JTextField();
+        scAuxilio = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
+        scAuxilio1 = new javax.swing.JScrollPane();
+        tbAuxilio1 = new javax.swing.JTable();
         lblNome = new javax.swing.JLabel();
         lblSexo = new javax.swing.JLabel();
         lblCamposObrigatorios = new javax.swing.JLabel();
@@ -285,6 +320,32 @@ public class CadClientes extends javax.swing.JFrame {
         txtCliCep = new javax.swing.JFormattedTextField();
 
         txtId.setText("jTextField1");
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio.setViewportView(tbAuxilio);
+
+        tbAuxilio1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio1.setViewportView(tbAuxilio1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cadastro de Clientes");
@@ -633,7 +694,11 @@ public class CadClientes extends javax.swing.JFrame {
     private javax.swing.JLabel lblSexo;
     private javax.swing.JLabel lblTelefone;
     private javax.swing.JPanel pnClientes;
+    private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scAuxilio1;
     private javax.swing.JScrollPane scClientes;
+    private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbAuxilio1;
     private javax.swing.JTable tbClientes;
     private javax.swing.JTextField txtCliBairro;
     private javax.swing.JFormattedTextField txtCliCep;

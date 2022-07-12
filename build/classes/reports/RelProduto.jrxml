@@ -4,8 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
-		<![CDATA[Select * from tbProdutos
-]]>
+		<![CDATA[Select * from tbProdutos]]>
 	</queryString>
 	<field name="idproduto" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -143,6 +142,9 @@
 			</line>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="7ddb3e34-185f-420b-b621-5ff2ec58fe0d"/>
+			</line>
+			<line>
+				<reportElement x="0" y="30" width="555" height="1" uuid="e4cb479b-b156-4acc-95b2-33c0da88e64f"/>
 			</line>
 		</band>
 	</detail>
