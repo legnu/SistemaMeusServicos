@@ -51,7 +51,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         try {
 
-            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and dia_Pagamento = current_date()";
+            String sql = "select id as ID ,dia as Data_Emissao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and dia_Pagamento = current_date()";
             pst = conexao.prepareStatement(sql);
 
             rs = pst.executeQuery();
@@ -106,6 +106,44 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         }
     }
+    
+     public void instanciarTabelaCliente() {
+        try {
+
+            String sql = "select id from tbtotalvendas where tipo='Venda'";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; i < tbAuxilio1.getRowCount(); i++) {
+
+                String sqo = "select idcliente from tbtotalvendas where id=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());               
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String id = tbAuxilio.getModel().getValueAt(0, 0).toString();
+               
+                
+                String sqy = "select nomecli from tbclientes where idcli=?";
+                pst = conexao.prepareStatement(sqy);
+                pst.setString(1, id);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                String nome = tbAuxilio.getModel().getValueAt(0, 0).toString();
+                System.out.println(nome + " " + id);
+                
+                String sqr = "update tbtotalvendas set cliente=? where id=?";
+                pst = conexao.prepareStatement(sqr);
+                pst.setString(1, nome);
+                pst.setString(2, tbAuxilio1.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -120,6 +158,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         tbRecebido = new javax.swing.JTable();
         scPago = new javax.swing.JScrollPane();
         tbPago = new javax.swing.JTable();
+        scAuxilio = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
+        scAuxilio1 = new javax.swing.JScrollPane();
+        tbAuxilio1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         lblData = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -190,6 +232,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         ));
         scPago.setViewportView(tbPago);
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio.setViewportView(tbAuxilio);
+
+        tbAuxilio1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio1.setViewportView(tbAuxilio1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Meus Serviços - Controle de Ordens de Serviços");
@@ -287,17 +355,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblUsuario)
-                    .addComponent(lblData)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblUsuario)
+                            .addComponent(lblData)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addContainerGap())
                     .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, 0))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -382,7 +448,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu1.setText("Relatorios");
         jMenu1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
 
-        relAtividadeClientes.setText("Atividade Clientes");
+        relAtividadeClientes.setText("Situação Clientela");
         relAtividadeClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 relAtividadeClientesActionPerformed(evt);
@@ -600,6 +666,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         //As Linhas abaixo substituem a label lblData pela Data Atual
         instanciarTabelaVendas();
         instanciarTabelaGasto();
+        instanciarTabelaCliente();
         Date data = new Date();
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         lblData.setText(df.format(data));
@@ -871,8 +938,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem relAtividadeClientes;
     private javax.swing.JMenuItem relClientes;
     private javax.swing.JMenuItem relOrdemServico;
+    private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JScrollPane scAuxilio1;
     private javax.swing.JScrollPane scPago;
     private javax.swing.JScrollPane scRecebido;
+    private javax.swing.JTable tbAuxilio;
+    private javax.swing.JTable tbAuxilio1;
     private javax.swing.JTable tbPago;
     private javax.swing.JTable tbRecebido;
     // End of variables declaration//GEN-END:variables

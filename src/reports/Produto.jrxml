@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Produto" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="68ccd48a-4db1-429d-bf89-ce7e0b26b0d6">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from tbprodutos where estoque='Com controle de estoque.']]>
+	</queryString>
+	<field name="idproduto" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="codigo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="produto" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="valor_compra" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="valor_venda" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fornecedor" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="obs" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="estoque" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="quantidade" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="referencial_compra" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="referencial_venda" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="compra_x_venda" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="236" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="213" uuid="20623bd6-1148-41a8-add3-dd82e50365c0"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TituloSemCliente.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="31" splitType="Stretch">
+			<staticText>
+				<reportElement x="56" y="0" width="219" height="23" uuid="3f82cc35-872d-4c16-988f-aa089208b874"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Produto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="56" height="23" uuid="f121918f-8b3f-4d51-aa88-a0333344ce54"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quant.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="275" y="0" width="144" height="23" uuid="5ab31d98-1371-41e6-a24d-f73cbd754016"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[P.Compra(R$)]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="a80d31cc-82c6-4777-9288-9f7562fa34c8"/>
+			</line>
+			<line>
+				<reportElement x="0" y="23" width="555" height="1" uuid="c4a21fb5-f1a7-4576-9dfa-8cee780b2aba"/>
+			</line>
+			<staticText>
+				<reportElement x="419" y="0" width="136" height="24" uuid="4c9d291c-c0e3-421a-8adb-86d4c1220886"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[P.Venda(R$)]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="56" y="0" width="219" height="20" uuid="4ac744b3-bd10-483f-a9cb-52331ebe3e91"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{produto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="56" height="20" uuid="3eca2bb3-1e35-4b3d-b32b-33bdc5cec4f9"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantidade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="275" y="0" width="144" height="20" uuid="33fce791-7fe2-40ec-a73e-d2827de4427e"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_compra}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="419" y="0" width="136" height="20" uuid="5341471f-f2f3-4876-89b1-18dad196dce3"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_venda}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="72" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="23" width="555" height="47" uuid="f0331f23-8fd5-495e-a33b-4af6447460b5"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="4782b0b1-aed6-4918-bb71-744a76aa722c"/>
+			</line>
+		</band>
+	</columnFooter>
+	<lastPageFooter>
+		<band height="32">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="7" width="259" height="25" uuid="1cc0059c-0005-4b99-9673-62e7506f3750"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+</jasperReport>

@@ -69,6 +69,19 @@ public class telaCaixa extends javax.swing.JFrame {
         }
     }
 
+    public void instanciarEntrada_Saida_Lucro() {
+        try {
+            String sqo = "update tbrelatorio set entrada=?,saida=?,lucro=? where idRelatorio=1";
+            pst = conexao.prepareStatement(sqo);
+            pst.setString(1, lblTotalRecebido.getText());
+            pst.setString(2, lblTotalPago.getText());
+            pst.setString(3, lblTotalCaixa.getText());
+            pst.executeUpdate();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
     public void instanciarTabelaCliente() {
         try {
             String sql = "select id from tbtotalvendas where tipo='Venda'";
@@ -77,16 +90,14 @@ public class telaCaixa extends javax.swing.JFrame {
             tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
 
             for (int i = 0; i < tbAuxilio1.getRowCount(); i++) {
-               
 
                 String sqo = "select idcliente from tbtotalvendas where id=?";
                 pst = conexao.prepareStatement(sqo);
-                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());               
+                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());
                 rs = pst.executeQuery();
                 tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
                 String id = tbAuxilio.getModel().getValueAt(0, 0).toString();
-               
-                
+
                 String sqy = "select nomecli from tbclientes where idcli=?";
                 pst = conexao.prepareStatement(sqy);
                 pst.setString(1, id);
@@ -94,13 +105,12 @@ public class telaCaixa extends javax.swing.JFrame {
                 tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
                 String nome = tbAuxilio.getModel().getValueAt(0, 0).toString();
                 System.out.println(nome + " " + id);
-                
+
                 String sqr = "update tbtotalvendas set cliente=? where id=?";
                 pst = conexao.prepareStatement(sqr);
                 pst.setString(1, nome);
                 pst.setString(2, tbAuxilio1.getModel().getValueAt(i, 0).toString());
                 pst.executeUpdate();
-                
 
             }
         } catch (Exception e) {
@@ -119,7 +129,7 @@ public class telaCaixa extends javax.swing.JFrame {
             java.util.Date aFinal = DaFinal.getDate();
             java.sql.Date bFinal = new java.sql.Date(aFinal.getTime());
 
-            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and  dia between '" + bInicial + "' and '" + bFinal + "'";
+            String sql = "select id as ID ,dia as Data_Emissao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago' and  dia between '" + bInicial + "' and '" + bFinal + "'";
 
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -217,7 +227,7 @@ public class telaCaixa extends javax.swing.JFrame {
 
         try {
 
-            String sql = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago'";
+            String sql = "select id as ID ,dia as Data_Emissao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pago'";
             pst = conexao.prepareStatement(sql);
 
             rs = pst.executeQuery();
@@ -639,7 +649,8 @@ public class telaCaixa extends javax.swing.JFrame {
         instanciarTabelaGasto();
         instanciarTabelaVendas();
         instanciarTabela();
-       
+        instanciarEntrada_Saida_Lucro();
+
 
     }//GEN-LAST:event_formWindowActivated
 

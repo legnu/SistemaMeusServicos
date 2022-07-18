@@ -220,7 +220,7 @@
         <Component class="javax.swing.JToggleButton" name="btnImprimir">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/br/com/MeusServicos/icones/ImpresoraIcon.png"/>
+              <Image iconType="3" name="/br/com/MeusServicos/icones/impresora 64x63.png"/>
             </Property>
             <Property name="borderPainted" type="boolean" value="false"/>
             <Property name="contentAreaFilled" type="boolean" value="false"/>

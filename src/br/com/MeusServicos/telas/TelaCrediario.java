@@ -339,7 +339,7 @@ public class TelaCrediario extends javax.swing.JFrame {
                 pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas a Pagar:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
             } else {
-                String sqr = "select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pendente'";
+                String sqr = "select id as ID ,dia as Data_Emissao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pendente'";
                 pst = conexao.prepareStatement(sqr);
                 rs = pst.executeQuery();
                 tbContas.setModel(DbUtils.resultSetToTableModel(rs));

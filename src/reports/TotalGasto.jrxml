@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalGasto" language="groovy" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="863fd0a9-394b-4625-ab0c-1cb3424163b4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select * from tbrelatorio]]>
+	</queryString>
+	<field name="idRelatorio" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nome_empresa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nome_proprietario" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email_proprietario" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="descricao" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="numero" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="obs" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="imagem" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="preco" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="entrada" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="saida" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lucro" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<title>
+		<band height="63" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="27" width="127" height="23" uuid="efcbc9de-7d7a-4544-9e8b-af282e524e6a"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Gasto(R$): ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="127" y="27" width="115" height="23" forecolor="#CC0000" uuid="c8be0c2e-7f83-4886-a83f-a631cdb912d4"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saida}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="62" width="555" height="1" uuid="9f52a34d-2143-4a52-8221-9b3323938de5"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="50">
+			<line>
+				<reportElement x="294" y="0" width="1" height="38" uuid="61c88c7a-f50b-414d-8e0a-4c0fb49b7ad4"/>
+			</line>
+			<line>
+				<reportElement x="295" y="38" width="260" height="1" uuid="581ce66d-b7a2-49a2-b891-ce6cb24cdc30"/>
+			</line>
+			<staticText>
+				<reportElement x="295" y="8" width="160" height="21" uuid="ea3c6ec4-68e7-4584-957e-47ce8d5c9df8"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lucratividade(R$): ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="455" y="8" width="100" height="21" forecolor="#0033CC" uuid="af3a6b19-aac3-40bc-acdf-eea8ab6bc6f1"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lucro}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+</jasperReport>

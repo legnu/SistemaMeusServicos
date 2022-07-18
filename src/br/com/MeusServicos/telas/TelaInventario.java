@@ -216,10 +216,10 @@ public class TelaInventario extends javax.swing.JFrame {
             for (int i = 0; i < tbProdutos.getRowCount(); i++) {
                 x = Double.parseDouble(String.valueOf(Double.parseDouble(tbProdutos.getModel().getValueAt(i, 3).toString().replace(".", "")) / 100));
                 y = Double.parseDouble(String.valueOf(Double.parseDouble(tbProdutos.getModel().getValueAt(i, 4).toString().replace(".", "")) / 100));
-                String sqr = "update tbprodutos set compra_x_venda=? where idproduto=" + t;
+                String sqr = "update tbprodutos set compra_x_venda=? where idproduto=?";
                 pst = conexao.prepareStatement(sqr);
                 pst.setString(1, new DecimalFormat("#,##0.00").format(Double.parseDouble(String.valueOf(y - x))).replace(",", "."));
-
+                pst.setString(2, tbProdutos.getModel().getValueAt(i, 0).toString());
                 pst.executeUpdate();
                 t++;
 
@@ -361,7 +361,7 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
-        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/ImpresoraIcon.png"))); // NOI18N
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/impresora 64x63.png"))); // NOI18N
         btnImprimir.setBorderPainted(false);
         btnImprimir.setContentAreaFilled(false);
         btnImprimir.addActionListener(new java.awt.event.ActionListener() {

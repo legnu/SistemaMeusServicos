@@ -1,47 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaPdv" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0c317b7e-de7a-4e5b-9a08-fa4ea2389a09">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaPDV" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d59ce0fa-1189-4783-a358-73b254cf2c45">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[select * from tbvenda]]>
+		<![CDATA[SELECT P.nome as Nome,
+    P.preco,
+    P.quantidade as Quantidade,
+    C.nome_empresa,
+    C.nome_proprietario,
+    C.email_proprietario,
+    C.descricao,
+    C.numero,
+    C.obs,
+    C.cliente,
+    C.preco as Total
+FROM
+    tbvenda P
+ left join
+  tbrelatorio C
+  ON P.idvenda = C.idRelatorio;]]>
 	</queryString>
-	<field name="cliente_venda" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="nome" class="java.lang.String">
+	<field name="Nome" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="preco" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="quantidade" class="java.lang.Integer">
+	<field name="Quantidade" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="pagamento" class="java.lang.String">
+	<field name="nome_empresa" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="idvenda" class="java.lang.Integer">
+	<field name="nome_proprietario" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="email_proprietario" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="descricao" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="numero" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="obs" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Total" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="67" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="0" width="237" height="30" uuid="48d50142-171e-4d2c-9a19-046953a07ef1"/>
+		<band height="284" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="284" uuid="07d735b4-c1a6-4cb1-be14-84ff8aa52085"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "titulo.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="476" y="264" width="100" height="20" uuid="6485dee0-890a-404f-9a5d-b19925fad454"/>
 				<textElement>
-					<font fontName="Dialog" size="20" isBold="true"/>
+					<font fontName="Dialog" size="12"/>
 				</textElement>
-				<text><![CDATA[Nota Ponto de Vendas]]></text>
-			</staticText>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="424" y="0" width="131" height="30" uuid="9ca6a2e6-f06f-4cfe-8184-5c3c0ab2be2e"/>
-				<textElement>
-					<font fontName="Dialog" size="20" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -49,74 +78,117 @@
 		<band splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="33" splitType="Stretch">
+		<band height="29" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="127" height="31" uuid="98f1d27e-d620-4929-adf9-c6c73bb6e5dc"/>
-				<textElement>
-					<font fontName="Dialog" size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Produto/OS]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="222" y="0" width="60" height="31" uuid="cdca04e4-d100-4ff0-88f4-811f96286fb9"/>
-				<textElement>
-					<font fontName="Dialog" size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Preço]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="435" y="0" width="120" height="31" uuid="6ac42242-0cfa-4a7b-824d-2686d238412e"/>
+				<reportElement x="0" y="0" width="100" height="24" uuid="e71d038d-387e-45ca-816e-8211c60448ab"/>
 				<textElement>
 					<font fontName="Dialog" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Quantidade]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="168" y="0" width="100" height="24" uuid="56cbab8c-a8fc-40d3-bd5b-26d3574bfed0"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="0" width="100" height="24" uuid="ceaf1657-d874-4f52-b787-8a14663ae0ab"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Preço]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="49240487-2b15-4976-9156-a5c587c2912e"/>
+			</line>
+			<line>
+				<reportElement x="0" y="24" width="555" height="1" uuid="1ae99b89-5727-4aad-8d29-7a85c0fc20e9"/>
+			</line>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="28" splitType="Stretch">
+		<band height="33" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="100" height="20" uuid="f29a0db7-0a02-46f2-bd13-99a82f385f31"/>
+				<reportElement x="0" y="5" width="100" height="25" uuid="2c2939bc-b29c-4050-8ca0-fb31c01cdb83"/>
 				<textElement>
-					<font fontName="Dialog" size="12" isBold="true"/>
+					<font fontName="Dialog" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{Quantidade}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="435" y="0" width="120" height="20" uuid="1db8d281-9c5c-4ecf-835d-7137372340d9"/>
+				<reportElement x="168" y="5" width="100" height="25" uuid="4a7c512d-24d7-4290-8094-693e3e111ecd"/>
 				<textElement>
-					<font fontName="Dialog" size="12" isBold="true"/>
+					<font fontName="Dialog" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{quantidade}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{Nome}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="222" y="0" width="100" height="20" uuid="90c15b55-9c5c-47bd-ab12-71e07ec11401"/>
+				<reportElement x="455" y="5" width="100" height="25" uuid="d0b2cf83-d894-4fa7-bdfb-86bc5780993c"/>
 				<textElement>
-					<font fontName="Dialog" size="12" isBold="true"/>
+					<font fontName="Dialog" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{preco}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="153" y="-33" width="1" height="61" uuid="f8b3d28c-5a59-408c-9a02-3ad4b7ed1e01"/>
-			</line>
-			<line>
-				<reportElement x="379" y="-33" width="1" height="61" uuid="4e6ceac9-80a4-4d8a-a403-6f422e78d396"/>
-			</line>
-			<line>
-				<reportElement x="0" y="0" width="555" height="1" uuid="4456cb1c-1054-4641-9240-032327fa69c1"/>
-			</line>
-			<line>
-				<reportElement x="0" y="27" width="555" height="1" uuid="22ee6e4a-db88-4fa2-8cf6-ed074906e82b"/>
-			</line>
 		</band>
 	</detail>
 	<columnFooter>
-		<band splitType="Stretch"/>
+		<band height="49" splitType="Stretch">
+			<subreport>
+				<reportElement x="455" y="16" width="100" height="20" uuid="ca59f0c4-271a-40db-b94e-249b42b705f4"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "total.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="410" y="16" width="45" height="20" uuid="20de431c-0339-40d8-84d8-4bf18b162690"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="e1e2be25-4aae-462c-a1f0-018013c7ed93"/>
+			</line>
+			<subreport>
+				<reportElement x="0" y="16" width="354" height="20" uuid="9d05f067-af7b-45f5-b227-fc99cddce6af"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
 	</columnFooter>
 	<pageFooter>
 		<band splitType="Stretch"/>
 	</pageFooter>
+	<lastPageFooter>
+		<band height="47">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="18" width="168" height="29" uuid="5c6f9710-4b30-4108-a352-84ecad1e0fd3"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="439" y="18" width="37" height="29" uuid="e8c64acd-15a6-4b44-9073-8eb6ff3a054b"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pag:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="476" y="18" width="79" height="29" uuid="01c7ac3c-68d9-45e7-acab-fb5830022145"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="4440dbc4-2294-4490-9c6a-f977e7d89fde"/>
+			</line>
+		</band>
+	</lastPageFooter>
 	<summary>
-		<band splitType="Stretch"/>
+		<band height="16" splitType="Stretch"/>
 	</summary>
 </jasperReport>

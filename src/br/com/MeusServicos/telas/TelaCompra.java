@@ -293,7 +293,7 @@ public class TelaCompra extends javax.swing.JFrame {
 
                 }
 
-                String sql = "insert into tbgastos(valor, data_emicao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
+                String sql = "insert into tbgastos(valor, data_emissao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
 
                 pst = conexao.prepareStatement(sql);
 
@@ -351,7 +351,7 @@ public class TelaCompra extends javax.swing.JFrame {
                     java.sql.Date dSqt = new java.sql.Date(data.getTime());
                     df.format(dSqt);
 
-                    String sql = "insert into tbgastos(valor, data_emicao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
+                    String sql = "insert into tbgastos(valor, data_emissao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
 
                     pst = conexao.prepareStatement(sql);
 

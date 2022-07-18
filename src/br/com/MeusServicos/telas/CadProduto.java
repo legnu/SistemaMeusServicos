@@ -51,6 +51,7 @@ public class CadProduto extends javax.swing.JFrame {
 
     public void InstanciarCombobox() {
         try {
+            cbFornecedor.removeAllItems();
             cbFornecedor.addItem("Selecione");
             String sql = "select nome_fornecedor from tbfornecedor";
             pst = conexao.prepareStatement(sql);

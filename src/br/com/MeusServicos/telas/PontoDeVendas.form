@@ -167,6 +167,9 @@
       </SubComponents>
     </Container>
     <Component class="javax.swing.JTextField" name="txtCliente">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Caixa"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtCrediario">
     </Component>
