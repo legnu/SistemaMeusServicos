@@ -3,10 +3,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/SubClienteMaquina.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/SubClienteAnimal.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadClientes.java</file>
-            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/SubClientePessoa.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaRelatorio.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaPrincipal.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/CadUsuarios.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/telaSangria.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaInventario.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/telaCaixa.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaSobre.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaLimitada.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaCrediario.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/telaSuprimento.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaServico.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/telaDesconto.java</file>
+            <file>file:/C:/Users/Ad3ln0r/Documents/NetBeansProjects/prjMeusServicos/src/br/com/MeusServicos/telas/TelaLogin.java</file>
         </group>
     </open-files>
 </project-private>

@@ -336,14 +336,14 @@ public class TelaCrediario extends javax.swing.JFrame {
                 pst = conexao.prepareStatement(sqr);
                 rs = pst.executeQuery();
                 tbContas.setModel(DbUtils.resultSetToTableModel(rs));
-                pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas a Pagar:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
+                pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas a Pagar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
             } else {
                 String sqr = "select id as ID ,dia as Data_Emissao, hora as Hora, cliente as Cliente, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas where status_pagamento='Pendente'";
                 pst = conexao.prepareStatement(sqr);
                 rs = pst.executeQuery();
                 tbContas.setModel(DbUtils.resultSetToTableModel(rs));
-                pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas a Receber:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
+                pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas a Receber", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
             }
 
@@ -368,7 +368,6 @@ public class TelaCrediario extends javax.swing.JFrame {
         scAuxilio1 = new javax.swing.JScrollPane();
         tbAuxilio1 = new javax.swing.JTable();
         pnPrincipal = new javax.swing.JPanel();
-        btnLogo = new javax.swing.JToggleButton();
         pnTabela = new javax.swing.JPanel();
         scContas = new javax.swing.JScrollPane();
         tbContas = new javax.swing.JTable();
@@ -403,7 +402,6 @@ public class TelaCrediario extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Tela Contas");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -413,19 +411,18 @@ public class TelaCrediario extends javax.swing.JFrame {
             }
         });
 
+        pnPrincipal.setBackground(new java.awt.Color(204, 204, 204));
         pnPrincipal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        btnLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
-        btnLogo.setBorderPainted(false);
-        btnLogo.setContentAreaFilled(false);
-
-        pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        pnTabela.setBackground(new java.awt.Color(204, 204, 204));
+        pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         tbContas = new javax.swing.JTable(){
             public boolean isCellEditable(int rowIndex, int colIndex){
                 return false;
             }
         };
+        tbContas.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         tbContas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -445,6 +442,7 @@ public class TelaCrediario extends javax.swing.JFrame {
         });
         scContas.setViewportView(tbContas);
 
+        rbPagar.setBackground(new java.awt.Color(204, 204, 204));
         grupo1.add(rbPagar);
         rbPagar.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbPagar.setText("A Pagar");
@@ -454,6 +452,7 @@ public class TelaCrediario extends javax.swing.JFrame {
             }
         });
 
+        rbReceber.setBackground(new java.awt.Color(204, 204, 204));
         grupo1.add(rbReceber);
         rbReceber.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbReceber.setText("A Receber");
@@ -467,13 +466,13 @@ public class TelaCrediario extends javax.swing.JFrame {
         pnTabela.setLayout(pnTabelaLayout);
         pnTabelaLayout.setHorizontalGroup(
             pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scContas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE)
             .addGroup(pnTabelaLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(rbPagar)
                 .addGap(18, 18, 18)
                 .addComponent(rbReceber)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(scContas, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
         );
         pnTabelaLayout.setVerticalGroup(
             pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -483,36 +482,31 @@ public class TelaCrediario extends javax.swing.JFrame {
                     .addComponent(rbPagar)
                     .addComponent(rbReceber))
                 .addGap(16, 16, 16)
-                .addComponent(scContas, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(scContas, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnPrincipalLayout = new javax.swing.GroupLayout(pnPrincipal);
         pnPrincipal.setLayout(pnPrincipalLayout);
         pnPrincipalLayout.setHorizontalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnLogo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(24, 24, 24)
                 .addComponent(pnTabela, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(16, 16, 16))
+                .addGap(24, 24, 24))
         );
         pnPrincipalLayout.setVerticalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnLogo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pnTabela, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+                .addGap(24, 24, 24)
+                .addComponent(pnTabela, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(24, 24, 24))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(pnPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -588,7 +582,6 @@ public class TelaCrediario extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton btnLogo;
     private javax.swing.ButtonGroup grupo1;
     private javax.swing.JPanel pnPrincipal;
     private javax.swing.JPanel pnTabela;

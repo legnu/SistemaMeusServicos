@@ -294,13 +294,13 @@ public class TelaInventario extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Inventario");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
             }
         });
 
+        pnPrincipal.setBackground(new java.awt.Color(204, 204, 204));
         pnPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produtos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         lblValor.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
@@ -334,6 +334,7 @@ public class TelaInventario extends javax.swing.JFrame {
         });
         scProdutos.setViewportView(tbProdutos);
 
+        rbVendaCompra.setBackground(new java.awt.Color(204, 204, 204));
         grupo1.add(rbVendaCompra);
         rbVendaCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbVendaCompra.setText("Venda X Compra");
@@ -343,6 +344,7 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
+        rbReferrencialVenda.setBackground(new java.awt.Color(204, 204, 204));
         grupo1.add(rbReferrencialVenda);
         rbReferrencialVenda.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbReferrencialVenda.setText("Referencial P.Venda");
@@ -352,6 +354,7 @@ public class TelaInventario extends javax.swing.JFrame {
             }
         });
 
+        rbReferencialCompra.setBackground(new java.awt.Color(204, 204, 204));
         grupo1.add(rbReferencialCompra);
         rbReferencialCompra.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbReferencialCompra.setText("Referencial P.Compra");
@@ -375,11 +378,11 @@ public class TelaInventario extends javax.swing.JFrame {
         pnPrincipalLayout.setHorizontalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(24, 24, 24)
                 .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnPrincipalLayout.createSequentialGroup()
-                        .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
-                        .addContainerGap())
+                        .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 797, Short.MAX_VALUE)
+                        .addGap(24, 24, 24))
                     .addGroup(pnPrincipalLayout.createSequentialGroup()
                         .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(pnPrincipalLayout.createSequentialGroup()
@@ -395,7 +398,7 @@ public class TelaInventario extends javax.swing.JFrame {
                                 .addGap(16, 16, 16)
                                 .addComponent(rbVendaCompra)
                                 .addGap(0, 0, Short.MAX_VALUE)))
-                        .addGap(16, 16, 16))))
+                        .addGap(24, 24, 24))))
         );
         pnPrincipalLayout.setVerticalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -405,26 +408,26 @@ public class TelaInventario extends javax.swing.JFrame {
                     .addComponent(rbVendaCompra)
                     .addComponent(rbReferrencialVenda)
                     .addComponent(rbReferencialCompra))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addComponent(scProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addComponent(scProdutos, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
                 .addGap(24, 24, 24)
                 .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblNome)
                         .addComponent(lblValor))
                     .addComponent(btnImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16))
+                .addGap(24, 24, 24))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(pnPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(pnPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();

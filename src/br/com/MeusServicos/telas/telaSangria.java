@@ -54,7 +54,7 @@ public class telaSangria extends javax.swing.JFrame {
 
     private void adicionar() {
 
-        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor)values(?,?,?,?)";
+        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
 
         try {
             Date d = new Date();
@@ -72,6 +72,7 @@ public class telaSangria extends javax.swing.JFrame {
             pst.setDate(2, dSql);
             pst.setString(3, "Pago");
             pst.setString(4, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtSangria.getText().replace(",", "."))).replace(",", "."));
+            pst.setString(5, "Sangria");
            
 
             //Validação dos Campos Obrigatorios
@@ -132,9 +133,9 @@ public class telaSangria extends javax.swing.JFrame {
         setTitle("Sangria");
         setResizable(false);
 
-        pnPrincipalSangria.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        pnPrincipalSangria.setBackground(new java.awt.Color(204, 204, 204));
 
-        btnAdicionarSangria.setBackground(new java.awt.Color(51, 255, 0));
+        btnAdicionarSangria.setBackground(new java.awt.Color(0, 204, 51));
         btnAdicionarSangria.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         btnAdicionarSangria.setForeground(new java.awt.Color(255, 255, 255));
         btnAdicionarSangria.setText("Adicionar");
@@ -145,6 +146,7 @@ public class telaSangria extends javax.swing.JFrame {
             }
         });
 
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Valor da Sangria", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -158,6 +160,7 @@ public class telaSangria extends javax.swing.JFrame {
             .addComponent(txtSangria, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
         );
 
+        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Descrição", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -176,25 +179,25 @@ public class telaSangria extends javax.swing.JFrame {
         pnPrincipalSangriaLayout.setHorizontalGroup(
             pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalSangriaLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(18, 18, 18)
                 .addGroup(pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnPrincipalSangriaLayout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
+                        .addGap(10, 10, 10)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnAdicionarSangria, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE))
-                .addGap(16, 16, 16))
+                .addGap(18, 18, 18))
         );
         pnPrincipalSangriaLayout.setVerticalGroup(
             pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalSangriaLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(18, 18, 18)
                 .addGroup(pnPrincipalSangriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(10, 10, 10)
                 .addComponent(btnAdicionarSangria, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addGap(18, 18, 18))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

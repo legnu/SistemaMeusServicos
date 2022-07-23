@@ -231,10 +231,7 @@ public class TelaClientes extends javax.swing.JFrame {
         scAuxilio = new javax.swing.JScrollPane();
         tbAuxilio = new javax.swing.JTable();
         Grupo1 = new javax.swing.ButtonGroup();
-        scPrincipal = new javax.swing.JScrollPane();
-        pnSC = new javax.swing.JPanel();
         pnPrincipal = new javax.swing.JPanel();
-        btnLogo = new javax.swing.JToggleButton();
         pnClientes = new javax.swing.JPanel();
         scClientes = new javax.swing.JScrollPane();
         tbClientesAtivos = new javax.swing.JTable();
@@ -259,23 +256,16 @@ public class TelaClientes extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Tela Clientes");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
             }
         });
 
-        scPrincipal.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scPrincipal.setToolTipText("");
-        scPrincipal.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-
+        pnPrincipal.setBackground(new java.awt.Color(204, 204, 204));
         pnPrincipal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        btnLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
-        btnLogo.setBorderPainted(false);
-        btnLogo.setContentAreaFilled(false);
-
+        pnClientes.setBackground(new java.awt.Color(204, 204, 204));
         pnClientes.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Clientes Ativos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         tbClientesAtivos = new javax.swing.JTable(){
@@ -283,6 +273,7 @@ public class TelaClientes extends javax.swing.JFrame {
                 return false;
             }
         };
+        tbClientesAtivos.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         tbClientesAtivos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -297,6 +288,7 @@ public class TelaClientes extends javax.swing.JFrame {
         tbClientesAtivos.setFocusable(false);
         scClientes.setViewportView(tbClientesAtivos);
 
+        rbAtivo.setBackground(new java.awt.Color(204, 204, 204));
         Grupo1.add(rbAtivo);
         rbAtivo.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbAtivo.setText("Ativos");
@@ -306,6 +298,7 @@ public class TelaClientes extends javax.swing.JFrame {
             }
         });
 
+        rbInativo.setBackground(new java.awt.Color(204, 204, 204));
         Grupo1.add(rbInativo);
         rbInativo.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbInativo.setText("Inativos");
@@ -331,20 +324,20 @@ public class TelaClientes extends javax.swing.JFrame {
         pnClientes.setLayout(pnClientesLayout);
         pnClientesLayout.setHorizontalGroup(
             pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+            .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
             .addGroup(pnClientesLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnClientesLayout.createSequentialGroup()
                         .addComponent(rbAtivo)
-                        .addGap(34, 34, 34)
+                        .addGap(16, 16, 16)
                         .addComponent(rbInativo)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(pnClientesLayout.createSequentialGroup()
                         .addComponent(lblPesquisar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txtPesquisar)))
-                .addContainerGap())
+                .addGap(16, 16, 16))
         );
         pnClientesLayout.setVerticalGroup(
             pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -358,8 +351,7 @@ public class TelaClientes extends javax.swing.JFrame {
                     .addComponent(rbAtivo)
                     .addComponent(rbInativo))
                 .addGap(16, 16, 16)
-                .addComponent(scClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE))
         );
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -369,55 +361,38 @@ public class TelaClientes extends javax.swing.JFrame {
         pnPrincipal.setLayout(pnPrincipalLayout);
         pnPrincipalLayout.setHorizontalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(24, 24, 24)
                 .addGroup(pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pnPrincipalLayout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(pnPrincipalLayout.createSequentialGroup()
-                        .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(16, 16, 16))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(24, 24, 24))
         );
         pnPrincipalLayout.setVerticalGroup(
             pnPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnPrincipalLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(btnLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24)
-                .addComponent(pnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(16, 16, 16)
                 .addComponent(jLabel1)
-                .addGap(16, 16, 16))
+                .addGap(24, 24, 24))
         );
-
-        javax.swing.GroupLayout pnSCLayout = new javax.swing.GroupLayout(pnSC);
-        pnSC.setLayout(pnSCLayout);
-        pnSCLayout.setHorizontalGroup(
-            pnSCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnSCLayout.createSequentialGroup()
-                .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        pnSCLayout.setVerticalGroup(
-            pnSCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnSCLayout.createSequentialGroup()
-                .addComponent(pnPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
-        );
-
-        scPrincipal.setViewportView(pnSC);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 627, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(pnPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 599, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(pnPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -484,17 +459,14 @@ public class TelaClientes extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup Grupo1;
-    private javax.swing.JToggleButton btnLogo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblPesquisar;
     private javax.swing.JPanel pnClientes;
     private javax.swing.JPanel pnPrincipal;
-    private javax.swing.JPanel pnSC;
     private javax.swing.JRadioButton rbAtivo;
     private javax.swing.JRadioButton rbInativo;
     private javax.swing.JScrollPane scAuxilio;
     private javax.swing.JScrollPane scClientes;
-    private javax.swing.JScrollPane scPrincipal;
     private javax.swing.JTable tbAuxilio;
     private javax.swing.JTable tbClientesAtivos;
     private javax.swing.JTextField txtPesquisar;

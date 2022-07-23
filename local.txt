@@ -7,15 +7,17 @@ use dbmeusservicos;
 create table tbusuarios(
 iduser MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 usuario varchar(50) not null,
-cargo_usuario varchar(15),
+cargo_usuario varchar(50),
 telefone varchar(20) not null,
-login varchar(15) not null unique,
-senha varchar(20) not null,
-perfil varchar(20) not  null
+login varchar(50) not null unique,
+senha varchar(50) not null,
+perfil varchar(50) not  null,
+comissao varchar(50)not null,
+salario varchar(30)
 );
 
-insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil)
-values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador');
+insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil,comissao)
+values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador','0%');
 
 create table tbclientes(
 idcli MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -56,6 +58,7 @@ obs text,
 tipo varchar(80)
 );
 select * from tbsubclientes;
+select idsub as ID, nome as Nome, tipo as Tipo from tbsubclientes where referencia=3;
 
 create table tbos(
 os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -66,7 +69,7 @@ previsao_entreg_os date,
 equipamento varchar(150) not null,
 defeito varchar(150) not null,
 servico varchar(150),
-tecnico varchar(30),
+funcionario varchar(30),
 valor varchar(20),
 cliente varchar(50)
 );
@@ -76,12 +79,17 @@ defeito as Defeito, servico as Serviço, tecnico as Tecnico, valor as Valor, cli
 
 create table tbvenda(
 idvenda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
-cliente_venda varchar(50),
 nome varchar(50),
 preco varchar(20),
 quantidade int,
-pagamento varchar(50)
+identificador varchar(30),
+comissao varchar(80),
+vendedor varchar(80),
+categoria varchar(80),
+tipo varchar(80)
 );
+
+select * from tbvenda;
 
 create table tbtotalvendas(
 id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -97,6 +105,7 @@ tipo varchar(50)
 );
 
 select *  from tbtotalvendas;
+select id from tbtotalvendas where id ORDER BY id desc;
 
 select id as ID ,dia as Data_Emicao, hora as Hora, cliente as Cliente_Suprimento, venda as Valor , dia_Pagamento as Dia_Pagamento from tbtotalvendas 
 where status_pagamento='Pago' and  dia = current_date();
@@ -127,7 +136,8 @@ nome_produto varchar(50),
 valor varchar(20),
 valor_unidade varchar(20),
 quantidade_comprada int,
-fornecedor varchar(50)
+fornecedor varchar(50),
+identificador varchar(30)
 );
 
 
@@ -138,7 +148,8 @@ data_emissao date,
 data_pagamento date,
 nome varchar(50),
 forma_pagamento varchar(50),
-status_pagamento varchar(50)
+status_pagamento varchar(50),
+tipo varchar(50)
 );
 
 select * from tbgastos;
@@ -153,14 +164,9 @@ nome_fornecedor varchar(80),
 razaosocial varchar(80),
 pessoa_juridica_fisica varchar(80),
 cnpj varchar(80),
-cidade_fornecedor varchar(80),
-bairro_fornecedor varchar(80),
-complemento_fornecedor varchar(80),
-cep_fornecedor varchar(20),
-numero_fornecedor varchar(5),
 telefone_fornecedor varchar(20),
 email_fornecedor varchar(80),
-rua_fornecedor varchar(80)
+endereco text
 );
 
 create table tbrelatorio(
@@ -184,11 +190,31 @@ idservico MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 servico varchar(50),
 id_cliente int,
 id_C_referencia int,
-data_agendada datetime,
+data_agendada timestamp unique,
 valor varchar(30),
 obs text,
-tipo varchar(80)
+tipo varchar(80),
+funcionario varchar(50)
 );
+
+select * from tbservicos where date(data_agendada) = current_date();
+select idservico as ID,servico as Serviço, data_agendada as Data_Agendada, obs as OBS, tipo as Tipo from tbservicos where tipo='Agendada' or tipo='Pendente' and  idservico ORDER BY tipo ASC;
+select * from tbservicos;
+
+create table tbFuncionarios(
+idFuncionario MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+funcionario varchar(80) unique,
+salario varchar(50),
+comissao varchar(10),
+contrato date,
+especialidade varchar(50),
+tipo varchar(50),
+data_pagamento date
+);
+select * from tbfuncionarios; 
+update tbfuncionarios set data_pagamento="2020-06-07" where idfuncionario=1;
+
+
 
 insert into tbrelatorio(idRelatorio) values(1);
 select * from tbrelatorio;

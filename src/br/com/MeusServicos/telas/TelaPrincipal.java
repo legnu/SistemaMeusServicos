@@ -17,6 +17,7 @@ import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -24,7 +25,6 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class TelaPrincipal extends javax.swing.JFrame {
 
-   
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
@@ -46,7 +46,135 @@ public class TelaPrincipal extends javax.swing.JFrame {
         this.dispose();
 
     }
+
+    public void salarioFuncionario() {
+        try {
+            String funcionario;
+
+            Date data = new Date();
+
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            java.sql.Date dSql = new java.sql.Date(data.getTime());
+            df.format(dSql);
+
+            String sql = "select idFuncionario,data_pagamento,salario,funcionario from tbFuncionarios";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbFuncionario.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; i < tbFuncionario.getRowCount(); i++) {
+                System.out.println(tbFuncionario.getModel().getValueAt(i, 1).toString());
+                String pagamento = tbFuncionario.getModel().getValueAt(i, 1).toString();
+                
+                 
+                if(tbFuncionario.getModel().getValueAt(i, 1).toString().isEmpty() == true){
+                    
+                }else if (data.after(df.parse(tbFuncionario.getModel().getValueAt(i, 1).toString())) ==  true) {
+                    String sqr = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
+                    pst = conexao.prepareStatement(sqr);
+                    pst.setString(1, "Pagamento de Funcionario");
+                    pst.setDate(2, dSql);
+                    pst.setString(3, "Pago");
+                    pst.setString(4, tbFuncionario.getModel().getValueAt(i, 2).toString());
+                    pst.setString(5, "Salario");
+                    pst.executeUpdate();
+
+                    String mes = new SimpleDateFormat("MM").format(data);
+                    String ano = new SimpleDateFormat("yyyy").format(data);
+
+                    int limite = Integer.parseInt(mes) + 1;
+
+                    if (limite > 12) {
+                        limite = limite - 12;
+                        ano = String.valueOf(Integer.parseInt(ano) + 1);
+                    }
+
+                    String dataLimite = ano + "-" + limite + "-07";
+
+                    Date d = df.parse(dataLimite);
+                    java.sql.Date dSqt = new java.sql.Date(d.getTime());
+                    df.format(dSqt);
+
+                    String sqo = "update tbFuncionarios set data_pagamento=? where idFuncionario=?";
+                    pst = conexao.prepareStatement(sqo);
+                    pst.setDate(1, dSqt);
+                    pst.setString(2, tbFuncionario.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+
+                }
+            }
+
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
     
+    
+
+    public void instanciarTabelaHoje() {
+        try {
+            String sql = "select idservico as ID, servico as Serviço, valor as Valor, data_agendada as Data_Agendada, obs as OBS from tbservicos where date(data_agendada) = current_date() and tipo='Agendada'";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbHoje.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
+
+    public void instanciarTabelaPendente() {
+        try {
+            String sql = "select idservico as ID, servico as Serviço, valor as Valor, data_agendada as Data_Agendada, obs as OBS from tbservicos where tipo='Pendente'";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbPendentes.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
+
+    public void instanciarAgendamentosPendentes() {
+
+        try {
+
+            String sql = "select idservico, data_agendada from tbservicos where tipo='Agendada' or tipo='Pendente'";
+            pst = conexao.prepareStatement(sql);
+
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+            rs = pst.executeQuery();
+            tbAuxilioPendentes.setModel(DbUtils.resultSetToTableModel(rs));
+            Date data = new Date();
+
+            for (int i = 0; i < tbAuxilioPendentes.getRowCount(); i++) {
+                Timestamp banco = Timestamp.valueOf(tbAuxilioPendentes.getModel().getValueAt(i, 1).toString());
+                System.out.println(data);
+                System.out.println(banco);
+                if (data.after(banco) == true) {
+                    String sqr = "update tbservicos set tipo='Pendente' where idservico=?";
+                    pst = conexao.prepareStatement(sqr);
+                    pst.setString(1, tbAuxilioPendentes.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+                } else {
+                    String sqr = "update tbservicos set tipo='Agendada' where idservico=?";
+                    pst = conexao.prepareStatement(sqr);
+                    pst.setString(1, tbAuxilioPendentes.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+                }
+
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+    }
+
     public void instanciarTabelaVendas() {
 
         try {
@@ -80,7 +208,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public void instanciarTabelaGasto() {
 
         try {
-           
 
             String sql = "select idgastos as ID, nome as Identificador, data_pagamento as Dia_Pagamento, valor as Valor  from tbgastos where status_pagamento='Pago' and data_pagamento = current_date()";
             pst = conexao.prepareStatement(sql);
@@ -106,8 +233,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         }
     }
-    
-     public void instanciarTabelaCliente() {
+
+    public void instanciarTabelaCliente() {
         try {
 
             String sql = "select id from tbtotalvendas where tipo='Venda'";
@@ -119,12 +246,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
                 String sqo = "select idcliente from tbtotalvendas where id=?";
                 pst = conexao.prepareStatement(sqo);
-                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());               
+                pst.setString(1, tbAuxilio1.getModel().getValueAt(i, 0).toString());
                 rs = pst.executeQuery();
                 tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
                 String id = tbAuxilio.getModel().getValueAt(0, 0).toString();
-               
-                
+
                 String sqy = "select nomecli from tbclientes where idcli=?";
                 pst = conexao.prepareStatement(sqy);
                 pst.setString(1, id);
@@ -132,7 +258,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
                 String nome = tbAuxilio.getModel().getValueAt(0, 0).toString();
                 System.out.println(nome + " " + id);
-                
+
                 String sqr = "update tbtotalvendas set cliente=? where id=?";
                 pst = conexao.prepareStatement(sqr);
                 pst.setString(1, nome);
@@ -162,6 +288,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         tbAuxilio = new javax.swing.JTable();
         scAuxilio1 = new javax.swing.JScrollPane();
         tbAuxilio1 = new javax.swing.JTable();
+        scAuxilioPendentes = new javax.swing.JScrollPane();
+        tbAuxilioPendentes = new javax.swing.JTable();
+        scAuxilioFuncionario = new javax.swing.JScrollPane();
+        tbFuncionario = new javax.swing.JTable();
+        jPanel7 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblData = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -175,6 +306,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         lblGastos = new javax.swing.JLabel();
         lblResultadoGastos = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbHoje = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tbPendentes = new javax.swing.JTable();
         Menu = new javax.swing.JMenuBar();
         MenCad = new javax.swing.JMenu();
         MenCadCli = new javax.swing.JMenuItem();
@@ -182,6 +319,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCadUsu = new javax.swing.JMenuItem();
         menServicos = new javax.swing.JMenuItem();
         menCadastroFornecedor = new javax.swing.JMenuItem();
+        menCadastroServico = new javax.swing.JMenuItem();
+        menCadFuncionario = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         relAtividadeClientes = new javax.swing.JMenuItem();
         relClientes = new javax.swing.JMenuItem();
@@ -201,6 +340,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menContas = new javax.swing.JMenu();
         menContasContas = new javax.swing.JMenuItem();
         menContasClientes = new javax.swing.JMenuItem();
+        menAgendamento = new javax.swing.JMenu();
         menPontoDeVendas = new javax.swing.JMenu();
         MenAju = new javax.swing.JMenu();
         MenAjuSob = new javax.swing.JMenuItem();
@@ -259,16 +399,44 @@ public class TelaPrincipal extends javax.swing.JFrame {
         ));
         scAuxilio1.setViewportView(tbAuxilio1);
 
+        tbAuxilioPendentes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilioPendentes.setViewportView(tbAuxilioPendentes);
+
+        tbFuncionario.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilioFuncionario.setViewportView(tbFuncionario);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Meus Serviços - Controle de Ordens de Serviços");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
             }
         });
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel7.setBackground(new java.awt.Color(204, 204, 204));
+
+        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblData.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblData.setText("Data:");
@@ -283,9 +451,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel2.setText("Nome do Usuário:");
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/Logo_200x164.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/LogoNova 450X193.png"))); // NOI18N
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 0, new java.awt.Color(0, 0, 0)));
+        jPanel4.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblResultadoVendas.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblResultadoVendas.setForeground(new java.awt.Color(0, 51, 204));
@@ -304,7 +473,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(lblVendas)
                 .addGap(8, 8, 8)
                 .addComponent(lblResultadoVendas)
-                .addGap(0, 0, 0))
+                .addContainerGap(125, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -316,7 +485,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGap(13, 13, 13))
         );
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 1, 1, 0, new java.awt.Color(0, 0, 0)));
+        jPanel5.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblGastos.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblGastos.setForeground(new java.awt.Color(255, 0, 0));
@@ -351,57 +521,166 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblUsuario)
                             .addComponent(lblData)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))
-                        .addContainerGap())
-                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblUsuario)
-                .addGap(24, 24, 24)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblData)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(72, 72, 72))
+                .addGap(29, 29, 29))
         );
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel6.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Agendados para Hoje", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        tbHoje = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
+        tbHoje.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        tbHoje.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        tbHoje.setFocusable(false);
+        jScrollPane1.setViewportView(tbHoje);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        );
+
+        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Agendamentos Pendentes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        tbPendentes = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex){
+                return false;
+            }
+        };
+        tbPendentes.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        tbPendentes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        tbPendentes.setFocusable(false);
+        jScrollPane2.setViewportView(tbPendentes);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 827, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(16, 16, 16))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(24, 24, 24))
+        );
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 436, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
 
         Menu.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
         MenCad.setText("Cadastro");
         MenCad.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        MenCad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenCadActionPerformed(evt);
+            }
+        });
 
         MenCadCli.setText("Clientes");
         MenCadCli.addActionListener(new java.awt.event.ActionListener() {
@@ -442,6 +721,22 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
         MenCad.add(menCadastroFornecedor);
+
+        menCadastroServico.setText("Serviço");
+        menCadastroServico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCadastroServicoActionPerformed(evt);
+            }
+        });
+        MenCad.add(menCadastroServico);
+
+        menCadFuncionario.setText("Funcionario");
+        menCadFuncionario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCadFuncionarioActionPerformed(evt);
+            }
+        });
+        MenCad.add(menCadFuncionario);
 
         Menu.add(MenCad);
 
@@ -587,6 +882,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         Menu.add(menContas);
 
+        menAgendamento.setText("Agendamentos");
+        menAgendamento.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        menAgendamento.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menAgendamentoMouseClicked(evt);
+            }
+        });
+        menAgendamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menAgendamentoActionPerformed(evt);
+            }
+        });
+        Menu.add(menAgendamento);
+
         menPontoDeVendas.setText("PDV");
         menPontoDeVendas.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         menPontoDeVendas.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -633,24 +942,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(25, 25, 25)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(16, 16, 16))
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        setSize(new java.awt.Dimension(1143, 643));
+        setSize(new java.awt.Dimension(1215, 598));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -663,10 +962,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_MenOpcSaiActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        //As Linhas abaixo substituem a label lblData pela Data Atual
+        //As Linhas abaixo substituem a label lblData pela Data Atual        
         instanciarTabelaVendas();
         instanciarTabelaGasto();
         instanciarTabelaCliente();
+        instanciarAgendamentosPendentes();
+        instanciarTabelaHoje();
+        instanciarTabelaPendente();
+        salarioFuncionario();
         Date data = new Date();
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         lblData.setText(df.format(data));
@@ -680,26 +983,26 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void MenCadUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadUsuActionPerformed
         CadUsuarios usuario = new CadUsuarios();
         usuario.setVisible(true);
-       
+
     }//GEN-LAST:event_MenCadUsuActionPerformed
 
     private void MenCadCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadCliActionPerformed
         CadClientes cliente = new CadClientes();
         cliente.setVisible(true);
-        
+
     }//GEN-LAST:event_MenCadCliActionPerformed
 
     private void MenCadOsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadOsActionPerformed
         CadOS os = new CadOS();
         os.setVisible(true);
-     
+
     }//GEN-LAST:event_MenCadOsActionPerformed
 
     private void menServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menServicosActionPerformed
         // TODO add your handling code here:
         CadProduto produto = new CadProduto();
         produto.setVisible(true);
-        
+
     }//GEN-LAST:event_menServicosActionPerformed
 
     private void menPontoDeVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menPontoDeVendasActionPerformed
@@ -813,12 +1116,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         }
-        
+
     }//GEN-LAST:event_menVendasDoDiaActionPerformed
 
     private void menGastosDoDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGastosDoDiaActionPerformed
         // TODO add your handling code here:
-           int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
                 JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelGastosDoDia.jasper"), null, conexao);
@@ -857,6 +1160,35 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_relOrdemServicoActionPerformed
+
+    private void menCadastroServicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadastroServicoActionPerformed
+        // TODO add your handling code here:
+        CadServico servico = new CadServico();
+        servico.setVisible(true);
+    }//GEN-LAST:event_menCadastroServicoActionPerformed
+
+    private void menAgendamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAgendamentoActionPerformed
+        // TODO add your handling code here:
+        TelaServico servico = new TelaServico();
+        servico.setVisible(true);
+    }//GEN-LAST:event_menAgendamentoActionPerformed
+
+    private void menAgendamentoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menAgendamentoMouseClicked
+        // TODO add your handling code here:
+        TelaServico servico = new TelaServico();
+        servico.setVisible(true);
+    }//GEN-LAST:event_menAgendamentoMouseClicked
+
+    private void MenCadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_MenCadActionPerformed
+
+    private void menCadFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadFuncionarioActionPerformed
+        // TODO add your handling code here:
+        CadFuncionarios funcionarios = new CadFuncionarios();
+        funcionarios.setVisible(true);
+    }//GEN-LAST:event_menCadFuncionarioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -908,17 +1240,25 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblData;
     private javax.swing.JLabel lblGastos;
     private javax.swing.JLabel lblResultadoGastos;
     private javax.swing.JLabel lblResultadoVendas;
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JLabel lblVendas;
+    private javax.swing.JMenu menAgendamento;
+    private javax.swing.JMenuItem menCadFuncionario;
     private javax.swing.JMenuItem menCadastroFornecedor;
+    private javax.swing.JMenuItem menCadastroServico;
     private javax.swing.JMenu menCaixa;
     private javax.swing.JMenuItem menCaixaCaixa;
     private javax.swing.JMenuItem menCaixaSangria;
@@ -940,11 +1280,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem relOrdemServico;
     private javax.swing.JScrollPane scAuxilio;
     private javax.swing.JScrollPane scAuxilio1;
+    private javax.swing.JScrollPane scAuxilioFuncionario;
+    private javax.swing.JScrollPane scAuxilioPendentes;
     private javax.swing.JScrollPane scPago;
     private javax.swing.JScrollPane scRecebido;
     private javax.swing.JTable tbAuxilio;
     private javax.swing.JTable tbAuxilio1;
+    private javax.swing.JTable tbAuxilioPendentes;
+    private javax.swing.JTable tbFuncionario;
+    private javax.swing.JTable tbHoje;
     private javax.swing.JTable tbPago;
+    private javax.swing.JTable tbPendentes;
     private javax.swing.JTable tbRecebido;
     // End of variables declaration//GEN-END:variables
 }
