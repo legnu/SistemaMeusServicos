@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relOrçamento" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="718d3026-3443-426f-930e-1f71522edbba">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select data_os as Data_Emição, equipamento as Equipamento, defeito as Defeito, servico as Servico, valor as Valor, funcionario as Funcionario from tbos where tipo='Orçamento']]>
+	</queryString>
+	<field name="Data_Emição" class="java.sql.Timestamp"/>
+	<field name="Equipamento" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Defeito" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Servico" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Valor" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Funcionario" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="261" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="261" uuid="4cf9cae2-c0f8-425a-b62d-e294ea28ab52"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TituloSemCliente.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="34" splitType="Stretch">
+			<staticText>
+				<reportElement x="276" y="0" width="124" height="20" uuid="c3e66896-facf-4dae-acf2-643eebc9c4b4"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Servico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="0" width="106" height="20" uuid="b4122449-365b-4fb8-a514-e4c999c36239"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Defeito]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="61" y="0" width="109" height="20" uuid="7459b11f-a775-4f5d-93a5-7e3ccdd4f140"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Equipamento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="0" width="100" height="20" uuid="324b910e-98f7-46e2-9241-235f6a842bf9"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tecnico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="0" width="55" height="20" uuid="bc3ca51d-283c-4b9d-a91f-e9fd03053ef9"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor(R$)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="61" height="20" uuid="b2bc652c-4188-4efd-a4ea-cf9da2e581d8"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Emição]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="6d58775b-fb85-49f9-b0df-61f5c1d9e9ad"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="49" height="20" uuid="db7fc8cc-e50a-4190-a14e-9c422617800c"/>
+				<textElement>
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Data_Emição}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="0" width="124" height="20" uuid="12552a8c-1888-4e01-9d2a-0db1f71679e5"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Servico}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="55" height="20" uuid="ab81145e-e33e-45d7-995c-831112daff40"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Valor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="49" y="0" width="121" height="20" uuid="a95cd409-94b2-4ed4-9343-b1ace0119e0c"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Equipamento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="0" width="106" height="20" uuid="403c478c-b305-4581-981d-d60b2c668431"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Defeito}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="0" width="100" height="20" uuid="8fb36fb0-a4c3-439d-9654-6895a93c2cce"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Funcionario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<lastPageFooter>
+		<band height="45">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="20" width="171" height="25" uuid="c2b41261-a48b-4cf6-847c-2e0dfabce0ca"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="208" y="20" width="347" height="25" uuid="2dc85ffe-6b2c-44cd-af4a-6dbc2828871e"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="169163b7-6425-44a9-a2ff-7bebfb755d62"/>
+			</line>
+		</band>
+	</lastPageFooter>
+</jasperReport>

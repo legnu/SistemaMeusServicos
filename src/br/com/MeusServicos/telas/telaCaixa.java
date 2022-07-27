@@ -24,6 +24,7 @@
 package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
+import static br.com.MeusServicos.telas.PontoDeVendas.lblValorTotal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,8 +32,12 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -115,6 +120,40 @@ public class telaCaixa extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    public void Imprimir(){
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            
+            try {
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                setarPorData();
+
+                instanciarEntrada_Saida_Lucro();
+                
+                HashMap filtro = new HashMap();               
+                
+                filtro.put("di", df.format(DaInicial.getDate()));
+                filtro.put("df", df.format(DaFinal.getDate()));
+                filtro.put("inicialS", df.format(DaInicial.getDate()));
+                filtro.put("finalS", df.format(DaFinal.getDate()));
+                System.out.println(df.format(DaInicial.getDate()));
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Caixa.jasper"), filtro, conexao);
+                JasperViewer.viewReport(print, false);
+                
+                
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma Data inicial e final.");
+                
+
+            }catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                
+
+            }
         }
     }
 
@@ -312,6 +351,7 @@ public class telaCaixa extends javax.swing.JFrame {
         pnRelatorio = new javax.swing.JPanel();
         lblNome1 = new javax.swing.JLabel();
         lblTotalCaixa = new javax.swing.JLabel();
+        btnImprimir = new javax.swing.JToggleButton();
         pnPago = new javax.swing.JPanel();
         scCaixaPago = new javax.swing.JScrollPane();
         tbCaixaPago = new javax.swing.JTable();
@@ -381,6 +421,9 @@ public class telaCaixa extends javax.swing.JFrame {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
             }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
         });
 
         jScrollPane1.setBackground(new java.awt.Color(204, 204, 204));
@@ -408,7 +451,7 @@ public class telaCaixa extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(DaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(DaInicial, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jPanel2.setBackground(new java.awt.Color(204, 204, 204));
@@ -424,9 +467,7 @@ public class telaCaixa extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(DaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(DaFinal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         btnPesquisar.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -454,19 +495,30 @@ public class telaCaixa extends javax.swing.JFrame {
         lblTotalCaixa.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblTotalCaixa.setText("0.00");
 
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/impresora 64x63.png"))); // NOI18N
+        btnImprimir.setBorderPainted(false);
+        btnImprimir.setContentAreaFilled(false);
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnRelatorioLayout = new javax.swing.GroupLayout(pnRelatorio);
         pnRelatorio.setLayout(pnRelatorioLayout);
         pnRelatorioLayout.setHorizontalGroup(
             pnRelatorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnRelatorioLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(lblNome1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblTotalCaixa)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnImprimir))
         );
         pnRelatorioLayout.setVerticalGroup(
             pnRelatorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnRelatorioLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnRelatorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -515,7 +567,7 @@ public class telaCaixa extends javax.swing.JFrame {
         pnPago.setLayout(pnPagoLayout);
         pnPagoLayout.setHorizontalGroup(
             pnPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scCaixaPago, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
+            .addComponent(scCaixaPago)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnPagoLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblNome2)
@@ -605,7 +657,7 @@ public class telaCaixa extends javax.swing.JFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                         .addComponent(btnPesquisar))
                     .addComponent(pnRecebido, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -616,10 +668,10 @@ public class telaCaixa extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addComponent(jToggleButton1)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pnRecebido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
@@ -649,12 +701,7 @@ public class telaCaixa extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // TODO add your handling code here:
-        instanciarTabelaCliente();
-        instanciarTabelaGasto();
-        instanciarTabelaVendas();
-        instanciarTabela();
-        instanciarEntrada_Saida_Lucro();
+    
     }//GEN-LAST:event_formWindowActivated
 
     private void DaInicialKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DaInicialKeyReleased
@@ -675,6 +722,20 @@ public class telaCaixa extends javax.swing.JFrame {
     private void tbCaixaRecebidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbCaixaRecebidoMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_tbCaixaRecebidoMouseClicked
+
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        // TODO add your handling code here:
+        Imprimir();
+    }//GEN-LAST:event_btnImprimirActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        instanciarTabelaCliente();
+        instanciarTabelaGasto();
+        instanciarTabelaVendas();
+        instanciarTabela();
+        instanciarEntrada_Saida_Lucro();
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -718,6 +779,7 @@ public class telaCaixa extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JDateChooser DaFinal;
     private com.toedter.calendar.JDateChooser DaInicial;
+    private javax.swing.JToggleButton btnImprimir;
     private javax.swing.JToggleButton btnPesquisar;
     private javax.swing.ButtonGroup grupo1;
     private javax.swing.JPanel jPanel1;

@@ -169,40 +169,18 @@ public class TelaInventario extends javax.swing.JFrame {
     }
 
     public void imprimir() {
-        if (tipo.equals("Compra") == true) {
-            int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão do relatorio Referencial de Compra?", "Atençao", JOptionPane.YES_OPTION);
+        
+            int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão do relatorio Referencial de Compra, Venda e Compra_X_Venda?", "Atençao", JOptionPane.YES_OPTION);
             if (confirma == JOptionPane.YES_OPTION) {
                 try {
-                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelRefCompra.jasper"), null, conexao);
+                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Referencial.jasper"), null, conexao);
 
                     JasperViewer.viewReport(print, false);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, e);
                 }
             }
-        } else if (tipo.equals("Venda") == true) {
-            int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão do relatorio Referencial de Venda?", "Atençao", JOptionPane.YES_OPTION);
-            if (confirma == JOptionPane.YES_OPTION) {
-                try {
-                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelRefVenda.jasper"), null, conexao);
-
-                    JasperViewer.viewReport(print, false);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e);
-                }
-            }
-        } else if (tipo.equals("CompraXVenda") == true) {
-            int confirma = JOptionPane.showConfirmDialog(null, " impressão do relatorio Referencial de Compra_X_Venda", "Atençao", JOptionPane.YES_OPTION);
-            if (confirma == JOptionPane.YES_OPTION) {
-                try {
-                    JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelVendaXCompra.jasper"), null, conexao);
-
-                    JasperViewer.viewReport(print, false);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e);
-                }
-            }
-        }
+       
     }
 
     public void calculoLucro() {

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RelOS" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ad4e46f2-ad74-4951-ba03-65fd968f8380">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="15"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="os" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -17,7 +17,7 @@
 	P.equipamento,
     P.defeito,
     P.servico,
-    P.tecnico,
+    P.funcionario,
     P.valor,
 	P.cliente,
 P.situacao,
@@ -48,7 +48,7 @@ FROM
 	<field name="servico" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="tecnico" class="java.lang.String">
+	<field name="funcionario" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="valor" class="java.lang.String">
@@ -82,14 +82,14 @@ FROM
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="278" splitType="Stretch">
+		<band height="281" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="278" uuid="0191ea98-0521-4c03-b904-407c6b2baedf"/>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "titulo.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement x="477" y="258" width="114" height="20" uuid="23bb949b-eb46-4ed6-b0af-3eb1aa6f4b79"/>
+				<reportElement x="443" y="259" width="112" height="20" uuid="23bb949b-eb46-4ed6-b0af-3eb1aa6f4b79"/>
 				<textElement>
 					<font fontName="Dialog" size="12"/>
 				</textElement>
@@ -193,13 +193,6 @@ FROM
 				</textElement>
 				<text><![CDATA[Serviço:]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="465" y="129" width="90" height="20" uuid="c428435e-1b73-4e84-8001-fa143a3e8367"/>
-				<textElement>
-					<font fontName="Dialog" size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{tecnico}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="400" y="129" width="65" height="20" uuid="9aec3efc-7455-4d34-8ad2-7bb91f1e65f1"/>
 				<textElement>
@@ -207,6 +200,13 @@ FROM
 				</textElement>
 				<text><![CDATA[Tecnico:]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="465" y="129" width="90" height="20" uuid="3ea375b6-8b02-459a-b086-1327e0c9a97e"/>
+				<textElement>
+					<font fontName="Dialog" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
@@ -224,6 +224,14 @@ FROM
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement x="150" y="22" width="325" height="27" uuid="97c1ef73-0d0a-408a-960c-826d40967066"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="042d5e93-35d6-4896-a22a-359e80a6a3c8"/>
+			</line>
 		</band>
 	</lastPageFooter>
 	<summary>
@@ -242,11 +250,6 @@ FROM
 				</textElement>
 				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
 			</textField>
-			<subreport>
-				<reportElement x="19" y="9" width="325" height="27" uuid="97c1ef73-0d0a-408a-960c-826d40967066"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
-			</subreport>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="d494616f-6933-443b-ad4c-d324cc00c077"/>
 			</line>

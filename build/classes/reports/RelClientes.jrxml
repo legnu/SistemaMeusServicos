@@ -25,7 +25,7 @@ FROM
     tbclientes P
  left join
   tbrelatorio C
-  ON P.idcli = C.idRelatorio;]]>
+  ON P.idcli = C.idRelatorio where quantidade_comprada > 0]]>
 	</queryString>
 	<field name="nomecli" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>

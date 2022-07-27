@@ -33,6 +33,8 @@ public class TelaLogin extends javax.swing.JFrame {
             try {
                 if (rs.next()) {
                     String perfil = rs.getString(7);
+                    String nome = rs.getString(2);
+                   
                     //System.out.println(perfil);
                     //Linha acima competi a teste e a estrutura abaixo trata do perfil do usuario
                     if (perfil.equals("Administrador") == true) {
@@ -40,40 +42,20 @@ public class TelaLogin extends javax.swing.JFrame {
                         principal.setVisible(true);
 
                         TelaPrincipal.MenCadUsu.setEnabled(true);
-                        TelaPrincipal.lblUsuario.setText(rs.getString(2));
+                        TelaPrincipal.lblUsuario.setText(nome);
                         TelaPrincipal.lblUsuario.setForeground(Color.red);
                         this.dispose();
                         conexao.close();
                     } else if (perfil.equals("Usuario") == true) {
-                        
-                        String sqo = "select cargo_usuario from tbusuarios where usuario=?";
-                        pst = conexao.prepareStatement(sqo);
-                        pst.setString(1, txtUsuario.getText());
-                        rs = pst.executeQuery();
-                        tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));              
-                        
-                        if (tbAuxilio.getModel().getValueAt(0, 0).toString().equals("Vendedor") == true) {
-                            PontoDeVendas pdv = new PontoDeVendas();
-                            pdv.setVisible(true);
-                            PontoDeVendas.lblUsuarioPDV.setText(rs.getString(2));
-                            PontoDeVendas.lblUsuarioPDV.setForeground(Color.blue);
-                            this.dispose();
-                            conexao.close();
-                        }else if(tbAuxilio.getModel().getValueAt(0, 0).toString().equals("Profissional/Tec") == true){
-                              PontoDeVendas pdv = new PontoDeVendas();
-                            pdv.setVisible(true);
-                            PontoDeVendas.lblUsuarioPDV.setText(rs.getString(2));
-                            PontoDeVendas.lblUsuarioPDV.setForeground(Color.blue);
-                            this.dispose();
-                            conexao.close();
-                        }else if(tbAuxilio.getModel().getValueAt(0, 0).toString().equals("Profissional/Tec e Vendedor") == true){
-                              PontoDeVendas pdv = new PontoDeVendas();
-                            pdv.setVisible(true);
-                            PontoDeVendas.lblUsuarioPDV.setText(rs.getString(2));
-                            PontoDeVendas.lblUsuarioPDV.setForeground(Color.blue);
-                            this.dispose();
-                            conexao.close();
-                        }
+
+                        TelaLimitada limitada = new TelaLimitada();
+                        limitada.setVisible(true);
+                        TelaLimitada.btnPDV.setEnabled(false);
+                        TelaLimitada.btnCadOS.setEnabled(false);
+                        TelaLimitada.btnCadServiço.setEnabled(false);
+                        TelaLimitada.lblNome.setText(nome);
+                        this.dispose();
+                        conexao.close();
 
                     }
                 } else {

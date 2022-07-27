@@ -30,8 +30,12 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -67,6 +71,40 @@ public class TelaServico extends javax.swing.JFrame {
 
         }
     }
+    
+     public void fecharServico() {
+
+        String Perfil;
+        limpar();
+        try {
+            String sqy = "select perfil from tbusuarios where usuario=?";
+            pst = conexao.prepareStatement(sqy);
+            pst.setString(1, lblUsuario.getText());
+            rs = pst.executeQuery();
+            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+            Perfil = tbAuxilio.getModel().getValueAt(0, 0).toString();
+            if (Perfil.equals("Usuario") == true) {
+
+                        TelaLimitada limitada = new TelaLimitada();
+                        limitada.setVisible(true);
+                        TelaLimitada.btnPDV.setEnabled(false);
+                        TelaLimitada.btnCadOS.setEnabled(false);
+                        TelaLimitada.btnCadServiço.setEnabled(false);
+                        TelaLimitada.lblNome.setText(lblUsuario.getText());
+                        this.dispose();
+                        conexao.close();
+
+                    }
+
+        }catch (java.lang.ArrayIndexOutOfBoundsException e) {
+           
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+    }
 
     public void setar_campos() {
         int setar = tbPrincipal.getSelectedRow();
@@ -92,6 +130,22 @@ public class TelaServico extends javax.swing.JFrame {
         btnRemover.setEnabled(false);
         pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Serviços", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
+    }
+    
+    private void imprimir() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste Relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Agendamentos.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                limpar();
+
+            }
+        }
     }
 
     public void concluir() {
@@ -158,6 +212,9 @@ public class TelaServico extends javax.swing.JFrame {
     private void initComponents() {
 
         ID = new javax.swing.JTextField();
+        lblUsuario = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         pnTabela = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -166,10 +223,27 @@ public class TelaServico extends javax.swing.JFrame {
         btnRemover = new javax.swing.JToggleButton();
         btnConcluir = new javax.swing.JToggleButton();
         btnEditar = new javax.swing.JToggleButton();
+        btnImprimir = new javax.swing.JToggleButton();
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(tbAuxilio);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Tela Serviços");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
@@ -213,7 +287,7 @@ public class TelaServico extends javax.swing.JFrame {
         );
         pnTabelaLayout.setVerticalGroup(
             pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
         );
 
         btnLimpar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRestart-removebg-preview.png"))); // NOI18N
@@ -255,6 +329,15 @@ public class TelaServico extends javax.swing.JFrame {
             }
         });
 
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/ImpresoraIcon.png"))); // NOI18N
+        btnImprimir.setBorderPainted(false);
+        btnImprimir.setContentAreaFilled(false);
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -264,6 +347,7 @@ public class TelaServico extends javax.swing.JFrame {
                 .addComponent(pnTabela, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnConcluir)
                     .addComponent(btnLimpar)
                     .addComponent(btnRemover)
@@ -284,7 +368,10 @@ public class TelaServico extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addComponent(btnRemover)
                         .addGap(36, 36, 36)
-                        .addComponent(btnLimpar)))
+                        .addComponent(btnLimpar)
+                        .addGap(36, 36, 36)
+                        .addComponent(btnImprimir)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(24, 24, 24))
         );
 
@@ -332,6 +419,16 @@ public class TelaServico extends javax.swing.JFrame {
         remover();
     }//GEN-LAST:event_btnRemoverActionPerformed
 
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        fecharServico();
+    }//GEN-LAST:event_formWindowClosed
+
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        // TODO add your handling code here:
+        imprimir();
+    }//GEN-LAST:event_btnImprimirActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -375,11 +472,15 @@ public class TelaServico extends javax.swing.JFrame {
     private javax.swing.JTextField ID;
     private javax.swing.JToggleButton btnConcluir;
     private javax.swing.JToggleButton btnEditar;
+    private javax.swing.JToggleButton btnImprimir;
     private javax.swing.JToggleButton btnLimpar;
     private javax.swing.JToggleButton btnRemover;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
+    public javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel pnTabela;
+    private javax.swing.JTable tbAuxilio;
     private javax.swing.JTable tbPrincipal;
     // End of variables declaration//GEN-END:variables
 }

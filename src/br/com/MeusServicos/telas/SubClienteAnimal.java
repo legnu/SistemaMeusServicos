@@ -461,7 +461,7 @@ public class SubClienteAnimal extends javax.swing.JFrame {
         );
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeAdicionar-removebg-preview.png"))); // NOI18N
-        btnAdicionar.setToolTipText("Adicionar");
+        btnAdicionar.setToolTipText("");
         btnAdicionar.setContentAreaFilled(false);
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -472,7 +472,7 @@ public class SubClienteAnimal extends javax.swing.JFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeEditar-removebg-preview.png"))); // NOI18N
-        btnAlterar.setToolTipText("Alterar");
+        btnAlterar.setToolTipText("");
         btnAlterar.setContentAreaFilled(false);
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setEnabled(false);
@@ -484,7 +484,7 @@ public class SubClienteAnimal extends javax.swing.JFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRemover-removebg-preview.png"))); // NOI18N
-        btnRemover.setToolTipText("Apagar");
+        btnRemover.setToolTipText("");
         btnRemover.setContentAreaFilled(false);
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setEnabled(false);
@@ -496,6 +496,7 @@ public class SubClienteAnimal extends javax.swing.JFrame {
         });
 
         btnAtualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRestart-removebg-preview.png"))); // NOI18N
+        btnAtualizar.setToolTipText("");
         btnAtualizar.setBorderPainted(false);
         btnAtualizar.setContentAreaFilled(false);
         btnAtualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

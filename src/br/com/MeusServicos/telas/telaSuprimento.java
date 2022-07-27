@@ -32,6 +32,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
 
 /**
  *
@@ -45,62 +46,69 @@ public class telaSuprimento extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    String identificadorT;
+    String identificadorV;
 
     public telaSuprimento() {
         initComponents();
         conexao = ModuloConexao.conector();
     }
 
+   
     private void adicionar() {
 
-        String sql = "insert into tbtotalvendas(cliente, venda, tipo, status_pagamento, dia, dia_Pagamento, hora)values(?,?,?,?,?,?,?)";
-
         try {
-            
+
             Date dataHoraAtual = new Date();
-        String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
-            
+            String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
+
             Date d = new Date();
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             java.sql.Date dSql = new java.sql.Date(d.getTime());
             df.format(dSql);
-            pst = conexao.prepareStatement(sql);
+           
+            System.out.println(identificadorT);
+            System.out.println(identificadorV);
             
-            if(txtDescricao.getText().isEmpty()){
-                pst.setString(1, "Suprimento");
-            }else{
-                pst.setString(1, txtDescricao.getText());
-            }
-                      
-            pst.setString(2, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtSuprimento.getText().replace(",", "."))).replace(",", "."));
-            pst.setString(3, "Suprimento");
-            pst.setString(4, "Pago");
-            pst.setDate(5, dSql);
-            pst.setDate(6, dSql);
-            pst.setString(7, hora);
-            
+        
+                String sql = "insert into tbtotalvendas(cliente, venda, tipo, status_pagamento, dia, dia_Pagamento, hora)values(?,?,?,?,?,?,?)";
+                pst = conexao.prepareStatement(sql);
 
-            //Validação dos Campos Obrigatorios
-            if ((txtSuprimento.getText().isEmpty())) {
-                JOptionPane.showMessageDialog(null, "Adicione uma Suprimento.");
-                limpar();
-
-            } else if (Double.parseDouble(txtSuprimento.getText().replace(",", ".")) <= 0) {
-                JOptionPane.showMessageDialog(null, "Adicione uma Suprimento maior que 0.");
-                limpar();
-
-            } else {
-
-                //A linha abaixo atualiza os dados do novo usuario
-                int adicionado = pst.executeUpdate();
-                //A Linha abaixo serve de apoio ao entendimento da logica
-                //System.out.println(adicionado);
-                if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Suprimento adicionado com sucesso.");
-                    this.dispose();
-
+                if (txtDescricao.getText().isEmpty()) {
+                    pst.setString(1, "Suprimento");
+                } else {
+                    pst.setString(1, txtDescricao.getText());
                 }
-            }
+
+                pst.setString(2, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtSuprimento.getText().replace(",", "."))).replace(",", "."));
+                pst.setString(3, "Suprimento");
+                pst.setString(4, "Pago");
+                pst.setDate(5, dSql);
+                pst.setDate(6, dSql);
+                pst.setString(7, hora);
+
+                //Validação dos Campos Obrigatorios
+                if ((txtSuprimento.getText().isEmpty())) {
+                    JOptionPane.showMessageDialog(null, "Adicione uma Suprimento.");
+                    limpar();
+
+                } else if (Double.parseDouble(txtSuprimento.getText().replace(",", ".")) <= 0) {
+                    JOptionPane.showMessageDialog(null, "Adicione uma Suprimento maior que 0.");
+                    limpar();
+
+                } else {
+
+                    //A linha abaixo atualiza os dados do novo usuario
+                    int adicionado = pst.executeUpdate();
+                    //A Linha abaixo serve de apoio ao entendimento da logica
+                    //System.out.println(adicionado);
+                    if (adicionado > 0) {
+                        JOptionPane.showMessageDialog(null, "Suprimento adicionado com sucesso.");
+                        this.dispose();
+
+                    }
+                }
+            
 
         } catch (java.lang.NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Somente Numeros.");
@@ -112,7 +120,8 @@ public class telaSuprimento extends javax.swing.JFrame {
 
         }
     }
-     public void limpar(){
+
+    public void limpar() {
         txtDescricao.setText(null);
         txtSuprimento.setText(null);
     }
@@ -126,12 +135,27 @@ public class telaSuprimento extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
         pnPrincipal = new javax.swing.JPanel();
         btnAdicionarSuprimento = new javax.swing.JToggleButton();
         jPanel1 = new javax.swing.JPanel();
         txtSuprimento = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         txtDescricao = new javax.swing.JTextField();
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tbAuxilio);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Suprimento");
@@ -274,7 +298,9 @@ public class telaSuprimento extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnAdicionarSuprimento;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel pnPrincipal;
+    private javax.swing.JTable tbAuxilio;
     private javax.swing.JTextField txtDescricao;
     private javax.swing.JTextField txtSuprimento;
     // End of variables declaration//GEN-END:variables

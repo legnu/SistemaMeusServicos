@@ -73,7 +73,7 @@ public class CadServico extends javax.swing.JFrame {
 
         }
     }
-    
+
     private void pesquisar() {
 
         if (txtTipo.getText().equals("Cliente") == true) {
@@ -94,6 +94,39 @@ public class CadServico extends javax.swing.JFrame {
                 limpar();
 
             }
+
+        }
+    }
+
+    public void fecharServico() {
+
+        String Perfil;
+        limpar();
+        try {
+            String sqy = "select perfil from tbusuarios where usuario=?";
+            pst = conexao.prepareStatement(sqy);
+            pst.setString(1, lblUsuario.getText());
+            rs = pst.executeQuery();
+            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+            Perfil = tbAuxilio.getModel().getValueAt(0, 0).toString();
+            if (Perfil.equals("Usuario") == true) {
+
+                TelaLimitada limitada = new TelaLimitada();
+                limitada.setVisible(true);
+                TelaLimitada.btnPDV.setEnabled(false);
+                TelaLimitada.btnCadOS.setEnabled(false);
+                TelaLimitada.btnCadServiço.setEnabled(false);
+                TelaLimitada.lblNome.setText(lblUsuario.getText());
+                this.dispose();
+                conexao.close();
+
+            }
+
+        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
 
         }
     }
@@ -145,6 +178,9 @@ public class CadServico extends javax.swing.JFrame {
                 limpar();
             } else if ((Double.parseDouble(txtValor.getText().replace(".", "")) / 100) < 0) {
                 JOptionPane.showMessageDialog(null, "Campo Valor deve ser maior que 0.");
+                limpar();
+            } else if (cbFuncionario.getSelectedItem().toString().equals("Selecione") == true) {
+                JOptionPane.showMessageDialog(null, "Adicione um funcionario.");
                 limpar();
             } else if (Integer.parseInt(txtHora.getText().replace(":", "")) > 2359) {
                 JOptionPane.showMessageDialog(null, "Horario maximo cadastravel é 23:59");
@@ -230,7 +266,7 @@ public class CadServico extends javax.swing.JFrame {
                 txtServico.setEnabled(false);
                 txtValor.setEnabled(false);
                 btnAdicionar.setEnabled(false);
-                
+
                 dtAgendamento.setDate(null);
                 txtHora.setText(null);
                 txtOBS.setText(null);
@@ -308,6 +344,9 @@ public class CadServico extends javax.swing.JFrame {
 
         IDCliente = new javax.swing.JTextField();
         IDReferencia = new javax.swing.JTextField();
+        lblUsuario = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
         jPanel7 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -332,9 +371,25 @@ public class CadServico extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         txtTipo = new javax.swing.JLabel();
 
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(tbAuxilio);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cadastro de Servico");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
@@ -362,7 +417,7 @@ public class CadServico extends javax.swing.JFrame {
         );
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeAdicionar-removebg-preview.png"))); // NOI18N
-        btnAdicionar.setToolTipText("Adicionar");
+        btnAdicionar.setToolTipText("");
         btnAdicionar.setContentAreaFilled(false);
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setEnabled(false);
@@ -374,6 +429,7 @@ public class CadServico extends javax.swing.JFrame {
         });
 
         btnAtualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/iconeRestart-removebg-preview.png"))); // NOI18N
+        btnAtualizar.setToolTipText("");
         btnAtualizar.setBorderPainted(false);
         btnAtualizar.setContentAreaFilled(false);
         btnAtualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -538,12 +594,13 @@ public class CadServico extends javax.swing.JFrame {
             pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnTabelaLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
+                .addGroup(pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2)
-                        .addComponent(txtTipo)))
+                        .addComponent(txtTipo))
+                    .addGroup(pnTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)))
                 .addGap(16, 16, 16)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
@@ -554,12 +611,10 @@ public class CadServico extends javax.swing.JFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(pnTabela, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pnTabela, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -649,6 +704,11 @@ public class CadServico extends javax.swing.JFrame {
         pesquisar();
     }//GEN-LAST:event_txtPesquisaKeyReleased
 
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        fecharServico();
+    }//GEN-LAST:event_formWindowClosed
+
     /**
      * @param args the command line arguments
      */
@@ -702,7 +762,10 @@ public class CadServico extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    public javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel pnTabela;
+    private javax.swing.JTable tbAuxilio;
     private javax.swing.JTable tbPrincipal;
     private javax.swing.JFormattedTextField txtHora;
     private javax.swing.JTextArea txtOBS;

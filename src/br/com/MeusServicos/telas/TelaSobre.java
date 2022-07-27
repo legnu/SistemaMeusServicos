@@ -44,7 +44,7 @@ public class TelaSobre extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel5.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jLabel5.setText("legnudevelopment@gmail.com --- (31) 98235-2599");
+        jLabel5.setText("legnudevelopment@gmail.com --- (31) 98235.2599 - 97357.3354");
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel3.setText("Sob a licença GPL");

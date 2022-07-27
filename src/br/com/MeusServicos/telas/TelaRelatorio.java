@@ -24,10 +24,12 @@
 package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -81,6 +83,19 @@ public class TelaRelatorio extends javax.swing.JFrame {
         }
 
     }
+    
+    public void buscarFoto(){
+        JFileChooser arquivo = new JFileChooser();
+        arquivo.setDialogTitle("SELECIONE UMA IMAGEM");
+        arquivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int op = arquivo.showOpenDialog(this);
+        if(op == JFileChooser.APPROVE_OPTION){
+            File file = new File("");
+            file = arquivo.getSelectedFile();
+            String fileName = file.getAbsolutePath();
+            txtImagem.setText(fileName);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -96,6 +111,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
         txtOBS = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
         txtImagem = new javax.swing.JTextField();
+        btnBuscarImagem = new javax.swing.JToggleButton();
         jPanel1 = new javax.swing.JPanel();
         txtEmpresa = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
@@ -138,7 +154,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
         );
 
         jPanel7.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Caminho da Imagem", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Caminho da Imagem  (OBS: Tamanho recomendado da imagem 200x164).", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         txtImagem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -146,15 +162,31 @@ public class TelaRelatorio extends javax.swing.JFrame {
             }
         });
 
+        btnBuscarImagem.setBackground(new java.awt.Color(0, 0, 153));
+        btnBuscarImagem.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        btnBuscarImagem.setForeground(new java.awt.Color(255, 255, 255));
+        btnBuscarImagem.setText("buscar");
+        btnBuscarImagem.setBorderPainted(false);
+        btnBuscarImagem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarImagemActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtImagem, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(txtImagem, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnBuscarImagem))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtImagem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(txtImagem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBuscarImagem))
         );
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
@@ -185,6 +217,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
 
         ta1.setColumns(20);
         ta1.setRows(5);
+        ta1.setToolTipText("Recomendado Nome do Proprietario.");
         jScrollPane1.setViewportView(ta1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -215,6 +248,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
 
         ta2.setColumns(20);
         ta2.setRows(5);
+        ta2.setToolTipText("Recomendado Telefone");
         jScrollPane4.setViewportView(ta2);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -236,6 +270,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
 
         ta3.setColumns(20);
         ta3.setRows(5);
+        ta3.setToolTipText("Recomendado E-mail");
         jScrollPane2.setViewportView(ta3);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -257,6 +292,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
 
         ta4.setColumns(20);
         ta4.setRows(5);
+        ta4.setToolTipText("Recomendado Descrição da Empresa.");
         jScrollPane3.setViewportView(ta4);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -277,15 +313,17 @@ public class TelaRelatorio extends javax.swing.JFrame {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnAlterar)
-                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(btnAlterar)))
                 .addGap(24, 24, 24))
         );
         jPanel8Layout.setVerticalGroup(
@@ -314,7 +352,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 516, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -340,6 +378,11 @@ public class TelaRelatorio extends javax.swing.JFrame {
     private void txtImagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtImagemActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtImagemActionPerformed
+
+    private void btnBuscarImagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarImagemActionPerformed
+        // TODO add your handling code here:
+        buscarFoto();
+    }//GEN-LAST:event_btnBuscarImagemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -378,6 +421,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnAlterar;
+    private javax.swing.JToggleButton btnBuscarImagem;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

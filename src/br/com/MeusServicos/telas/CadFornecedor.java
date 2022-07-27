@@ -103,16 +103,34 @@ public class CadFornecedor extends javax.swing.JFrame {
                 limpar();
 
             } else if (cbPessoa.getSelectedItem() == "Juridica") {
-                if (ValidadorDeCNPJ.isCNPJ(txtCNPJ_CPF.getText()) == false) {
-                    JOptionPane.showMessageDialog(null, "CNPJ invalido.");
-                } else {
+                if (txtCNPJ_CPF.getText().isEmpty() == false) {
+                    if (ValidadorDeCNPJ.isCNPJ(txtCNPJ_CPF.getText()) == false) {
+                        JOptionPane.showMessageDialog(null, "CNPJ invalido.");
+                        limpar();
+                    } else {
 
+                        pst = conexao.prepareStatement(sql);
+
+                        pst.setString(1, txtFornecedor.getText());
+                        pst.setString(2, txtRazaoSocial.getText());
+                        pst.setString(3, cbPessoa.getSelectedItem().toString());
+                        pst.setString(4, txtCNPJ_CPF.getText());
+                        pst.setString(5, txtTelefone.getText());
+                        pst.setString(6, txtEmail.getText());
+                        pst.setString(7, txtEndereco.getText());
+                        pst.executeUpdate();
+
+                        JOptionPane.showMessageDialog(null, "Fornecedor adicionado com sucesso");
+                        limpar();
+
+                    }
+                } else {
                     pst = conexao.prepareStatement(sql);
 
                     pst.setString(1, txtFornecedor.getText());
                     pst.setString(2, txtRazaoSocial.getText());
                     pst.setString(3, cbPessoa.getSelectedItem().toString());
-                    pst.setString(4, txtCNPJ_CPF.getText());
+                    pst.setString(4, "");
                     pst.setString(5, txtTelefone.getText());
                     pst.setString(6, txtEmail.getText());
                     pst.setString(7, txtEndereco.getText());
@@ -120,19 +138,36 @@ public class CadFornecedor extends javax.swing.JFrame {
 
                     JOptionPane.showMessageDialog(null, "Fornecedor adicionado com sucesso");
                     limpar();
-
                 }
             } else if (cbPessoa.getSelectedItem() == "Fisica") {
-                if (ValidadorCpf.isCPF(txtCNPJ_CPF.getText()) == false) {
-                    JOptionPane.showMessageDialog(null, "CPF invalido.");
-                } else {
+                if (txtCNPJ_CPF.getText().isEmpty() == false) {
+                    if (ValidadorCpf.isCPF(txtCNPJ_CPF.getText()) == false) {
+                        JOptionPane.showMessageDialog(null, "CPF invalido.");
+                        limpar();
+                    } else {
 
+                        pst = conexao.prepareStatement(sql);
+
+                        pst.setString(1, txtFornecedor.getText());
+                        pst.setString(2, txtRazaoSocial.getText());
+                        pst.setString(3, cbPessoa.getSelectedItem().toString());
+                        pst.setString(4, txtCNPJ_CPF.getText());
+                        pst.setString(5, txtTelefone.getText());
+                        pst.setString(6, txtEmail.getText());
+                        pst.setString(7, txtEndereco.getText());
+                        pst.executeUpdate();
+
+                        JOptionPane.showMessageDialog(null, "Fornecedor adicionado com sucesso");
+                        limpar();
+
+                    }
+                } else {
                     pst = conexao.prepareStatement(sql);
 
                     pst.setString(1, txtFornecedor.getText());
                     pst.setString(2, txtRazaoSocial.getText());
                     pst.setString(3, cbPessoa.getSelectedItem().toString());
-                    pst.setString(4, txtCNPJ_CPF.getText());
+                    pst.setString(4, "");
                     pst.setString(5, txtTelefone.getText());
                     pst.setString(6, txtEmail.getText());
                     pst.setString(7, txtEndereco.getText());
@@ -140,7 +175,6 @@ public class CadFornecedor extends javax.swing.JFrame {
 
                     JOptionPane.showMessageDialog(null, "Fornecedor adicionado com sucesso");
                     limpar();
-
                 }
 
             }
@@ -159,47 +193,81 @@ public class CadFornecedor extends javax.swing.JFrame {
             if ((txtFornecedor.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
                 limpar();
-            }else if (cbPessoa.getSelectedItem() == "Juridica") {
-                if (ValidadorDeCNPJ.isCNPJ(txtCNPJ_CPF.getText()) == false) {
-                    JOptionPane.showMessageDialog(null, "CNPJ invalido.");
+            } else if (cbPessoa.getSelectedItem() == "Juridica") {
+                if (txtCNPJ_CPF.getText().isEmpty() == false) {
+                    if (ValidadorDeCNPJ.isCNPJ(txtCNPJ_CPF.getText()) == false) {
+                        JOptionPane.showMessageDialog(null, "CNPJ invalido.");
+                    } else {
+
+                        pst = conexao.prepareStatement(sql);
+
+                        pst.setString(1, txtFornecedor.getText());
+                        pst.setString(2, txtRazaoSocial.getText());
+                        pst.setString(3, cbPessoa.getSelectedItem().toString());
+                        pst.setString(4, txtCNPJ_CPF.getText());
+                        pst.setString(5, txtTelefone.getText());
+                        pst.setString(6, txtEmail.getText());
+                        pst.setString(7, txtEndereco.getText());
+                        pst.setString(8, txtID.getText());
+                        pst.executeUpdate();
+
+                        JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso");
+                        limpar();
+
+                    }
                 } else {
-                    
                     pst = conexao.prepareStatement(sql);
 
                     pst.setString(1, txtFornecedor.getText());
                     pst.setString(2, txtRazaoSocial.getText());
                     pst.setString(3, cbPessoa.getSelectedItem().toString());
-                    pst.setString(4, txtCNPJ_CPF.getText());
+                    pst.setString(4, "");
                     pst.setString(5, txtTelefone.getText());
                     pst.setString(6, txtEmail.getText());
-                    pst.setString(8, txtEndereco.getText());
-                    pst.setString(9, txtID.getText());
+                    pst.setString(7, txtEndereco.getText());
+                    pst.setString(8, txtID.getText());
                     pst.executeUpdate();
 
                     JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso");
                     limpar();
-
                 }
             } else if (cbPessoa.getSelectedItem() == "Fisica") {
-                if (ValidadorCpf.isCPF(txtCNPJ_CPF.getText()) == false) {
-                    JOptionPane.showMessageDialog(null, "CPF invalido.");
+                if (txtCNPJ_CPF.getText().isEmpty() == false) {
+                    if (ValidadorCpf.isCPF(txtCNPJ_CPF.getText()) == false) {
+                        JOptionPane.showMessageDialog(null, "CPF invalido.");
+                    } else {
+
+                        pst = conexao.prepareStatement(sql);
+
+                        pst.setString(1, txtFornecedor.getText());
+                        pst.setString(2, txtRazaoSocial.getText());
+                        pst.setString(3, cbPessoa.getSelectedItem().toString());
+                        pst.setString(4, txtCNPJ_CPF.getText());
+                        pst.setString(5, txtTelefone.getText());
+                        pst.setString(6, txtEmail.getText());
+                        pst.setString(7, txtEndereco.getText());
+                        pst.setString(8, txtID.getText());
+                        pst.executeUpdate();
+
+                        JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso");
+                        limpar();
+
+                    }
                 } else {
-                    
                     pst = conexao.prepareStatement(sql);
 
                     pst.setString(1, txtFornecedor.getText());
                     pst.setString(2, txtRazaoSocial.getText());
                     pst.setString(3, cbPessoa.getSelectedItem().toString());
-                    pst.setString(4, txtCNPJ_CPF.getText());
+                    pst.setString(4, "");
                     pst.setString(5, txtTelefone.getText());
                     pst.setString(6, txtEmail.getText());
-                    pst.setString(8, txtEndereco.getText());
-                    pst.setString(9, txtID.getText());
+                    pst.setString(7, txtEndereco.getText());
+                    pst.setString(8, txtID.getText());
                     pst.executeUpdate();
 
-                    JOptionPane.showMessageDialog(null, "Fornecedor adicionado com sucesso");
+                    JOptionPane.showMessageDialog(null, "Fornecedor alterado com sucesso");
                     limpar();
-
                 }
 
             }
@@ -213,26 +281,23 @@ public class CadFornecedor extends javax.swing.JFrame {
     private void remover() {
         int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este Fornecedor?", "Atenção", JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
-            
-            try {     
+
+            try {
                 JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                 String sql = "delete from tbfornecedor where idfornecedor=?";
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtID.getText());
                 pst.executeUpdate();
-                
+
                 JOptionPane.showMessageDialog(null, "Fornecedor removido com sucesso");
                 limpar();
-                
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 limpar();
             }
         }
     }
-    
-    
-   
 
     private void limpar() {
         instanciarTabela();

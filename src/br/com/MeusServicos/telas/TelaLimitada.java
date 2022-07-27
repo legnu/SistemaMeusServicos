@@ -23,6 +23,14 @@
  */
 package br.com.MeusServicos.telas;
 
+import br.com.MeusServicos.dal.ModuloConexao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
+
 /**
  *
  * @author Ad3ln0r
@@ -32,8 +40,75 @@ public class TelaLimitada extends javax.swing.JFrame {
     /**
      * Creates new form TelaLimitada
      */
+    Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+
     public TelaLimitada() {
         initComponents();
+        conexao = ModuloConexao.conector();
+    }
+
+    public void instanciarBtn() {
+        try {
+            String sqo = "select cargo_usuario from tbusuarios where usuario=?";
+            pst = conexao.prepareStatement(sqo);
+            pst.setString(1, lblNome.getText());
+            rs = pst.executeQuery();
+            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+
+            if (tbAuxilio.getModel().getValueAt(0, 0).toString().equals("Vendedor") == true) {
+                
+                btnPDV.setEnabled(true);
+                btnCadOS.setEnabled(false);
+                btnCadServiço.setEnabled(false);
+                btnAgendamentos.setEnabled(false);
+                
+            } else if (tbAuxilio.getModel().getValueAt(0, 0).toString().equals("Profissional/Tec") == true) {
+                btnPDV.setEnabled(false);
+                btnCadOS.setEnabled(true);
+                btnCadServiço.setEnabled(true);
+                btnAgendamentos.setEnabled(true);
+                
+            } else if (tbAuxilio.getModel().getValueAt(0, 0).toString().equals("Profissional/Tec e Vendedor") == true) {
+                btnPDV.setEnabled(true);
+                btnCadOS.setEnabled(true);
+                btnCadServiço.setEnabled(true);   
+                btnAgendamentos.setEnabled(true);
+                
+                
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void PDV() {
+        PontoDeVendas pdv = new PontoDeVendas();
+        pdv.setVisible(true);
+        PontoDeVendas.lblUsuarioPDV.setText(lblNome.getText());
+        this.dispose();
+    }
+    
+    public void Servico(){
+        CadServico Servico = new CadServico();
+        Servico.setVisible(true);
+        Servico.lblUsuario.setText(lblNome.getText());
+        this.dispose();
+    }
+    
+    public void gerenciadorServico(){
+        TelaServico Servico = new TelaServico();
+        Servico.setVisible(true);
+        Servico.lblUsuario.setText(lblNome.getText());
+        this.dispose();
+    }
+    
+    public void OS(){
+        CadOS os = new CadOS();
+        os.setVisible(true);
+        os.lblUsuario.setText(lblNome.getText());
+        this.dispose();
     }
 
     /**
@@ -45,15 +120,39 @@ public class TelaLimitada extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblNome = new javax.swing.JLabel();
+        scAuxilio = new javax.swing.JScrollPane();
+        tbAuxilio = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jToggleButton2 = new javax.swing.JToggleButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jToggleButton3 = new javax.swing.JToggleButton();
-        jToggleButton4 = new javax.swing.JToggleButton();
+        btnCadOS = new javax.swing.JToggleButton();
+        btnPDV = new javax.swing.JToggleButton();
+        btnCadServiço = new javax.swing.JToggleButton();
+        btnAgendamentos = new javax.swing.JToggleButton();
+
+        lblNome.setToolTipText("");
+
+        tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scAuxilio.setViewportView(tbAuxilio);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gerenciador");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -62,55 +161,91 @@ public class TelaLimitada extends javax.swing.JFrame {
         jToggleButton2.setBorderPainted(false);
         jToggleButton2.setContentAreaFilled(false);
 
-        jToggleButton1.setBackground(new java.awt.Color(255, 255, 255));
-        jToggleButton1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jToggleButton1.setForeground(new java.awt.Color(102, 102, 102));
-        jToggleButton1.setText("Cadastro de OS");
-        jToggleButton1.setBorderPainted(false);
-        jToggleButton1.setEnabled(false);
+        btnCadOS.setBackground(new java.awt.Color(102, 102, 102));
+        btnCadOS.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnCadOS.setForeground(new java.awt.Color(255, 255, 255));
+        btnCadOS.setText("Cadastro de OS");
+        btnCadOS.setBorderPainted(false);
+        btnCadOS.setEnabled(false);
+        btnCadOS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadOSActionPerformed(evt);
+            }
+        });
 
-        jToggleButton3.setBackground(new java.awt.Color(255, 255, 255));
-        jToggleButton3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jToggleButton3.setForeground(new java.awt.Color(102, 102, 102));
-        jToggleButton3.setText("Ponto de Vendas");
-        jToggleButton3.setBorderPainted(false);
-        jToggleButton3.setEnabled(false);
+        btnPDV.setBackground(new java.awt.Color(102, 102, 102));
+        btnPDV.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnPDV.setForeground(new java.awt.Color(255, 255, 255));
+        btnPDV.setText("Ponto de Vendas");
+        btnPDV.setBorderPainted(false);
+        btnPDV.setEnabled(false);
+        btnPDV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPDVActionPerformed(evt);
+            }
+        });
 
-        jToggleButton4.setBackground(new java.awt.Color(255, 255, 255));
-        jToggleButton4.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jToggleButton4.setForeground(new java.awt.Color(102, 102, 102));
-        jToggleButton4.setText("Cadastro de Serviço");
-        jToggleButton4.setToolTipText("");
-        jToggleButton4.setBorderPainted(false);
-        jToggleButton4.setEnabled(false);
+        btnCadServiço.setBackground(new java.awt.Color(102, 102, 102));
+        btnCadServiço.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnCadServiço.setForeground(new java.awt.Color(255, 255, 255));
+        btnCadServiço.setText("Cadastro de Serviço");
+        btnCadServiço.setToolTipText("");
+        btnCadServiço.setBorderPainted(false);
+        btnCadServiço.setEnabled(false);
+        btnCadServiço.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadServiçoActionPerformed(evt);
+            }
+        });
+
+        btnAgendamentos.setBackground(new java.awt.Color(102, 102, 102));
+        btnAgendamentos.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnAgendamentos.setForeground(new java.awt.Color(255, 255, 255));
+        btnAgendamentos.setText("Agendamentos");
+        btnAgendamentos.setBorderPainted(false);
+        btnAgendamentos.setEnabled(false);
+        btnAgendamentos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgendamentosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jToggleButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToggleButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-                    .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(16, 16, 16))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnPDV, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(16, 16, 16)
+                                .addComponent(btnCadServiço))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnAgendamentos, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(16, 16, 16)
+                                .addComponent(btnCadOS, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(24, 24, 24))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jToggleButton2)
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPDV, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCadServiço, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jToggleButton2))
-                .addGap(16, 16, 16))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAgendamentos, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCadOS, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -126,6 +261,31 @@ public class TelaLimitada extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnPDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPDVActionPerformed
+        // TODO add your handling code here:
+        PDV();
+    }//GEN-LAST:event_btnPDVActionPerformed
+
+    private void btnCadServiçoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadServiçoActionPerformed
+        // TODO add your handling code here:
+        Servico();
+    }//GEN-LAST:event_btnCadServiçoActionPerformed
+
+    private void btnCadOSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadOSActionPerformed
+        // TODO add your handling code here:
+        OS();
+    }//GEN-LAST:event_btnCadOSActionPerformed
+
+    private void btnAgendamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgendamentosActionPerformed
+        // TODO add your handling code here:
+        gerenciadorServico();
+    }//GEN-LAST:event_btnAgendamentosActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        instanciarBtn();
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -163,10 +323,14 @@ public class TelaLimitada extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JToggleButton btnAgendamentos;
+    public static javax.swing.JToggleButton btnCadOS;
+    public static javax.swing.JToggleButton btnCadServiço;
+    public static javax.swing.JToggleButton btnPDV;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton2;
-    private javax.swing.JToggleButton jToggleButton3;
-    private javax.swing.JToggleButton jToggleButton4;
+    public static javax.swing.JLabel lblNome;
+    private javax.swing.JScrollPane scAuxilio;
+    private javax.swing.JTable tbAuxilio;
     // End of variables declaration//GEN-END:variables
 }

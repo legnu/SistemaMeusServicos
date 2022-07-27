@@ -50,6 +50,18 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="di" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="df" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="inicialS" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="finalS" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[select * from tbTotalVendas]]>
 	</queryString>
@@ -90,6 +102,12 @@
 		<band height="308" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="243" width="555" height="65" uuid="a691c240-885a-4171-a429-14241faa4669"/>
+				<subreportParameter name="final">
+					<subreportParameterExpression><![CDATA[$P{df}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="inicial">
+					<subreportParameterExpression><![CDATA[$P{di}]]></subreportParameterExpression>
+				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Entrada.jasper"]]></subreportExpression>
 			</subreport>
@@ -109,6 +127,12 @@
 			</subreport>
 			<subreport>
 				<reportElement x="1" y="57" width="555" height="57" uuid="5d0a6ccb-dbc8-4fa0-9611-2bacc06493fe"/>
+				<subreportParameter name="dsi">
+					<subreportParameterExpression><![CDATA[$P{inicialS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dsf">
+					<subreportParameterExpression><![CDATA[$P{finalS}]]></subreportParameterExpression>
+				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Saida.jasper"]]></subreportExpression>
 			</subreport>

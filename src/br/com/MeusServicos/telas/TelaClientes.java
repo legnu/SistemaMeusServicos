@@ -31,8 +31,12 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -210,6 +214,21 @@ public class TelaClientes extends javax.swing.JFrame {
 
         }
     }
+    
+    public void imprimir(){
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            try {
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelClientes.jasper"), null, conexao);
+
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                
+            }
+        }
+    }
 
     public void Iniciar() {
         instanciarTabelaAuxilioCliente();
@@ -239,6 +258,7 @@ public class TelaClientes extends javax.swing.JFrame {
         rbInativo = new javax.swing.JRadioButton();
         lblPesquisar = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
+        btnImprimir = new javax.swing.JToggleButton();
         jLabel1 = new javax.swing.JLabel();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
@@ -320,6 +340,15 @@ public class TelaClientes extends javax.swing.JFrame {
             }
         });
 
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/impresora 64x63.png"))); // NOI18N
+        btnImprimir.setBorderPainted(false);
+        btnImprimir.setContentAreaFilled(false);
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnClientesLayout = new javax.swing.GroupLayout(pnClientes);
         pnClientes.setLayout(pnClientesLayout);
         pnClientesLayout.setHorizontalGroup(
@@ -329,29 +358,33 @@ public class TelaClientes extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnClientesLayout.createSequentialGroup()
+                        .addComponent(lblPesquisar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtPesquisar))
+                    .addGroup(pnClientesLayout.createSequentialGroup()
                         .addComponent(rbAtivo)
                         .addGap(16, 16, 16)
                         .addComponent(rbInativo)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(pnClientesLayout.createSequentialGroup()
-                        .addComponent(lblPesquisar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtPesquisar)))
-                .addGap(16, 16, 16))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         pnClientesLayout.setVerticalGroup(
             pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnClientesLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblPesquisar)
-                    .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
-                .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rbAtivo)
-                    .addComponent(rbInativo))
-                .addGap(16, 16, 16)
-                .addComponent(scClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE))
+                .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnClientesLayout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblPesquisar)
+                            .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(pnClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(rbAtivo)
+                            .addComponent(rbInativo)))
+                    .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(scClientes))
         );
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -422,6 +455,11 @@ public class TelaClientes extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPesquisarKeyPressed
 
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        // TODO add your handling code here:
+        imprimir();
+    }//GEN-LAST:event_btnImprimirActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -459,6 +497,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup Grupo1;
+    private javax.swing.JToggleButton btnImprimir;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblPesquisar;
     private javax.swing.JPanel pnClientes;

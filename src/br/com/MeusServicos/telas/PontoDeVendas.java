@@ -34,6 +34,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -58,6 +59,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
     String tipo;
     String funcionario;
     String identificador;
+    String permissao = "1";
 
     public PontoDeVendas() {
         initComponents();
@@ -65,7 +67,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void iniciar() {
-        identificador();
+        InstanciarComboboxComanda();
         instanciarTabelaVenda();
         instanciarTabelaCliente();
         txtPreco.setText("0.00");
@@ -89,6 +91,25 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } else if (String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Credito") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Crediario") == true) {
             cbNumero.setEnabled(true);
+        }
+    }
+
+    public void InstanciarComboboxComanda() {
+        try {
+            permissao = "1";
+            cbComanda.removeAllItems();
+            cbComanda.addItem("Caixa Principal");
+            String sql = "select nomeComanda from tbComanda";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                cbComanda.addItem(rs.getString("nomeComanda"));
+            }
+            permissao = "0";
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
         }
     }
 
@@ -122,18 +143,15 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     public void identificador() {
         try {
-            String sqy = "select id from tbtotalvendas where id ORDER BY id desc;";
+            String sqy = "select identificador from tbtotalvendas where id ORDER BY identificador desc;";
             pst = conexao.prepareStatement(sqy);
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
             identificador = String.valueOf(Integer.parseInt(tbAuxilio.getModel().getValueAt(0, 0).toString()) + 1);
-            System.out.println(identificador);
+            System.out.println(tbAuxilio.getModel().getValueAt(0, 0).toString());
 
-        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             identificador = "1";
-        }        catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
 
         }
     }
@@ -141,8 +159,8 @@ public class PontoDeVendas extends javax.swing.JFrame {
     public void criarNota() {
 
         try {
-            identificador();
-            String sql = "insert into tbvenda(nome, preco, quantidade, tipo, comissao, vendedor, identificador, categoria)values(?,?,?,?,?,?,?,?)";
+
+            String sql = "insert into tbvenda(nome, preco, quantidade, tipo, comissao, vendedor, comanda_nota)values(?,?,?,?,?,?,?)";
             pst = conexao.prepareStatement(sql);
 
             pst.setString(1, txtNome.getText());
@@ -166,17 +184,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 pst.setString(5, funcionario);
             }
             pst.setString(6, lblUsuarioPDV.getText());
-            pst.setString(7, identificador);
-            
-            if (tipo.equals("Produto") == true) {
-                pst.setString(8, "Produto");
-            } else if (tipo.equals("OS") == true) {
-
-                pst.setString(8, "OS");
-            } else if (tipo.equals("Serviço") == true) {
-
-                pst.setString(8, "Serviço");
-            }
+            pst.setString(7, cbComanda.getSelectedItem().toString());
 
             //Validação dos Campos Obrigatorios
             if ((txtNome.getText().isEmpty()) || (txtPreco.getText().isEmpty())) {
@@ -267,6 +275,27 @@ public class PontoDeVendas extends javax.swing.JFrame {
         }
     }
 
+    public void criarComanda() {
+        try {
+            String Comanda = JOptionPane.showInputDialog("Nomeie a nova comanda.");
+            if (Comanda.isEmpty() == false) {
+                JOptionPane.showMessageDialog(null, "Aguarde.");
+                String sql = "insert into tbComanda(nomeComanda)values(?)";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, Comanda);
+                pst.executeUpdate();
+                InstanciarComboboxComanda();
+                JOptionPane.showMessageDialog(null, "Comanda Adicionada com sucesso.");
+            }
+
+        } catch (java.lang.NullPointerException e) {
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+        }
+    }
+
     private void pesquisarCliente() {
 
         String sql = "select nomecli as Cliente from tbclientes where nomecli like ?";
@@ -323,50 +352,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 limpar();
             }
         }
-    }
-
-    private void tirarIdOS() {
-
-        String sql = "alter table tbos drop os";
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.executeUpdate();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
-
-    }
-
-    private void criarIdOS() {
-        String sql = "alter table tbos add os MEDIUMINT NOT NULL AUTO_INCREMENT Primary key";
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.executeUpdate();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
-    }
-
-    private void limpar_nota() {
-       
-        try {
-            
-            lblValorTotal.setText("0.00");
-            tirarIdOS();
-            criarIdOS();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            limpar();
-
-        }
-
     }
 
     public void QuantidadeTirada() {
@@ -485,8 +470,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     private void imprimir_nota() {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao desta Nota?", "Atençao", JOptionPane.YES_OPTION);
-        if (confirma == JOptionPane.YES_OPTION) {
-            System.out.println(txtCliente.getText());
+        if (confirma == JOptionPane.YES_OPTION) {            
             try {
 
                 String sql = "update tbrelatorio set cliente=?,preco=? where idRelatorio=1";
@@ -494,10 +478,17 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 pst.setString(1, txtCliente.getText());
                 pst.setString(2, lblValorTotal.getText());
                 pst.executeUpdate();
-
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/NotaPdv.jasper"), null, conexao);
-
-                JasperViewer.viewReport(print, false);
+                
+                
+                HashMap filtro = new HashMap();
+                
+                
+                filtro.put("IT", Integer.parseInt(identificador));
+                filtro.put("cliente", txtCliente.getText());
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/NotaPdv.jasper"), filtro, conexao);
+                JasperViewer.viewReport(print, false);               
+                
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 limpar();
@@ -511,16 +502,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
         try {
             double preco, x;
 
-            String sql = "select preco from tbvenda where identificador=?";
-
             preco = 0;
 
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, identificador);
-            rs = pst.executeQuery();
-            tbTotal.setModel(DbUtils.resultSetToTableModel(rs));
-            for (int i = 0; i < tbTotal.getRowCount(); i++) {
-                x = Double.parseDouble(tbTotal.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100;
+            for (int i = 0; i < tbItem.getRowCount(); i++) {
+                x = Double.parseDouble(tbItem.getModel().getValueAt(i, 2).toString().replace(".", "")) / 100;
                 preco = preco + x;
 
             }
@@ -553,10 +538,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void instanciarTabelaVenda() {
-        String sql = "select idvenda as ID, nome as Nome, preco as Preço, quantidade as Quantidade,tipo as tipo from tbvenda where identificador=?";
+        String sql = "select idvenda as ID, nome as Nome, preco as Preço, quantidade as Quantidade,tipo as tipo from tbvenda where comanda_nota=?";
         try {
             pst = conexao.prepareStatement(sql);
-            pst.setString(1, identificador);
+            pst.setString(1, cbComanda.getSelectedItem().toString());
             rs = pst.executeQuery();
             tbItem.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
@@ -740,7 +725,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
     public void removerOS() {
         try {
-            String sql = "select nome from tbvenda where categoria='OS'";
+            String sql = "select nome from tbvenda where tipo='OS'";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbOS.setModel(DbUtils.resultSetToTableModel(rs));
@@ -760,31 +745,58 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 pst.executeUpdate();
 
             }
-        } catch (Exception e) {       
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
         }
     }
-    
+
     public void AlterarServico() {
         try {
-            String sql = "select nome from tbvenda where categoria='Serviço'";
+            String sql = "select nome from tbvenda where tipo='Serviço'";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbOS.setModel(DbUtils.resultSetToTableModel(rs));
 
             for (int i = 0; i < tbOS.getRowCount(); i++) {
 
-            String sqo = "update tbservicos set tipo='Pago' where servico=?";
-            pst = conexao.prepareStatement(sqo);            
-            pst.setString(1, tbOS.getModel().getValueAt(i, 0).toString());
-            pst.executeUpdate();
+                String sqo = "update tbservicos set tipo='Pago' where servico=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, tbOS.getModel().getValueAt(i, 0).toString());
+                pst.executeUpdate();
 
             }
-        } catch (Exception e) {  
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             limpar();
         }
+    }
+
+    public void tirarComanda() {
+        try {
+            if (cbComanda.getSelectedItem().toString().equals("Caixa Principal") == false) {
+                for (int i = 0; i < tbItem.getRowCount(); i++) {
+                String id = tbItem.getModel().getValueAt(i, 0).toString();
+                String sqo = "update tbvenda set comanda_nota='Caixa Principal' where idvenda=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, id);
+                pst.executeUpdate();
+                }
+                String sqy = "delete from tbComanda where nomeComanda=?";
+                pst = conexao.prepareStatement(sqy);
+                pst.setString(1, cbComanda.getSelectedItem().toString());
+                pst.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Comanda removida com sucesso.");
+                InstanciarComboboxComanda();
+                instanciarTabelaVenda();
+            } else {
+                JOptionPane.showMessageDialog(null, "Caixa Principal não pode ser removido.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+        }
+
     }
 
     public void adicionarComissao() {
@@ -793,37 +805,36 @@ public class PontoDeVendas extends javax.swing.JFrame {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             java.sql.Date dSql = new java.sql.Date(d.getTime());
             df.format(dSql);
-            String sqo = "select preco, tipo, comissao from tbvenda where identificador=?";
+            String sqo = "select preco, tipo, comissao from tbvenda where comanda_nota=?";
             pst = conexao.prepareStatement(sqo);
-            pst.setString(1, identificador);
+            pst.setString(1, cbComanda.getSelectedItem().toString());
             rs = pst.executeQuery();
             tbComissao.setModel(DbUtils.resultSetToTableModel(rs));
 
             for (int i = 0; i < tbComissao.getRowCount(); i++) {
                 String tipoVenda = tbComissao.getModel().getValueAt(i, 1).toString();
-                
-                
+
                 if (tipoVenda.equals("Produto") == true) {
                     String sqy = "select comissao from tbusuarios where usuario=?";
                     pst = conexao.prepareStatement(sqy);
                     pst.setString(1, lblUsuarioPDV.getText());
                     rs = pst.executeQuery();
                     tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-                    String comissao = String.valueOf(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) / 100);                   
-                    String valorComissao = new DecimalFormat("#,##0.00").format(Double.parseDouble(tbComissao.getModel().getValueAt(i, 0).toString().replace(".", ""))/ 100 * Double.parseDouble(comissao)).replace(",", ".");
+                    String comissao = String.valueOf(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) / 100);
+                    String valorComissao = new DecimalFormat("#,##0.00").format(Double.parseDouble(tbComissao.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100 * Double.parseDouble(comissao)).replace(",", ".");
                     System.out.println(valorComissao);
-                    
-                    if(Integer.parseInt(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) > 0){    
-                    
-                    String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
-                    pst = conexao.prepareStatement(sql);                    
-                    pst.setString(1, "Comiçâo de " + lblUsuarioPDV.getText());
-                    pst.setDate(2, dSql);
-                    pst.setString(3, "Pago");
-                    pst.setString(4, valorComissao);
-                    pst.setString(5, "Comissao");
-                    pst.executeUpdate();
-                    
+
+                    if (Integer.parseInt(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) > 0) {
+
+                        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
+                        pst = conexao.prepareStatement(sql);
+                        pst.setString(1, "Comiçâo de " + lblUsuarioPDV.getText());
+                        pst.setDate(2, dSql);
+                        pst.setString(3, "Pago");
+                        pst.setString(4, valorComissao);
+                        pst.setString(5, "Comissao");
+                        pst.executeUpdate();
+
                     }
 
                 } else {
@@ -832,26 +843,25 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     pst.setString(1, tbComissao.getModel().getValueAt(i, 2).toString());
                     rs = pst.executeQuery();
                     tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-                    String comissao = String.valueOf(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) / 100);                   
-                    String valorComissao = new DecimalFormat("#,##0.00").format(Double.parseDouble(tbComissao.getModel().getValueAt(i, 0).toString().replace(".", ""))/ 100 * Double.parseDouble(comissao)).replace(",", ".");
+                    String comissao = String.valueOf(Double.parseDouble(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) / 100);
+                    String valorComissao = new DecimalFormat("#,##0.00").format(Double.parseDouble(tbComissao.getModel().getValueAt(i, 0).toString().replace(".", "")) / 100 * Double.parseDouble(comissao)).replace(",", ".");
                     System.out.println(valorComissao);
-                    
-                    if(Integer.parseInt(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) > 0){    
-                    
-                    String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
-                    pst = conexao.prepareStatement(sql);                    
-                    pst.setString(1, "Comiçâo de " + tbComissao.getModel().getValueAt(i, 2).toString());
-                    pst.setDate(2, dSql);
-                    pst.setString(3, "Pago");
-                    pst.setString(4, valorComissao);
-                    pst.setString(5, "Comissao");
-                    pst.executeUpdate();
-                    
+
+                    if (Integer.parseInt(tbAuxilio.getModel().getValueAt(0, 0).toString().replace("%", "")) > 0) {
+
+                        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
+                        pst = conexao.prepareStatement(sql);
+                        pst.setString(1, "Comiçâo de " + tbComissao.getModel().getValueAt(i, 2).toString());
+                        pst.setDate(2, dSql);
+                        pst.setString(3, "Pago");
+                        pst.setString(4, valorComissao);
+                        pst.setString(5, "Comissao");
+                        pst.executeUpdate();
+
                     }
 
-
                 }
-               
+
             }
 
         } catch (Exception e) {
@@ -861,8 +871,27 @@ public class PontoDeVendas extends javax.swing.JFrame {
         }
     }
 
-    public void concluir() {
+    public void finalizarVenda() {
+        try {
+            for (int i = 0; i < tbItem.getRowCount(); i++) {
+                String id = tbItem.getModel().getValueAt(i, 0).toString();
+                String sqo = "update tbvenda set comanda_nota='',identificador=? where idvenda=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, identificador);
+                pst.setString(2, id);
+                pst.executeUpdate();
+            }
 
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            limpar();
+
+        }
+
+    }
+
+    public void concluir() {
+        identificador();
         Date dataHoraAtual = new Date();
         String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
 
@@ -879,7 +908,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 limpar();
             } else if (String.valueOf(cbPagamento.getSelectedItem()).equals("A Vista (Dinhero)") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Debito") == true || String.valueOf(cbPagamento.getSelectedItem()).equals("Pix") == true) {
 
-                String sqo = "insert into tbtotalvendas(dia, hora, venda, idcliente, forma_pagamento, status_pagamento, dia_Pagamento,tipo)values(?,?,?,?,?,?,?,?)";
+                String sqo = "insert into tbtotalvendas(dia, hora, venda, idcliente, forma_pagamento, status_pagamento, dia_Pagamento,tipo, identificador)values(?,?,?,?,?,?,?,?,?)";
                 pst = conexao.prepareStatement(sqo);
                 pst.setString(1, dSql.toString());
                 pst.setString(2, hora);
@@ -889,8 +918,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 pst.setString(6, "Pago");
                 pst.setDate(7, dSql);
                 pst.setString(8, "Venda");
+                pst.setString(9, identificador);
                 pst.executeUpdate();
                 adicionarComissao();
+                finalizarVenda();
                 imprimir_nota();
                 inserirDadosCliente();
 
@@ -898,11 +929,11 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 AlterarServico();
 
                 JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                limpar_nota();
+                lblValorTotal.setText("0.00");
                 JOptionPane.showMessageDialog(null, "Concluido.");
                 limpar();
 
-            } else if (txtCliente.getText().isEmpty() == false & String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Credito")) {
+            } else if (txtCliente.getText().isEmpty() == false & String.valueOf(cbPagamento.getSelectedItem()).equals("Cartão Credito") == true) {
                 System.out.println(txtCrediario.getText());
                 for (int i = 0; i < Integer.parseInt(String.valueOf(cbNumero.getSelectedItem()).replace("x", "")); i++) {
 
@@ -922,7 +953,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     java.sql.Date dSqt = new java.sql.Date(data.getTime());
                     df.format(dSqt);
 
-                    String sqo = "insert into tbtotalvendas(dia, hora, venda, idcliente, forma_pagamento, status_pagamento, dia_Pagamento,tipo)values(?,?,?,?,?,?,?,?)";
+                    String sqo = "insert into tbtotalvendas(dia, hora, venda, idcliente, forma_pagamento, status_pagamento, dia_Pagamento,tipo, identificador)values(?,?,?,?,?,?,?,?,?)";
 
                     pst = conexao.prepareStatement(sqo);
 
@@ -934,10 +965,12 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     pst.setString(6, "Pendente");
                     pst.setDate(7, dSqt);
                     pst.setString(8, "Venda");
+                    pst.setString(9, identificador);
                     pst.executeUpdate();
                     acumulo++;
                 }
                 adicionarComissao();
+                finalizarVenda();
                 imprimir_nota();
                 inserirDadosCliente();
 
@@ -945,7 +978,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 AlterarServico();
 
                 JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                limpar_nota();
+                lblValorTotal.setText("0.00");
                 JOptionPane.showMessageDialog(null, "Concluido.");
                 limpar();
 
@@ -969,7 +1002,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     java.sql.Date dSqt = new java.sql.Date(data.getTime());
                     df.format(dSqt);
 
-                    String sqo = "insert into tbtotalvendas(dia, hora, venda, idcliente, forma_pagamento, status_pagamento, dia_Pagamento,tipo)values(?,?,?,?,?,?,?,?)";
+                    String sqo = "insert into tbtotalvendas(dia, hora, venda, idcliente, forma_pagamento, status_pagamento, dia_Pagamento,tipo, identificador)values(?,?,?,?,?,?,?,?,?)";
 
                     pst = conexao.prepareStatement(sqo);
 
@@ -981,11 +1014,12 @@ public class PontoDeVendas extends javax.swing.JFrame {
                     pst.setString(6, "Pendente");
                     pst.setDate(7, dSqt);
                     pst.setString(8, "Venda");
+                    pst.setString(9, identificador);
                     pst.executeUpdate();
                     acumulo++;
                 }
                 adicionarComissao();
-                
+                finalizarVenda();
                 imprimir_nota();
                 inserirDadosCliente();
 
@@ -993,7 +1027,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 AlterarServico();
 
                 JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                limpar_nota();
+                lblValorTotal.setText("0.00");
                 JOptionPane.showMessageDialog(null, "Concluido.");
                 limpar();
 
@@ -1138,12 +1172,22 @@ public class PontoDeVendas extends javax.swing.JFrame {
             if (Perfil.equals("Administrador")) {
                 TelaPrincipal principal = new TelaPrincipal();
                 principal.setVisible(true);
-
                 TelaPrincipal.MenCadUsu.setEnabled(true);
                 TelaPrincipal.lblUsuario.setText(lblUsuarioPDV.getText());
                 TelaPrincipal.lblUsuario.setForeground(Color.red);
                 this.dispose();
                 conexao.close();
+            } else if (Perfil.equals("Usuario") == true) {
+
+                TelaLimitada limitada = new TelaLimitada();
+                limitada.setVisible(true);
+                TelaLimitada.btnPDV.setEnabled(false);
+                TelaLimitada.btnCadOS.setEnabled(false);
+                TelaLimitada.btnCadServiço.setEnabled(false);
+                TelaLimitada.lblNome.setText(lblUsuarioPDV.getText());
+                this.dispose();
+                conexao.close();
+
             }
 
         } catch (Exception e) {
@@ -1167,13 +1211,13 @@ public class PontoDeVendas extends javax.swing.JFrame {
         txtQuantidade.setEnabled(false);
         lblValorTotal.setText("0.00");
         ((DefaultTableModel) tbListaDeInformaçoes.getModel()).setRowCount(0);
-        txtCliente.setText(null);
+        txtCliente.setText("Vendas Sem Registro.");
         txtCrediario.setText(null);
         cbPagamento.setSelectedItem("A Vista (Dinhero)");
         cbNumero.setSelectedItem("1x");
         funcionario = null;
         pnCliente.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cliente Selecionado: ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
-        identificador();
+
         instanciarTabelaVenda();
         instanciarTabelaCliente();
         soma();
@@ -1220,6 +1264,10 @@ public class PontoDeVendas extends javax.swing.JFrame {
         pnTbNota = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbItem = new javax.swing.JTable();
+        cbComanda = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        btnComanda = new javax.swing.JToggleButton();
+        btnTirarComanda = new javax.swing.JToggleButton();
         lblTotal = new javax.swing.JLabel();
         lblValorTotal = new javax.swing.JLabel();
         btnConcluir = new javax.swing.JButton();
@@ -1352,7 +1400,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         ));
         scOS.setViewportView(tbOS);
 
-        txtCliente.setText("Caixa");
+        txtCliente.setText("Vendas Sem Registro.");
 
         idCliente.setText("1");
 
@@ -1375,11 +1423,11 @@ public class PontoDeVendas extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Ponto de Vendas");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowActivated(java.awt.event.WindowEvent evt) {
-                formWindowActivated(evt);
-            }
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
 
@@ -1416,15 +1464,61 @@ public class PontoDeVendas extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tbItem);
 
+        cbComanda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Caixa Principal" }));
+        cbComanda.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbComandaItemStateChanged(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel1.setText("Comanda: ");
+
+        btnComanda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/plus.png"))); // NOI18N
+        btnComanda.setBorderPainted(false);
+        btnComanda.setContentAreaFilled(false);
+        btnComanda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnComandaActionPerformed(evt);
+            }
+        });
+
+        btnTirarComanda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/MeusServicos/icones/minus.png"))); // NOI18N
+        btnTirarComanda.setBorderPainted(false);
+        btnTirarComanda.setContentAreaFilled(false);
+        btnTirarComanda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTirarComandaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnTbNotaLayout = new javax.swing.GroupLayout(pnTbNota);
         pnTbNota.setLayout(pnTbNotaLayout);
         pnTbNotaLayout.setHorizontalGroup(
             pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+            .addGroup(pnTbNotaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbComanda, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnComanda, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnTirarComanda, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         pnTbNotaLayout.setVerticalGroup(
             pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnTbNotaLayout.createSequentialGroup()
+                .addGap(1, 1, 1)
+                .addGroup(pnTbNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnComanda, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbComanda, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(btnTirarComanda, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         );
 
         lblTotal.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
@@ -1512,7 +1606,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         );
         pnClienteLayout.setVerticalGroup(
             pnClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(scCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout pnTbClientesLayout = new javax.swing.GroupLayout(pnTbClientes);
@@ -1590,7 +1684,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(pnPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnConcluir1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnConcluir1)
                 .addGap(16, 16, 16))
             .addGroup(pnNotaLayout.createSequentialGroup()
                 .addGap(81, 81, 81)
@@ -1601,7 +1695,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
             pnNotaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnNotaLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(pnTbClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pnTbClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(pnTbNota, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(16, 16, 16)
@@ -1726,7 +1820,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                         .addComponent(rbProduto)
                         .addGap(18, 18, 18)
                         .addComponent(rbServico)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                         .addComponent(btnOS)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCliente))
@@ -1753,7 +1847,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                         .addComponent(btnOS)
                         .addComponent(btnCliente)))
                 .addGap(16, 16, 16)
-                .addComponent(scPdv, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
+                .addComponent(scPdv, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(204, 204, 204));
@@ -1825,7 +1919,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         );
         pnOBSLayout.setVerticalGroup(
             pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 145, Short.MAX_VALUE)
+            .addGap(0, 135, Short.MAX_VALUE)
             .addGroup(pnOBSLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(scText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
         );
@@ -1882,7 +1976,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
@@ -1901,12 +1995,12 @@ public class PontoDeVendas extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 3, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(pnNota, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(18, 18, 18))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pnNota, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
@@ -1922,7 +2016,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                .addGap(18, 18, 18))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1979,11 +2073,6 @@ public class PontoDeVendas extends javax.swing.JFrame {
         // TODO add your handling code here:
         setar_campos();
     }//GEN-LAST:event_tbListaDeInformaçoesMouseClicked
-
-    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // TODO add your handling code here:
-        iniciar();
-    }//GEN-LAST:event_formWindowActivated
 
     private void txtPesquisaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisaKeyReleased
         // TODO add your handling code here:
@@ -2057,6 +2146,29 @@ public class PontoDeVendas extends javax.swing.JFrame {
         instanciarTabela();
     }//GEN-LAST:event_rbServicoActionPerformed
 
+    private void btnComandaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComandaActionPerformed
+        // TODO add your handling code here:
+        criarComanda();
+    }//GEN-LAST:event_btnComandaActionPerformed
+
+    private void cbComandaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbComandaItemStateChanged
+        // TODO add your handling code here:
+        if (permissao.equals("0") == true) {
+            instanciarTabelaVenda();
+            soma();
+        }
+    }//GEN-LAST:event_cbComandaItemStateChanged
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        iniciar();
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnTirarComandaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTirarComandaActionPerformed
+        // TODO add your handling code here:
+        tirarComanda();
+    }//GEN-LAST:event_btnTirarComandaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2096,13 +2208,17 @@ public class PontoDeVendas extends javax.swing.JFrame {
     private javax.swing.ButtonGroup OS_Produtos;
     private javax.swing.JButton btnAdicionar;
     private javax.swing.JToggleButton btnCliente;
+    private javax.swing.JToggleButton btnComanda;
     private javax.swing.JButton btnConcluir;
     private javax.swing.JButton btnConcluir1;
     private javax.swing.JToggleButton btnOS;
     private javax.swing.JButton btnRemove;
+    private javax.swing.JToggleButton btnTirarComanda;
+    private javax.swing.JComboBox<String> cbComanda;
     private javax.swing.JComboBox<String> cbNumero;
     private javax.swing.JComboBox<String> cbPagamento;
     private javax.swing.JTextField idCliente;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -35,7 +35,8 @@ public class ModuloConexao {
         String driver = "com.mysql.jdbc.Driver";
         String url = "jdbc:mysql://localhost:3306/dbmeusservicos?characterEncoding=utf-8";
         String user = "dba";
-        String password = "Peruca@13";
+        String password = "Legnu.131807";
+        //Legnu.131807
         
         try {
             Class.forName(driver);
