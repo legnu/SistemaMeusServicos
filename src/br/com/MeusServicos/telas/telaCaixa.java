@@ -56,6 +56,47 @@ public class telaCaixa extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
     }
+    
+    public void contador(){
+        try {
+            String sql = "update tbgastos set comunicarGasto=null where idgastos";
+            pst = conexao.prepareStatement(sql);                        
+            pst.executeUpdate();
+            String squ = "update tbtotalvendas set comunicarVenda=null where id";
+            pst = conexao.prepareStatement(squ);                        
+            pst.executeUpdate();
+            
+         
+            int contagem = 1;
+            
+            for(int i = 0; i < tbCaixaPago.getRowCount(); i++){            
+            String sqh = "update tbgastos set comunicarGasto=? where idgastos=?";
+            pst = conexao.prepareStatement(sqh);
+            pst.setInt(1, contagem);
+            pst.setString(2, tbCaixaPago.getModel().getValueAt(i, 0).toString());            
+            pst.executeUpdate();
+            contagem++;            
+            }
+            
+           
+            contagem = 1;
+            
+            for(int i = 0; i < tbCaixaRecebido.getRowCount(); i++){           
+            String sqk = "update tbtotalvendas set comunicarVenda=? where id=?";
+            pst = conexao.prepareStatement(sqk);
+            pst.setInt(1, contagem);
+            pst.setString(2, tbCaixaRecebido.getModel().getValueAt(i, 0).toString());            
+            pst.executeUpdate();
+            contagem++;
+            }
+            
+        } catch (java.lang.NullPointerException e) {
+            JOptionPane.showMessageDialog(null, e);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }        
+    }
 
     public void instanciarTabela() {
         try {
@@ -74,18 +115,7 @@ public class telaCaixa extends javax.swing.JFrame {
         }
     }
 
-    public void instanciarEntrada_Saida_Lucro() {
-        try {
-            String sqo = "update tbrelatorio set entrada=?,saida=?,lucro=? where idRelatorio=1";
-            pst = conexao.prepareStatement(sqo);
-            pst.setString(1, lblTotalRecebido.getText());
-            pst.setString(2, lblTotalPago.getText());
-            pst.setString(3, lblTotalCaixa.getText());
-            pst.executeUpdate();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-    }
+
 
     public void instanciarTabelaCliente() {
         try {
@@ -128,17 +158,29 @@ public class telaCaixa extends javax.swing.JFrame {
         if (confirma == JOptionPane.YES_OPTION) {
             
             try {
+                JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 setarPorData();
-
-                instanciarEntrada_Saida_Lucro();
+                contador();
                 
+                String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs)); 
                 HashMap filtro = new HashMap();               
                 
                 filtro.put("di", df.format(DaInicial.getDate()));
                 filtro.put("df", df.format(DaFinal.getDate()));
-                filtro.put("inicialS", df.format(DaInicial.getDate()));
-                filtro.put("finalS", df.format(DaFinal.getDate()));
+                filtro.put("entrada", lblTotalRecebido.getText());
+                filtro.put("Saida", lblTotalPago.getText());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                filtro.put("lucro", lblTotalCaixa.getText());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
                 System.out.println(df.format(DaInicial.getDate()));
                 
                 JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Caixa.jasper"), filtro, conexao);
@@ -730,11 +772,12 @@ public class telaCaixa extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
+        
         instanciarTabelaCliente();
         instanciarTabelaGasto();
         instanciarTabelaVendas();
         instanciarTabela();
-        instanciarEntrada_Saida_Lucro();
+       
     }//GEN-LAST:event_formWindowOpened
 
     /**

@@ -54,7 +54,7 @@ public class telaSangria extends javax.swing.JFrame {
 
     private void adicionar() {
 
-        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
+        String sql = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo,)values(?,?,?,?,?)";
 
         try {
             Date d = new Date();

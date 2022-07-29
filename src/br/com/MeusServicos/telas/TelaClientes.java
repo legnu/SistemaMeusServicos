@@ -220,10 +220,33 @@ public class TelaClientes extends javax.swing.JFrame {
         if (confirma == JOptionPane.YES_OPTION) {
             try {
                 
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelClientes.jasper"), null, conexao);
+                 String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                
+                
+                //tbAuxilio1.getModel().getValueAt(0, 0).toString()
+                HashMap filtro = new HashMap();
+                
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelClientes.jasper"), filtro, conexao);
 
                 JasperViewer.viewReport(print, false);
-            } catch (Exception e) {
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma imagem no relatorio");
+        
+
+            }catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 
             }

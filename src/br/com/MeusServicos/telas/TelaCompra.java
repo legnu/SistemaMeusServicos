@@ -293,7 +293,7 @@ public class TelaCompra extends javax.swing.JFrame {
 
                 }
 
-                String sql = "insert into tbgastos(valor, data_emissao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
+                String sql = "insert into tbgastos(valor, data_emissao, status_pagamento, data_pagamento, nome, forma_pagamento,tipo)values(?,?,?,?,?,?,?)";
 
                 pst = conexao.prepareStatement(sql);
 
@@ -303,6 +303,7 @@ public class TelaCompra extends javax.swing.JFrame {
                 pst.setDate(4, dSqo);
                 pst.setString(5, compra);
                 pst.setString(6, cbPagamento.getSelectedItem().toString());
+                pst.setString(7, "Compra");
                 pst.executeUpdate();
 
                 try {
@@ -351,7 +352,7 @@ public class TelaCompra extends javax.swing.JFrame {
                     java.sql.Date dSqt = new java.sql.Date(data.getTime());
                     df.format(dSqt);
 
-                    String sql = "insert into tbgastos(valor, data_emissao, status_pagamento, data_pagamento, nome, forma_pagamento)values(?,?,?,?,?,?)";
+                    String sql = "insert into tbgastos(valor, data_emissao, status_pagamento, data_pagamento, nome, forma_pagamento, tipo)values(?,?,?,?,?,?,?)";
 
                     pst = conexao.prepareStatement(sql);
 
@@ -361,6 +362,7 @@ public class TelaCompra extends javax.swing.JFrame {
                     pst.setDate(4, dSqt);
                     pst.setString(5, compra + " Parcela: "+parcela+"/"+String.valueOf(cbNumero.getSelectedItem()).replace("x",""));
                     pst.setString(6, cbPagamento.getSelectedItem().toString());
+                    pst.setString(7, "Compra");
                     pst.executeUpdate();
                     acumulo++;
                     parcela++;

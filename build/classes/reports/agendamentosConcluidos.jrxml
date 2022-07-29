@@ -3,9 +3,13 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
-	</parameter>
+	<parameter name="empresa" class="java.lang.String"/>
+	<parameter name="nome" class="java.lang.String"/>
+	<parameter name="email" class="java.lang.String"/>
+	<parameter name="descricao" class="java.lang.String"/>
+	<parameter name="numero" class="java.lang.String"/>
+	<parameter name="imagem" class="java.lang.String"/>
+	<parameter name="obs" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select servico as Serviço, valor as Valor, data_agendada as Data, funcionario as Funcionario, tipo as Tipo from tbservicos where
 tipo='Concluido']]>
@@ -26,11 +30,45 @@ tipo='Concluido']]>
 	</background>
 	<title>
 		<band height="268" splitType="Stretch">
-			<subreport>
-				<reportElement x="0" y="0" width="555" height="268" uuid="a81429ea-b7b9-48b4-bc2d-f379b82360a0"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TituloSemCliente.jasper"]]></subreportExpression>
-			</subreport>
+			<image>
+				<reportElement x="312" y="10" width="222" height="172" uuid="70588822-2054-4f18-bf94-d5595db5836a"/>
+				<imageExpression><![CDATA[$P{imagem}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="10" y="83" width="291" height="23" uuid="cbfe1cca-aa7b-4f4a-b499-02137276abba"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="30" width="291" height="26" uuid="1f6908ad-27e1-4591-9040-cef8cf5cc1ab"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="121" width="291" height="22" uuid="26f62a95-f041-4b74-b6eb-44d4b9f2d678"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{email}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="160" width="291" height="22" uuid="a0e0a439-38d4-4411-a6c3-ffc1c33f132a"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="210" width="545" height="25" uuid="ef8510f7-6338-44ed-84da-a628f758c1f8"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{numero}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
@@ -86,35 +124,35 @@ tipo='Concluido']]>
 			<textField>
 				<reportElement x="153" y="0" width="65" height="20" uuid="c23aad48-8667-4193-8a05-42a87d17104f"/>
 				<textElement>
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Data}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="153" height="20" uuid="f2210505-1b21-4eeb-9325-6fb058f1de2e"/>
 				<textElement>
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Serviço}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="397" y="0" width="69" height="20" uuid="696442a0-254f-4391-9a21-b99d0d75de65"/>
 				<textElement textAlignment="Center">
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Valor}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="468" y="0" width="87" height="20" uuid="b06ce232-818e-4748-a8f2-1b2e5cc9925d"/>
 				<textElement textAlignment="Right">
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Tipo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="239" y="0" width="158" height="20" uuid="72c79862-b28f-49d4-af23-22035f338fb5"/>
 				<textElement>
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Funcionario}]]></textFieldExpression>
 			</textField>
@@ -132,14 +170,16 @@ tipo='Concluido']]>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<subreport>
-				<reportElement x="208" y="14" width="347" height="25" uuid="2b0fc024-3c4f-4c79-a619-00e8df9f0dad"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
-			</subreport>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="6f1064c8-f0cd-4f85-a7ac-6d72ca62fcd9"/>
 			</line>
+			<textField>
+				<reportElement x="239" y="14" width="316" height="25" uuid="fe54f4f5-1364-4656-8215-973fa4a7f4af"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{obs}]]></textFieldExpression>
+			</textField>
 		</band>
 	</lastPageFooter>
 </jasperReport>

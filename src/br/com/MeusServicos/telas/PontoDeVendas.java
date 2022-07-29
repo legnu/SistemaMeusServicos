@@ -67,6 +67,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
     }
 
     public void iniciar() {
+        this.setEnabled(false);
         InstanciarComboboxComanda();
         instanciarTabelaVenda();
         instanciarTabelaCliente();
@@ -75,6 +76,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
         rbOrdemDeServico.setSelected(true);
         instanciarTabela();
         soma();
+        this.setEnabled(true);
 
     }
 
@@ -473,22 +475,45 @@ public class PontoDeVendas extends javax.swing.JFrame {
         if (confirma == JOptionPane.YES_OPTION) {            
             try {
 
-                String sql = "update tbrelatorio set cliente=?,preco=? where idRelatorio=1";
+                String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
                 pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtCliente.getText());
-                pst.setString(2, lblValorTotal.getText());
-                pst.executeUpdate();
+                rs = pst.executeQuery();
+                tbAuxilio1.setModel(DbUtils.resultSetToTableModel(rs));
+                String sqo = "select endcli from tbclientes where idcli=?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, idCliente.getText());
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
                 
-                
+                //tbAuxilio1.getModel().getValueAt(0, 0).toString()
                 HashMap filtro = new HashMap();
+                
                 
                 
                 filtro.put("IT", Integer.parseInt(identificador));
                 filtro.put("cliente", txtCliente.getText());
+                filtro.put("total", lblValorTotal.getText());
+                filtro.put("empresa", tbAuxilio1.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio1.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio1.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio1.getModel().getValueAt(0, 3).toString());
+                filtro.put("OBS", tbAuxilio1.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio1.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio1.getModel().getValueAt(0, 6).toString());
                 
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/NotaPdv.jasper"), filtro, conexao);
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                
+                
+                
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/NotaPDV.jasper"), filtro, conexao);
+
                 JasperViewer.viewReport(print, false);               
                 
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma imagem no relatorio");
+                limpar();
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 limpar();
@@ -866,7 +891,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-            limpar();
+           
 
         }
     }
@@ -1192,7 +1217,7 @@ public class PontoDeVendas extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-            limpar();
+       
 
         }
     }

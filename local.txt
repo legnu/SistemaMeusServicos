@@ -13,6 +13,7 @@ comissao varchar(50)not null,
 salario varchar(30)
 );
 
+
 create table tbclientes(
 idcli MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomecli varchar(60) not null,
@@ -29,6 +30,7 @@ ultima_compra date,
 prazo_inativo date,
 crediario varchar(50)
 );
+
 
 create table tbsubclientes(
 idsub MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -75,7 +77,8 @@ comanda_nota varchar(80),
 tipo varchar(80)
 );
 
-create table tbtotalvendas(
+
+create table  tbtotalvendas(
 id  MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 dia date,
 hora varchar(50),
@@ -86,7 +89,8 @@ dia_Pagamento date,
 idcliente varchar(10),
 cliente varchar(50),
 tipo varchar(50),
-identificador int
+identificador int,
+comunicarVenda int
 );
 
 create table tbprodutos(
@@ -122,7 +126,8 @@ data_pagamento date,
 nome varchar(50),
 forma_pagamento varchar(50),
 status_pagamento varchar(50),
-tipo varchar(50)
+tipo varchar(50),
+comunicarGasto int
 );
 
 create table tbfornecedor(
@@ -144,13 +149,9 @@ email_proprietario varchar(200),
 descricao varchar(200),
 numero varchar(200),
 obs varchar(200),
-cliente varchar(50),
-imagem varchar(900),
-preco varchar(50),
-entrada varchar(50),
-saida varchar(50),
-lucro varchar(50)
+imagem varchar(900)
 );
+
 
 create table tbservicos(
 idservico MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -181,6 +182,7 @@ senha varchar(80),
 vencimento date
 );
 
+
 create table tbComanda(
 idComanda MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomeComanda varchar(80)
@@ -188,6 +190,22 @@ nomeComanda varchar(80)
 
 insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil,comissao) values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador','0%');
 insert into tbrelatorio(idRelatorio) values(1);
-insert into tbclientes(nomecli,quantidade_comprada,valor_gasto,ticket_medio,crediario) values('Vendas Sem Registro.','0.00','0.00','0.00','Habilitado');
+insert into tbclientes(nomecli,quantidade_comprada,valor_gasto,ticket_medio,crediario,endcli) values('Vendas Sem Registro.','0.00','0.00','0.00','Habilitado','');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  

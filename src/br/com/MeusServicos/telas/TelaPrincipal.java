@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -65,11 +66,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
             for (int i = 0; i < tbFuncionario.getRowCount(); i++) {
                 System.out.println(tbFuncionario.getModel().getValueAt(i, 1).toString());
                 String pagamento = tbFuncionario.getModel().getValueAt(i, 1).toString();
-                
-                 
-                if(tbFuncionario.getModel().getValueAt(i, 1).toString().isEmpty() == true){
-                    
-                }else if (data.after(df.parse(tbFuncionario.getModel().getValueAt(i, 1).toString())) ==  true) {
+
+                if (tbFuncionario.getModel().getValueAt(i, 1).toString().isEmpty() == true) {
+
+                } else if (data.after(df.parse(tbFuncionario.getModel().getValueAt(i, 1).toString())) == true) {
                     String sqr = "insert into tbgastos(nome, data_pagamento, status_pagamento, valor, tipo)values(?,?,?,?,?)";
                     pst = conexao.prepareStatement(sqr);
                     pst.setString(1, "Pagamento de Funcionario");
@@ -104,13 +104,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 }
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
     }
-    
-    
 
     public void instanciarTabelaHoje() {
         try {
@@ -266,6 +264,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 pst.executeUpdate();
 
             }
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -1014,9 +1013,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Produto.jasper"), null, conexao);
+                
+                String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                
+                
+                //tbAuxilio1.getModel().getValueAt(0, 0).toString()
+                HashMap filtro = new HashMap();
+                
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/Produto.jasper"), filtro, conexao);
 
                 JasperViewer.viewReport(print, false);
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma imagem no relatorio");
+               
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -1082,9 +1104,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/relOrçamento.jasper"), null, conexao);
+                
+                String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                
+                
+                //tbAuxilio1.getModel().getValueAt(0, 0).toString()
+                HashMap filtro = new HashMap();
+                
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/relOrçamento.jasper"), filtro, conexao);
 
                 JasperViewer.viewReport(print, false);
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma imagem no relatorio");
+                
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -1096,9 +1141,33 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/relOrdemDeServico.jasper"), null, conexao);
+                
+                 String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                
+                
+                //tbAuxilio1.getModel().getValueAt(0, 0).toString()
+                HashMap filtro = new HashMap();
+                
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/relOrdemDeServico.jasper"), filtro, conexao);
 
                 JasperViewer.viewReport(print, false);
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma imagem no relatorio");
+                
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -1113,7 +1182,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void MenCadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_MenCadActionPerformed
 
     private void menCadFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadFuncionarioActionPerformed
@@ -1133,9 +1202,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressao deste relatorio?", "Atençao", JOptionPane.YES_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
-                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/agendamentosConcluidos.jasper"), null, conexao);
+                
+                String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
+                
+                
+                //tbAuxilio1.getModel().getValueAt(0, 0).toString()
+                HashMap filtro = new HashMap();
+                
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                
+                JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/agendamentosConcluidos.jasper"), filtro, conexao);
 
                 JasperViewer.viewReport(print, false);
+            } catch (java.lang.NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Adicione uma imagem no relatorio");
+                
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -1146,7 +1238,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         TelaRelatorio relatorio = new TelaRelatorio();
         relatorio.setVisible(true);
-        
+
     }//GEN-LAST:event_menRelatorioDadosRelatorioActionPerformed
 
     /**

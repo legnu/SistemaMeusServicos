@@ -47,132 +47,258 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
-	</parameter>
 	<parameter name="di" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="df" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="inicialS" class="java.lang.String">
+	<parameter name="entrada" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="finalS" class="java.lang.String">
+	<parameter name="Saida" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="numero" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="nome" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="descricao" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="email" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="imagem" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="lucro" class="java.lang.String"/>
+	<parameter name="obs" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select * from tbTotalVendas]]>
+		<![CDATA[select * from(
+select E.id,E.cliente,E.venda,E.tipo,S.idgastos,S.nome,S.valor,S.tipo as tipoS from tbtotalvendas E left join tbgastos S
+on comunicarVenda = comunicarGasto and S.status_pagamento="Pago"  and data_pagamento between $P{di} and $P{df}
+where E.status_pagamento="Pago" and dia between $P{di} and $P{df} union
+select E.id,E.cliente,E.venda,E.tipo,S.idgastos,S.nome,S.valor,S.tipo as tipoS from tbtotalvendas E right outer join tbgastos S
+on S.comunicarGasto = E.comunicarVenda and E.status_pagamento='Pago' and dia between $P{di} and $P{df}
+where S.status_pagamento="Pago" and data_pagamento between $P{di} and $P{df}) idgastos  order by 1 asc;]]>
 	</queryString>
-	<field name="id" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="dia" class="java.sql.Date">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="hora" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="venda" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="forma_pagamento" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="status_pagamento" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="dia_Pagamento" class="java.sql.Date">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="idcliente" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="cliente" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="tipo" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="venda" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="idgastos" class="java.lang.Integer"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="valor" class="java.lang.String"/>
+	<field name="tipoS" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="308" splitType="Stretch">
-			<subreport>
-				<reportElement x="0" y="243" width="555" height="65" uuid="a691c240-885a-4171-a429-14241faa4669"/>
-				<subreportParameter name="final">
-					<subreportParameterExpression><![CDATA[$P{df}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="inicial">
-					<subreportParameterExpression><![CDATA[$P{di}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Entrada.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="0" y="0" width="556" height="243" uuid="f9354780-8cfc-45b3-be7b-5b69a963c61d"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TituloSemCliente.jasper"]]></subreportExpression>
-			</subreport>
+		<band height="279" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="210" width="545" height="25" uuid="60c07306-9e6c-478c-9507-9cf25827a26b"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="83" width="291" height="23" uuid="76e69d64-a62e-4d7f-8cc5-ede1743b173d"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="160" width="291" height="22" uuid="9fee95de-6f35-4251-aea5-341d8c2d84b3"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="30" width="291" height="26" uuid="193c2c23-3330-4080-9191-7037a98016dd"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="121" width="291" height="22" uuid="8c7194cf-2a75-4b86-97ee-7aa5c88845ed"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{email}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="312" y="10" width="222" height="172" uuid="4ce35119-b07d-4db5-aa48-bdeb07d6c9d1"/>
+				<imageExpression><![CDATA[$P{imagem}]]></imageExpression>
+			</image>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="189">
-			<subreport>
-				<reportElement x="0" y="0" width="556" height="57" uuid="32c271ac-33da-47dc-a608-81b833b2f4fe"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TotalRecebido.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="1" y="57" width="555" height="57" uuid="5d0a6ccb-dbc8-4fa0-9611-2bacc06493fe"/>
-				<subreportParameter name="dsi">
-					<subreportParameterExpression><![CDATA[$P{inicialS}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="dsf">
-					<subreportParameterExpression><![CDATA[$P{finalS}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Saida.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-	</pageHeader>
 	<columnHeader>
-		<band height="70">
-			<subreport>
-				<reportElement x="0" y="0" width="555" height="69" uuid="fa3b0639-0694-450a-a510-3a893d94355e"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TotalGasto.jasper"]]></subreportExpression>
-			</subreport>
+		<band height="48">
+			<staticText>
+				<reportElement x="1" y="0" width="353" height="25" uuid="332a9259-16c2-4233-9298-d248f18cc516"/>
+				<textElement>
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Entrada/Saida]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="25" width="553" height="1" uuid="6d376afc-4905-4a39-af5b-7c6433e7b911"/>
+			</line>
+			<line>
+				<reportElement x="1" y="0" width="553" height="1" uuid="1f616fdc-78c8-4915-b22a-ef0f575c6f49"/>
+			</line>
+			<staticText>
+				<reportElement x="354" y="0" width="101" height="25" uuid="60f93168-b2cc-4829-ac55-f660e3b094b2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor(R$)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="454" y="0" width="101" height="25" uuid="97a3e40f-2ebe-42a5-8c23-c40c1e12aa73"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band splitType="Stretch"/>
+		<band height="25">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="354" height="20" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" uuid="6cad39e3-d312-4180-9539-c828b4fe9796"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="354" y="0" width="101" height="20" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" forecolor="#000099" uuid="9356ac91-50c5-48d0-a3a7-1ca7fae6120a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{venda}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="455" y="0" width="99" height="20" isRemoveLineWhenBlank="true" uuid="46334a1f-0dcb-48ae-8371-05fa8fcd84b2"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="24" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="1" y="0" width="353" height="20" isRemoveLineWhenBlank="true" uuid="5663e189-bcf3-4abb-9047-2e6527b40eed"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="354" y="0" width="101" height="20" isRemoveLineWhenBlank="true" forecolor="#990000" uuid="1340b5bb-7c38-4129-b615-5630bbca1d74"/>
+				<textElement textAlignment="Center">
+					<font fontName="Dialog" size="14" isBold="true"/>
+					<paragraph lineSpacing="AtLeast"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="455" y="0" width="99" height="20" isRemoveLineWhenBlank="true" uuid="9d4a5ac9-c890-4ed5-8bf9-b79c6754f4b2"/>
+				<textElement textAlignment="Right">
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipoS}]]></textFieldExpression>
+			</textField>
+		</band>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
 	<lastPageFooter>
 		<band height="49">
 			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement x="1" y="27" width="217" height="22" uuid="3af9056c-8c6b-41a1-b478-779b69170531"/>
+				<reportElement x="0" y="27" width="216" height="22" uuid="3af9056c-8c6b-41a1-b478-779b69170531"/>
 				<textElement>
 					<font fontName="Dialog" size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<subreport>
-				<reportElement x="218" y="27" width="338" height="22" uuid="8f767fd4-6ee8-47f5-8b47-936bfec75c24"/>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "obs.jasper"]]></subreportExpression>
-			</subreport>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="baa00959-c581-4959-8005-b3ba98a19503"/>
 			</line>
+			<textField>
+				<reportElement x="216" y="27" width="100" height="22" uuid="03a2575e-d2a0-49df-85aa-f2daa26a9ac6"/>
+				<textElement>
+					<font fontName="Dialog" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{obs}]]></textFieldExpression>
+			</textField>
 		</band>
 	</lastPageFooter>
 	<summary>
-		<band splitType="Stretch"/>
+		<band height="104">
+			<line>
+				<reportElement x="1" y="0" width="553" height="1" uuid="f3bc4cb8-085f-46e1-882c-131add94ca09"/>
+			</line>
+			<line>
+				<reportElement x="284" y="1" width="1" height="80" uuid="e060014b-8dc5-4925-ab77-f14659d678e7"/>
+			</line>
+			<line>
+				<reportElement x="1" y="40" width="554" height="1" uuid="5b8b6b78-15b1-4652-8abb-b7a98d74f46e"/>
+			</line>
+			<staticText>
+				<reportElement x="301" y="9" width="125" height="22" uuid="01cb8303-c42e-492c-ac72-334d4b369fa2"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TotalGasto(R$):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="9" width="151" height="22" uuid="fe3bf147-be50-4099-8220-79ab4be7d0c8"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TotalRecebido(R$):]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="151" y="9" width="132" height="22" forecolor="#000099" uuid="aec90b01-f107-4d50-821e-1b307cb645e8"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{entrada}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="426" y="9" width="128" height="22" forecolor="#990000" uuid="accb3b2f-82a8-4c2c-ba2a-ec48195a104c"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Saida}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="285" y="81" width="270" height="1" uuid="785142fb-919a-4c22-8175-79b8cce16d94"/>
+			</line>
+			<staticText>
+				<reportElement x="301" y="50" width="142" height="22" uuid="2ea232b1-6f41-4683-a41e-28a626240b14"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TotalLucrado(R$):]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="50" width="131" height="22" forecolor="#009900" uuid="ff1dbda5-c048-4d2e-ac34-6db0ebfcb303"/>
+				<textElement>
+					<font fontName="Dialog" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{lucro}]]></textFieldExpression>
+			</textField>
+		</band>
 	</summary>
 </jasperReport>

@@ -248,11 +248,14 @@ public class CadOS extends javax.swing.JFrame {
 
         try {
             int confirma = 0;
-            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty()) ||  dtPrevisao.getDate() == null) {
+            if ((txtCliente.getText().isEmpty()) || (txtOsEquip.getText().isEmpty()) || (txtOsDef.getText().isEmpty()) || (txtOsServ.getText().isEmpty()) || (txtOsValor.getText().isEmpty())||  dtPrevisao.getDate() == null) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
                 limpar();
                 confirma = 1;
-            } else if ((Double.parseDouble(txtOsValor.getText().replace(",", ".")) <= 0)) {
+            } else if (cbFuncionario.getSelectedItem().toString().equals("Selecione") == true) {
+                JOptionPane.showMessageDialog(null, "Adicione um Funcionario.");
+                limpar();
+            }else if ((Double.parseDouble(txtOsValor.getText().replace(",", ".")) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
                 limpar();
             } else if (confirma == 0) {
@@ -300,7 +303,10 @@ public class CadOS extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios.");
                 limpar();
                 confirma = 1;
-            } else if ((Double.parseDouble(txtOsValor.getText().replace(",", ".")) <= 0)) {
+            } else if (cbFuncionario.getSelectedItem().toString().equals("Selecione") == true) {
+                JOptionPane.showMessageDialog(null, "Adicione um Funcionario.");
+                limpar();
+            }else if ((Double.parseDouble(txtOsValor.getText().replace(",", ".")) <= 0)) {
                 JOptionPane.showMessageDialog(null, "Adicione um valor maior que 0.");
                 limpar();
             } else if (confirma == 0) {
@@ -397,6 +403,21 @@ public class CadOS extends javax.swing.JFrame {
 
                 HashMap filtro = new HashMap();
                 filtro.put("os", Integer.parseInt(txtOs.getText()));
+                String sql = "select nome_empresa,nome_proprietario,email_proprietario,descricao,obs,numero,imagem from tbrelatorio where idRelatorio=1";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));               
+                
+                filtro.put("empresa", tbAuxilio.getModel().getValueAt(0, 0).toString());
+                filtro.put("nome", tbAuxilio.getModel().getValueAt(0, 1).toString());
+                filtro.put("email", tbAuxilio.getModel().getValueAt(0, 2).toString());
+                filtro.put("descricao", tbAuxilio.getModel().getValueAt(0, 3).toString());
+                filtro.put("obs", tbAuxilio.getModel().getValueAt(0, 4).toString());
+                filtro.put("numero", tbAuxilio.getModel().getValueAt(0, 5).toString());
+                filtro.put("imagem", tbAuxilio.getModel().getValueAt(0, 6).toString());
+                filtro.put("cliente", txtCliente.getText());
+                
+                filtro.put("endereco", tbAuxilio.getModel().getValueAt(0, 0).toString());
 
                 JasperPrint print = JasperFillManager.fillReport(getClass().getResourceAsStream("/reports/RelOS.jasper"), filtro, conexao);
 
@@ -529,7 +550,7 @@ public class CadOS extends javax.swing.JFrame {
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtOsValor, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+            .addComponent(txtOsValor, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -713,7 +734,7 @@ public class CadOS extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dtPrevisao, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+            .addComponent(dtPrevisao, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -729,7 +750,7 @@ public class CadOS extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtOsServ)
+            .addComponent(txtOsServ, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -880,7 +901,7 @@ public class CadOS extends javax.swing.JFrame {
                         .addGap(10, 10, 10)
                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel10Layout.createSequentialGroup()
                         .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10)
@@ -889,10 +910,10 @@ public class CadOS extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(10, 10, 10)
                         .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnCliente)))
+                        .addComponent(btnCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(57, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(

@@ -3,34 +3,39 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\Ad3ln0r\\Documents\\NetBeansProjects\\prjMeusServicos\\src\\reports\\"]]></defaultValueExpression>
-	</parameter>
 	<parameter name="IT" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="cliente" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="total" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="numero" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="OBS" class="java.lang.String"/>
+	<parameter name="nome" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="email" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="descricao" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="imagem" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endereco" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT P.nome as Nome,
-    P.preco,
-    P.quantidade as Quantidade,
-    C.nome_empresa,
-    C.nome_proprietario,
-    C.email_proprietario,
-    C.descricao,
-    C.numero,
-    C.obs,
-    C.cliente,
-    C.imagem,
-    C.preco as Total
-FROM
-    tbvenda P
- left join
-  tbrelatorio C
-  ON P.idvenda = C.idRelatorio
-where identificador = $P{IT}]]>
+		<![CDATA[SELECT nome as Nome, preco, quantidade as Quantidade from tbvenda where identificador = $P{IT}]]>
 	</queryString>
 	<field name="Nome" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -41,93 +46,82 @@ where identificador = $P{IT}]]>
 	<field name="Quantidade" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="nome_empresa" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="nome_proprietario" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="email_proprietario" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="descricao" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="numero" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="obs" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="cliente" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="imagem" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="Total" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="284" splitType="Stretch">
-			<textField>
-				<reportElement x="439" y="247" width="136" height="20" uuid="080cab56-2005-45e7-a3e4-9941709a91c3"/>
-				<textElement>
-					<font fontName="Dialog" size="12"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{cliente}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="193" width="555" height="25" uuid="233191b0-7c17-4db3-a386-460919be9f6f"/>
-				<textElement>
-					<font fontName="Dialog" size="16"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="150" width="291" height="22" uuid="09873db7-b68a-43b7-b347-c0beca396a01"/>
-				<textElement>
-					<font fontName="Dialog" size="16"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
-			</textField>
+		<band height="298" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="20" width="291" height="26" uuid="c7db62e3-3c1f-482b-b5cf-34779567cd29"/>
 				<textElement>
 					<font fontName="Dialog" size="18" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{nome_empresa}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{empresa}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="111" width="291" height="22" uuid="b7d3b589-c8c0-4a3d-811c-84a63dd2dbae"/>
 				<textElement>
 					<font fontName="Dialog" size="16"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{email_proprietario}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{email}]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement x="311" y="0" width="244" height="172" uuid="6596e58d-e038-4fcb-b2cf-ef8a8d1d2cd2"/>
-				<imageExpression><![CDATA[$F{imagem}]]></imageExpression>
+				<imageExpression><![CDATA[$P{imagem}]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="0" y="73" width="291" height="23" uuid="00264cef-227a-41af-abc8-93461cc0016a"/>
 				<textElement>
 					<font fontName="Dialog" size="16"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{nome_proprietario}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{nome}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="439" y="227" width="116" height="20" uuid="6d3b19a9-0bad-45a8-9f13-44db0bd1d469"/>
+				<reportElement x="0" y="228" width="116" height="20" uuid="6d3b19a9-0bad-45a8-9f13-44db0bd1d469"/>
 				<textElement>
 					<font fontName="Dialog" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cliente]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="0" y="248" width="311" height="20" uuid="080cab56-2005-45e7-a3e4-9941709a91c3"/>
+				<textElement>
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="150" width="291" height="22" uuid="09873db7-b68a-43b7-b347-c0beca396a01"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="188" width="555" height="22" uuid="8dc104c8-e17a-4355-87ec-11f6c284cf65"/>
+				<textElement>
+					<font fontName="Dialog" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{numero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="311" y="228" width="60" height="20" uuid="49c2258e-3c31-414a-80c2-94a4595f08d8"/>
+				<textElement>
+					<font fontName="Dialog" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Endereço  ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="371" y="228" width="184" height="70" uuid="78494ef2-0f9d-42b2-bf5b-2a53076d67cf"/>
+				<textElement>
+					<font fontName="Dialog" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{endereco}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
-		<band splitType="Stretch"/>
+		<band/>
 	</pageHeader>
 	<columnHeader>
 		<band height="29" splitType="Stretch">
@@ -150,7 +144,7 @@ where identificador = $P{IT}]]>
 				<textElement>
 					<font fontName="Dialog" size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Preço]]></text>
+				<text><![CDATA[Preço(R$)]]></text>
 			</staticText>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="49240487-2b15-4976-9156-a5c587c2912e"/>
@@ -165,21 +159,21 @@ where identificador = $P{IT}]]>
 			<textField>
 				<reportElement x="0" y="5" width="100" height="25" uuid="2c2939bc-b29c-4050-8ca0-fb31c01cdb83"/>
 				<textElement>
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Quantidade}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="168" y="5" width="242" height="25" uuid="4a7c512d-24d7-4290-8094-693e3e111ecd"/>
 				<textElement>
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Nome}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="439" y="5" width="116" height="25" uuid="d0b2cf83-d894-4fa7-bdfb-86bc5780993c"/>
+				<reportElement x="439" y="5" width="116" height="25" forecolor="#0000CC" uuid="d0b2cf83-d894-4fa7-bdfb-86bc5780993c"/>
 				<textElement>
-					<font fontName="Dialog" size="12"/>
+					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{preco}]]></textFieldExpression>
 			</textField>
@@ -198,11 +192,11 @@ where identificador = $P{IT}]]>
 				<reportElement x="0" y="0" width="555" height="1" uuid="e1e2be25-4aae-462c-a1f0-018013c7ed93"/>
 			</line>
 			<textField>
-				<reportElement x="455" y="16" width="100" height="20" uuid="bcec0284-047c-4298-9235-3e774e45eb0b"/>
+				<reportElement x="455" y="16" width="100" height="20" forecolor="#0000CC" uuid="a51b5a47-4171-40a1-a712-0d86abb7e3dd"/>
 				<textElement>
-					<font fontName="Dialog" size="14"/>
+					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnFooter>
@@ -228,7 +222,7 @@ where identificador = $P{IT}]]>
 			<textField>
 				<reportElement x="476" y="18" width="79" height="29" uuid="01c7ac3c-68d9-45e7-acab-fb5830022145"/>
 				<textElement>
-					<font fontName="Dialog" size="16"/>
+					<font fontName="Dialog" size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
@@ -236,11 +230,11 @@ where identificador = $P{IT}]]>
 				<reportElement x="0" y="0" width="555" height="1" uuid="4440dbc4-2294-4490-9c6a-f977e7d89fde"/>
 			</line>
 			<textField>
-				<reportElement x="183" y="18" width="227" height="29" uuid="033beccd-ae0b-4f5c-a1da-75f899eff0a5"/>
+				<reportElement x="168" y="18" width="256" height="29" uuid="181f7a1c-a74d-47fd-b358-bf9a73189bd3"/>
 				<textElement>
-					<font fontName="Dialog" size="16"/>
+					<font fontName="Dialog" size="14" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{obs}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{OBS}]]></textFieldExpression>
 			</textField>
 		</band>
 	</lastPageFooter>

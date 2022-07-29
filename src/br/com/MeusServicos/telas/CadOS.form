@@ -121,7 +121,7 @@
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Component id="jPanel6" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                          <Component id="jPanel7" max="32767" attributes="0"/>
+                          <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
@@ -131,10 +131,10 @@
                           <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Component id="jPanel9" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="btnCliente" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnCliente" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace pref="57" max="32767" attributes="0"/>
@@ -203,7 +203,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="txtOsValor" alignment="0" pref="100" max="32767" attributes="0"/>
+                  <Component id="txtOsValor" alignment="0" pref="95" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -545,7 +545,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="dtPrevisao" alignment="0" pref="117" max="32767" attributes="0"/>
+                  <Component id="dtPrevisao" alignment="0" pref="122" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -580,7 +580,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="txtOsServ" alignment="0" max="32767" attributes="0"/>
+                  <Component id="txtOsServ" alignment="0" pref="273" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
