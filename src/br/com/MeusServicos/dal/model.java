@@ -25,6 +25,7 @@ package br.com.MeusServicos.dal;
 
 import java.awt.Toolkit;
 import javax.swing.JFrame;
+import java.awt.Toolkit;
 
 /**
  *
@@ -32,9 +33,6 @@ import javax.swing.JFrame;
  */
 public class model {
     
-    public void InserirIcone(JFrame frm){
-           
-        frm.setIconImage(Toolkit.getDefaultToolkit().getImage("/br/com/MeusServicos/icones/ERPGestao64.png"));
-    }
-    
+  
 }
+ 

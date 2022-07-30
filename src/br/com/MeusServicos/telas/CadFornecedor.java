@@ -26,6 +26,7 @@ package br.com.MeusServicos.telas;
 import br.com.MeusServicos.dal.ModuloConexao;
 import br.com.MeusServicos.dal.ValidadorDeCNPJ;
 import br.com.MeusServicos.dal.ValidadorCpf;
+import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,7 +51,13 @@ public class CadFornecedor extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
 
+       setIcon();        
     }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
+    }
+
 
     public void iniciar() {
         instanciarTabela();

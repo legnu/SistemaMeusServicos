@@ -24,6 +24,7 @@
 package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
+import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,7 +48,13 @@ public class CadProduto extends javax.swing.JFrame {
     public CadProduto() {
         initComponents();
         conexao = ModuloConexao.conector();
+        setIcon();        
     }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
+    }
+
 
     public void InstanciarCombobox() {
         try {

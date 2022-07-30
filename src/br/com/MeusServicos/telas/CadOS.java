@@ -24,6 +24,7 @@
 package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
+import java.awt.Toolkit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,13 +62,19 @@ public class CadOS extends javax.swing.JFrame {
     public CadOS() {
         initComponents();
         conexao = ModuloConexao.conector();
+        setIcon();        
     }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
+    }
+
     
      public void InstanciarCombobox() {
         try {
             cbFuncionario.removeAllItems();
             cbFuncionario.addItem("Selecione");
-            String sql = "select funcionario from tbFuncionarios";
+            String sql = "select funcionario from tbFuncionarios where tipo != 'Vendedor'";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             while (rs.next()) {

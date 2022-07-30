@@ -7,6 +7,7 @@ package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -37,7 +38,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
 
+        setIcon();        
     }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
+    }
+
 
     public void pontoDeVendas() {
         PontoDeVendas pdv = new PontoDeVendas();

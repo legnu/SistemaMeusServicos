@@ -28,6 +28,7 @@ import br.com.MeusServicos.dal.model;
 import static br.com.MeusServicos.telas.PontoDeVendas.lblUsuarioPDV;
 import static br.com.MeusServicos.telas.TelaPrincipal.lblUsuario;
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,8 +55,11 @@ public class TelaVale extends javax.swing.JFrame {
     public TelaVale() {
         initComponents();
         conexao = ModuloConexao.conector();
-        model m = new model();
-        m.InserirIcone(this);
+        setIcon();        
+    }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
     }
 
     public void CriarSenha() {
@@ -74,6 +78,13 @@ public class TelaVale extends javax.swing.JFrame {
 
     public void primeiraConta() {
         try {
+            String sqo = "select senha from tbVale where idVale=1";
+            pst = conexao.prepareStatement(sqo);
+            rs = pst.executeQuery();
+            
+            if(tbAuxilio.getModel().getValueAt(0, 0) == null == false){
+                
+            }else{
             CriarSenha();
 
             Date data = new Date();
@@ -95,12 +106,12 @@ public class TelaVale extends javax.swing.JFrame {
             java.sql.Date dSqt = new java.sql.Date(d.getTime());
             df.format(dSqt);
 
-            String sql = "insert into tbVale(senha, vencimento)values(?,?)";
+            String sql = "update tbVale set senha=?, vencimento=? where idVale=1";
             pst = conexao.prepareStatement(sql);
             pst.setString(1, Senha);
             pst.setDate(2, dSqt);
-
             pst.executeUpdate();
+            }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -117,7 +128,6 @@ public class TelaVale extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            
 
             if (data.after(df.parse(tbAuxilio.getModel().getValueAt(0, 0).toString())) == true) {
 
@@ -138,23 +148,25 @@ public class TelaVale extends javax.swing.JFrame {
                 Date d = df.parse(dataLimite);
                 java.sql.Date dSqt = new java.sql.Date(d.getTime());
                 df.format(dSqt);
-                
+
                 String sql = "update tbVale set senha=?, vencimento=? where idVale=1";
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, Senha);
                 pst.setDate(2, dSqt);
 
                 pst.executeUpdate();
-            }
+            }  
+            
 
-        } catch (Exception e) {
+       
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
 
-    }
+    }    
 
-    public void VerificarSenha() {
+    public void VerificarSenha() {        
         try {
             Date data = new Date();
             DateFormat Dia = new SimpleDateFormat("dd");
@@ -165,18 +177,19 @@ public class TelaVale extends javax.swing.JFrame {
             rs = pst.executeQuery();
             tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
             //tbauxilio.getModel().getValueAt(i, 2).toString()
-            if (txtSenha.getText().equals(tbAuxilio.getModel().getValueAt(0, 0).toString()) == true) {             
-                
-                if(Dia.format(data).equals("04") == true){
+
+            if (txtSenha.getText().equals(tbAuxilio.getModel().getValueAt(0, 0).toString()) == true) {
+
+                if (Dia.format(data).equals("04") == true) {
                     JOptionPane.showMessageDialog(null, "Antepenúltimo dia para vencimento da Senha Mensal.");
                 }
-                if(Dia.format(data).equals("05") == true){
+                if (Dia.format(data).equals("05") == true) {
                     JOptionPane.showMessageDialog(null, "Penúltimo dia para vencimento da Senha Mensal.");
                 }
-                if(Dia.format(data).equals("06") == true){
+                if (Dia.format(data).equals("06") == true) {
                     JOptionPane.showMessageDialog(null, "Último dia para vencimento da Senha Mensal.");
                 }
-                
+
                 TelaLogin login = new TelaLogin();
                 login.setVisible(true);
                 this.dispose();
@@ -184,10 +197,8 @@ public class TelaVale extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Senha Invalida entre em contato com 31 98235-2599.");
             }
 
-        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
-            primeiraConta();
-
-        } catch (Exception e) {
+      
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
@@ -280,7 +291,8 @@ public class TelaVale extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        CriarSenha();
+        primeiraConta();
+       
     }//GEN-LAST:event_formWindowOpened
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
@@ -330,4 +342,6 @@ public class TelaVale extends javax.swing.JFrame {
     private javax.swing.JTable tbAuxilio;
     private javax.swing.JTextField txtSenha;
     // End of variables declaration//GEN-END:variables
+
+   
 }

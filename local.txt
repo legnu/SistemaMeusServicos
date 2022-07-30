@@ -172,9 +172,12 @@ salario varchar(50),
 comissao varchar(10),
 contrato date,
 especialidade varchar(50),
+validade_contrato varchar(50),
 tipo varchar(50),
 data_pagamento date
 );
+
+select *  from tbFuncionarios;
 
 create table tbVale(
 idVale MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
@@ -191,6 +194,7 @@ nomeComanda varchar(80)
 insert into tbusuarios(iduser,usuario,cargo_usuario,telefone,login,senha,perfil,comissao) values(1,'Administrador','Administrador','000000000000000','admin','admin123','Administrador','0%');
 insert into tbrelatorio(idRelatorio) values(1);
 insert into tbclientes(nomecli,quantidade_comprada,valor_gasto,ticket_medio,crediario,endcli) values('Vendas Sem Registro.','0.00','0.00','0.00','Habilitado','');
+insert into tbVale(idVale) values(1);
 
 
 

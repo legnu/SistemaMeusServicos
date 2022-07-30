@@ -95,83 +95,61 @@ public class CadUsuarios extends javax.swing.JFrame {
     private void adicionar() {
 
         try {
-            if (cbCargo.getSelectedItem().equals("Profissional/Tec") == true || cbCargo.getSelectedItem().equals("Profissional/Tec e Vendedor") == true) {
-                if ((txtNome.getText().isEmpty()) || (txtLogin.getText().isEmpty()) || (txtSenha.getText().isEmpty()) || (txtComissao.getText().isEmpty())) {
-                    JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-                    limpar();
-                } else {
 
-                    String sql = "insert into tbusuarios(usuario,cargo_usuario,telefone,login,senha,perfil,comissao)values(?,?,?,?,?,?,?)";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setString(1, txtNome.getText());
-                    pst.setString(2, cbCargo.getSelectedItem().toString());
-                    pst.setString(3, txtTelefone.getText());
-                    pst.setString(4, txtLogin.getText());
-                    pst.setString(5, txtSenha.getText());
-                    pst.setString(6, cbPerfil.getSelectedItem().toString());
-                    pst.setString(7, txtComissao.getText());
-                    pst.executeUpdate();
-                    
-                    Date data = new Date();
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                    String mes = new SimpleDateFormat("MM").format(data);
-                    String ano = new SimpleDateFormat("yyyy").format(data);
-
-                    int limite = Integer.parseInt(mes) + 1;
-
-                    if (limite > 12) {
-                        limite = limite - 12;
-                        ano = String.valueOf(Integer.parseInt(ano) + 1);
-                    }
-
-                    String dataLimite = ano + "-" + limite + "-07";
-
-                    Date d = df.parse(dataLimite);
-                    java.sql.Date dSqt = new java.sql.Date(d.getTime());
-                    df.format(dSqt);
-
-                    String sqo = "insert into tbFuncionarios(funcionario,salario,comissao,tipo,data_pagamento,contrato,especialidade)values(?,?,?,?,?,?,?)";
-                    pst = conexao.prepareStatement(sqo);
-                    pst.setString(1, txtNome.getText());
-                    pst.setString(2, "0.00");
-                    pst.setString(3, "0%");
-                    pst.setString(4, "Dados Pendentes");
-                    pst.setDate(5, dSqt);
-                    pst.setDate(6, dSqt);
-                    pst.setString(7, "");
-                    pst.executeUpdate();
-
-                    JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
-                    JOptionPane.showMessageDialog(null, "Funcionario adicionado com sucesso");
-                    JOptionPane.showMessageDialog(null, "Complete os Dados do funcionario '" + txtNome.getText() + "' na tela Cadastro de Funcionarios.");
-
-                    limpar();
-
-                }
+            if ((txtNome.getText().isEmpty()) || (txtLogin.getText().isEmpty()) || (txtSenha.getText().isEmpty()) || (txtComissao.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
+                limpar();
             } else {
 
-                if ((txtNome.getText().isEmpty()) || (txtLogin.getText().isEmpty()) || (txtSenha.getText().isEmpty()) || (txtComissao.getText().isEmpty())) {
-                    JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
-                    limpar();
-                } else {
+                String sql = "insert into tbusuarios(usuario,cargo_usuario,telefone,login,senha,perfil,comissao)values(?,?,?,?,?,?,?)";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtNome.getText());
+                pst.setString(2, cbCargo.getSelectedItem().toString());
+                pst.setString(3, txtTelefone.getText());
+                pst.setString(4, txtLogin.getText());
+                pst.setString(5, txtSenha.getText());
+                pst.setString(6, cbPerfil.getSelectedItem().toString());
+                pst.setString(7, txtComissao.getText());
+                pst.executeUpdate();
 
-                    String sql = "insert into tbusuarios(usuario,cargo_usuario,telefone,login,senha,perfil,comissao)values(?,?,?,?,?,?,?)";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setString(1, txtNome.getText());
-                    pst.setString(2, cbCargo.getSelectedItem().toString());
-                    pst.setString(3, txtTelefone.getText());
-                    pst.setString(4, txtLogin.getText());
-                    pst.setString(5, txtSenha.getText());
-                    pst.setString(6, cbPerfil.getSelectedItem().toString());
-                    pst.setString(7, txtComissao.getText());
-                    pst.executeUpdate();
+                Date data = new Date();
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                String mes = new SimpleDateFormat("MM").format(data);
+                String ano = new SimpleDateFormat("yyyy").format(data);
 
-                    JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
-                    limpar();
+                int limite = Integer.parseInt(mes) + 1;
 
+                if (limite > 12) {
+                    limite = limite - 12;
+                    ano = String.valueOf(Integer.parseInt(ano) + 1);
                 }
 
+                String dataLimite = ano + "-" + limite + "-07";
+
+                Date d = df.parse(dataLimite);
+                java.sql.Date dSqt = new java.sql.Date(d.getTime());
+                df.format(dSqt);
+
+                String sqo = "insert into tbFuncionarios(funcionario,salario,comissao,tipo,data_pagamento,contrato,especialidade,validade_contrato)values(?,?,?,?,?,?,?,?)";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, txtNome.getText());
+                pst.setString(2, "0.00");
+                pst.setString(3, "0%");
+                pst.setString(4, cbCargo.getSelectedItem().toString());
+                pst.setDate(5, dSqt);
+                pst.setDate(6, dSqt);
+                pst.setString(7, "");
+                pst.setString(8, "Dados Pendentes");
+                pst.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
+                JOptionPane.showMessageDialog(null, "Funcionario adicionado com sucesso");
+                JOptionPane.showMessageDialog(null, "Complete os Dados do funcionario '" + txtNome.getText() + "' na tela Cadastro de Funcionarios.");
+
+                limpar();
+
             }
+
         } catch (java.lang.NumberFormatException e) {
             if ((txtTelefone.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatorios");
@@ -180,7 +158,7 @@ public class CadUsuarios extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Campo Telefone Suporta somente Numeros.");
                 limpar();
             }
-        }  catch (java.sql.SQLIntegrityConstraintViolationException e) {
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             JOptionPane.showMessageDialog(null, "Nome/Login já existente.");
             limpar();
         } catch (com.mysql.cj.jdbc.exceptions.MysqlDataTruncation e) {
@@ -249,12 +227,12 @@ public class CadUsuarios extends javax.swing.JFrame {
                 try {
                     if (cbCargo.getSelectedItem().equals("Profissional/Tec") == true || cbCargo.getSelectedItem().equals("Profissional/Tec e Vendedor") == true) {
                         JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                        
+
                         String sql = "delete from tbusuarios where iduser=?";
                         pst = conexao.prepareStatement(sql);
                         pst.setString(1, txtId.getText());
-                        pst.executeUpdate();   
-                        
+                        pst.executeUpdate();
+
                         JOptionPane.showMessageDialog(null, "Usuário removido com sucesso");
                         limpar();
 
@@ -287,7 +265,6 @@ public class CadUsuarios extends javax.swing.JFrame {
 
     }
 
-   
     public void instanciarCombobox() {
         if (cbPerfil.getSelectedItem().toString().equals("Administrador") == true) {
             cbCargo.removeAllItems();

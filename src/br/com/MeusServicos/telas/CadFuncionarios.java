@@ -24,6 +24,7 @@
 package br.com.MeusServicos.telas;
 
 import br.com.MeusServicos.dal.ModuloConexao;
+import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,11 +53,17 @@ public class CadFuncionarios extends javax.swing.JFrame {
     public CadFuncionarios() {
         initComponents();
         conexao = ModuloConexao.conector();
+        setIcon();        
     }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
+    }
+
 
     public void instanciarTabela() {
         try {
-            String sql = "select idFuncionario as ID, funcionario as Funcionario, salario as Salario, comissao as Comissão, contrato as Contrato, especialidade as Especialidade from tbFuncionarios";
+            String sql = "select idFuncionario as ID, funcionario as Funcionario, salario as Salario, comissao as Comissão, contrato as Contrato, especialidade as Especialidade, tipo as Tipo from tbFuncionarios";
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbPrincipal.setModel(DbUtils.resultSetToTableModel(rs));
@@ -70,7 +77,7 @@ public class CadFuncionarios extends javax.swing.JFrame {
 
     private void Pesquisar() {
 
-        String sql = "select idFuncionario as ID, funcionario as Funcionario, salario as Salario, comissao as Comissão, contrato as Contrato, especialidade as Especialidade from tbFuncionarios where funcionario like ?";
+        String sql = "select idFuncionario as ID, funcionario as Funcionario, salario as Salario, comissao as Comissão, contrato as Contrato, especialidade as Especialidade, tipo as Tipo  from tbFuncionarios where funcionario like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -117,15 +124,16 @@ public class CadFuncionarios extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "O maximo e 100%.");
                 limpar();
             } else {
-                String sql = "insert into tbFuncionarios(funcionario,salario,comissao,contrato,especialidade,tipo,data_pagamento)values(?,?,?,?,?,?,?)";
+                String sql = "insert into tbFuncionarios(funcionario,salario,comissao,contrato,especialidade,tipo,data_pagamento,validade_contrato)values(?,?,?,?,?,?,?,?)";
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtFuncionario.getText());
                 pst.setString(2, new DecimalFormat("#,##0.00").format(Double.parseDouble(txtSalario.getText().replace(",", "."))).replace(",", "."));
                 pst.setString(3, txtComissao.getText());
                 pst.setDate(4, dSql);
                 pst.setString(5, txtEspecialidade.getText());
-                pst.setString(6, "Contrato em dia");
+                pst.setString(6, "Funcionario");
                 pst.setDate(7, dSqt);
+                pst.setString(8, "Contrato em dia");
 
                 //Validação dos Campos Obrigatorios
                 //A linha abaixo atualiza os dados do novo usuario
@@ -159,6 +167,7 @@ public class CadFuncionarios extends javax.swing.JFrame {
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 java.sql.Date dSql = new java.sql.Date(dtContrato.getDate().getTime());
                 df.format(dSql);
+                
 
                 String sql = "update tbFuncionarios set funcionario=?,salario=?,comissao=?,contrato=?,especialidade=? where idFuncionario=?";
 
@@ -169,6 +178,7 @@ public class CadFuncionarios extends javax.swing.JFrame {
                 pst.setDate(4, dSql);
                 pst.setString(5, txtEspecialidade.getText());
                 pst.setString(6, ID);
+                
                 //A linha abaixo altera os dados do novo usuario
                 int adicionado = pst.executeUpdate();
                 //A Linha abaixo serve de apoio ao entendimento da logica
@@ -234,6 +244,7 @@ public class CadFuncionarios extends javax.swing.JFrame {
             dtContrato.setDate(df.parse(tbPrincipal.getModel().getValueAt(setar, 4).toString()));
 
             txtEspecialidade.setText(tbPrincipal.getModel().getValueAt(setar, 5).toString());
+            
             pnTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Funcionario Selecionado: " + txtFuncionario.getText(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12)));
 
             //A Linha Abaixo desabilita o botão adicionar
@@ -253,12 +264,15 @@ public class CadFuncionarios extends javax.swing.JFrame {
         txtComissao.setText(null);
         txtEspecialidade.setText(null);
         txtFuncionario.setText(null);
+        txtTipo.setText(null);
         txtSalario.setText("0.00");
         dtContrato.setDate(null);
         ID = null;
 
         btnAlterar.setEnabled(false);
         btnRemover.setEnabled(false);
+        btnAdicionar.setEnabled(true);
+        btnAtualizar.setEnabled(true);
         instanciarTabela();
     }
 
@@ -271,6 +285,7 @@ public class CadFuncionarios extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        txtTipo = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         btnAtualizar = new javax.swing.JToggleButton();
         btnRemover = new javax.swing.JButton();
@@ -292,6 +307,8 @@ public class CadFuncionarios extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
+
+        txtTipo.setText("jTextField1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cadastro de Funcionarios");
@@ -660,5 +677,6 @@ public class CadFuncionarios extends javax.swing.JFrame {
     private javax.swing.JTextField txtFuncionario;
     private javax.swing.JTextField txtPesquisar;
     private javax.swing.JTextField txtSalario;
+    private javax.swing.JTextField txtTipo;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,6 +5,8 @@
  */
 package br.com.MeusServicos.telas;
 
+import java.awt.Toolkit;
+
 /**
  *
  * @author Leandro Clemente
@@ -16,7 +18,13 @@ public class TelaSobre extends javax.swing.JFrame {
      */
     public TelaSobre() {
         initComponents();
+        setIcon();        
     }
+    
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/MeusServicos/icones/ERPGestao64.png")));
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
